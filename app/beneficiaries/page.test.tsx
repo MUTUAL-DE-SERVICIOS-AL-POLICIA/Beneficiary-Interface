@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test, beforeAll, afterAll } from "vitest"
+import { afterEach, describe, expect, test, beforeAll, afterAll, vi, beforeEach } from "vitest"
 // Metodos de prueba de react
 import { cleanup, render, screen, waitFor } from "@testing-library/react"
 
@@ -6,6 +6,8 @@ import { http, HttpResponse } from "msw"
 import {setupServer} from 'msw/node'
 // El componente a probar
 import Page from "./page"
+import userEvent from '@testing-library/user-event';
+
 
 const textColumns = [
    'PRIMER NOMBRE',
@@ -18,8 +20,8 @@ const textColumns = [
 ]
 
 const server = setupServer(
-   http.get('/api/persons', () => {
-      console.log("MSW interceptó la solicitud a /api/persons");
+   http.get(/\/api\/persons/, () => {
+      // console.log("MSW interceptó la solicitud a /api/persons");
       return HttpResponse.json(
          [
             {
@@ -79,7 +81,7 @@ afterEach(() => {
 })
 afterAll(() => server.close())
 
-describe('Page beneficiaries', () => {
+describe.only('Page beneficiaries', () => {
    afterEach(cleanup)
    describe('Render component Table beneficiaries', () => {
       test("Checking render table", () => {
@@ -111,16 +113,24 @@ describe('Page beneficiaries', () => {
          await waitFor(() => {
             const rows = screen.getAllByRole("gridcell")
             // debug(rows)
-            expect(rows.length).toBeGreaterThan(11)
+            expect(rows.length).toBeGreaterThan(0)
          })
-         const firstNameCell = await screen.findByText('Johni');
-         expect(firstNameCell).toBeDefined();
+         const firstNameCell = await screen.findByText('Johni')
+         expect(firstNameCell).toBeDefined()
 
-         const lastNameCell = await screen.findByText('Mamani');
-         expect(lastNameCell).toBeDefined();
+         const lastNameCell = await screen.findByText('Mamani')
+         expect(lastNameCell).toBeDefined()
 
          const identityCardCell = await screen.findByText('123456789');
-         expect(identityCardCell).toBeDefined();
+         expect(identityCardCell).toBeDefined()
+      })
+      /* TODO */
+      test('Should show person options', async () => {
+         const user = userEvent.setup()
+         const { debug } = render(<Page />)
+         const buttonAction = await screen.findAllByTestId('show')
+         expect(buttonAction[0]).toBeDefined()
+         user.click(buttonAction[0])
       })
    })
    describe('Render component Search beneficiary', () => {

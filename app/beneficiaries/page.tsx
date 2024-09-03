@@ -1,41 +1,56 @@
 "use client"
 import { Input } from "@nextui-org/input";
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table";
+import { SortDescriptor, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisVertical, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Pagination } from "@nextui-org/pagination";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 import { Button } from "@nextui-org/button";
+import { useRouter } from "next/navigation";
 
-export default function Beneficiaries() {
+
+export default function Beneficiaries({ _beneficiaries } : any) {
+
+   useEffect(() => {
+      try {
+         const fetchBeneficiaries = async () => {
+            const response = await fetch('http://192.168.2.194:3080/api/persons');
+            if (!response.ok) {
+               throw new Error(`Error: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            setBeneficiaries(data);
+         };
+         fetchBeneficiaries();
+      } catch(e) {
+         console.log("error")
+         console.log(e)
+      }
+   }, [])
+
+   const router = useRouter()
 
    const [beneficiaries, setBeneficiaries] = useState<any[]>([]);
 
    const [ filterValue, setFilterValue ] = useState("")
    const [ page, setPage ] = useState(1)
-   const [ rowsPerPage, setRowsPerPage ] = useState(2)
-   const [ sortDescriptor, setSortDescriptor ] = useState({
-      column: "age",
+   const [ rowsPerPage, setRowsPerPage ] = useState(4)
+   const [ sortDescriptor, setSortDescriptor ] = useState<SortDescriptor>({
+      column: "first_name",
       direction: "ascending"
    })
-   const hasSearchFilter = Boolean(filterValue)
 
-   useEffect(() => {
-      const fetchUsers = async () => {
-         const response = await fetch('/api/persons');
-         const data = await response.json();
-         setBeneficiaries(data);
-      };
-      fetchUsers();
-   }, [])
+   type Beneficiary = typeof beneficiaries[0]
+
+   const pages = Math.ceil(beneficiaries.length / rowsPerPage)
+   const hasSearchFilter = Boolean(filterValue)
 
    const filteredItems = useMemo(() => {
       let filteredBeneficiaries = [...beneficiaries]
-
       if(hasSearchFilter) {
-         filteredBeneficiaries = filteredBeneficiaries.filter((beneficiarie) => 
-            beneficiarie.name.toLowerCase().includes(filterValue.toLocaleLowerCase())
+         filteredBeneficiaries = filteredBeneficiaries.filter((beneficiary) =>
+            beneficiary.first_name.toLowerCase().includes(filterValue.toLocaleLowerCase())
          )
       }
       return filteredBeneficiaries
@@ -49,13 +64,27 @@ export default function Beneficiaries() {
    }, [page, filteredItems, rowsPerPage])
 
    const sortedItems = useMemo(() => {
-      return [...items].sort((a, b) => {
-         const first = a[sortDescriptor.column];
-         const second = b[sortDescriptor.column];
+      return [...items].sort((a: Beneficiary, b: Beneficiary) => {
+         const first = a[sortDescriptor.column as keyof Beneficiary] as number;
+         const second = b[sortDescriptor.column as keyof Beneficiary] as number;
          const cmp = first < second ? -1 : first > second ? 1 : 0;
          return sortDescriptor.direction === "descending" ? -cmp : cmp;
       });
    }, [sortDescriptor, items]);
+
+   const onRowsPerPageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number(e.target.value))
+      setPage(1)
+   }, [])
+
+   const onSearchChange = useCallback((value?: string) => {
+      if(value) {
+         setFilterValue(value)
+         setPage(1)
+      } else {
+         setFilterValue("")
+      }
+   }, [])
 
    const topContent = useMemo(() => {
       const classNames = {
@@ -72,15 +101,32 @@ export default function Beneficiaries() {
                   size="sm"
                   variant="bordered"
                   startContent={<FontAwesomeIcon size="sm" icon={faSearch} />}
+                  value={filterValue}
+                  onClear={() => setFilterValue("")}
+                  onValueChange={onSearchChange}
                />
+            </div>
+            <div className="flex justify-between items-center">
+               <span className="text-default-400 text-small"> Total {beneficiaries.length}</span>
+               <label className="flex items-center text default-400 text-small">
+                  Filas por página:
+                  <select
+                     className="bg-transparent outline-none text-default-400 text-small"
+                     onChange={onRowsPerPageChange}
+                  >
+                     <option value="5">5</option>
+                     <option value="10">10</option>
+                     <option value="15">15</option>
+                  </select>
+               </label>
             </div>
          </div>
       )
-   }, [])
+   }, [filterValue, onSearchChange, beneficiaries.length, hasSearchFilter, onRowsPerPageChange ])
 
    const bottomContent = useMemo(() => {
       const classNames = {
-         cursor: "bg-foreground text-brackground"
+         cursor: "bg-foreground text-background"
       }
       return (
          <div data-testid="pagination" className="py-2 px-2 flex justify-between items-center">
@@ -88,15 +134,15 @@ export default function Beneficiaries() {
                showControls
                classNames={classNames}
                color="default"
+               isDisabled={hasSearchFilter}
+               page={page}
                variant="light"
-               total={12}
+               total={pages}
+               onChange={setPage}
             />
-            <span className="text-small text-default-400">
-               Todos los items seleccionados
-            </span>
          </div>
       )
-   }, [])
+   }, [items.length, page, hasSearchFilter, pages])
 
    const classNames = useMemo(
       () => ({
@@ -113,6 +159,10 @@ export default function Beneficiaries() {
       [],
    )
 
+   const handleViewPerson = (id: number) => {
+      router.push(`/beneficiary/${id}`)
+   }
+
    const renderCell = useCallback((beneficiary:any , columnKey:any) => {
       const cellValue = beneficiary[columnKey]
       switch(columnKey) {
@@ -121,11 +171,12 @@ export default function Beneficiaries() {
                <div className="relative flex justify-end items-center gap-2">
                   <Dropdown className="bg-background border-1 border-default-200">
                      <DropdownTrigger>
-                        <Button isIconOnly radius='full' size="sm" variant="light">
+                        <Button data-testid="show" isIconOnly radius='full' size="sm" variant="light">
+                           <FontAwesomeIcon  size="sm" icon={faEllipsisVertical}/>
                         </Button>
                      </DropdownTrigger>
-                     <DropdownMenu>
-                        <DropdownItem>Ver persona</DropdownItem>
+                     <DropdownMenu data-testid="menu">
+                        <DropdownItem onClick={() => handleViewPerson(beneficiary.id)}>Ver persona</DropdownItem>
                         <DropdownItem>Editar</DropdownItem>
                      </DropdownMenu>
                   </Dropdown>
@@ -146,6 +197,7 @@ export default function Beneficiaries() {
       { id: 7, name: 'ACCION', key: 'actions'}
    ]
 
+
    return (
       <Table
          isCompact
@@ -162,10 +214,17 @@ export default function Beneficiaries() {
          bottomContent={bottomContent}
          bottomContentPlacement="outside"
          data-testid="beneficiaries-table"
+         sortDescriptor={sortDescriptor}
+         onSortChange={setSortDescriptor}
+         shadow="md"
       >
          <TableHeader columns={headerColumns}>
             {(column:any) => (
-               <TableColumn key={column.key}>
+               <TableColumn
+                  key={column.key}
+                  align={column.key === "actions" ? "center" : "start"}
+                  allowsSorting={column.sortable}
+               >
                   {column.name}
                </TableColumn>
             )}
