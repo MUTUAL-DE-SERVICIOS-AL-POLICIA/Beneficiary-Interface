@@ -1,6 +1,6 @@
 "use client"
 
-import { faCircleDollarToSlot, faFingerprint, faHeartPulse, faListCheck, faMoneyBill1, faPeopleGroup, faPhotoFilm, faPiggyBank, faPuzzlePiece, faRibbon, faUserNinja, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons"
+import { faCircleDollarToSlot, faFingerprint, faHeartPulse, faListCheck, faMoneyBill1, faPeopleGroup, faPhotoFilm, faPiggyBank, faPuzzlePiece, faRibbon, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Accordion, AccordionItem } from "@nextui-org/accordion"
 import { Avatar } from "@nextui-org/avatar"
@@ -16,13 +16,13 @@ import hands from '../../../public/hands.jpeg'
 const areas = [
    { name: "Pulgar  Izquierdo", x: 25,  y: 170, width: 30, height: 30 },
    { name: "Índice  Izquierdo", x: 100, y: 55,  width: 20, height: 30 },
-   { name: "Medio   Izquierdo", x: 145, y: 35,  width: 20, height: 30 },
-   { name: "Anular  Izquierdo", x: 185, y: 45,  width: 20, height: 30 },
-   { name: "Meñique Izquierdo", x: 225, y: 85,  width: 20, height: 30 },
+   // { name: "Medio   Izquierdo", x: 145, y: 35,  width: 20, height: 30 },
+   // { name: "Anular  Izquierdo", x: 185, y: 45,  width: 20, height: 30 },
+   // { name: "Meñique Izquierdo", x: 225, y: 85,  width: 20, height: 30 },
 
-   { name: "Meñique Derecho", x: 275, y: 80,  width: 20, height: 30 },
-   { name: "Anular  Derecho", x: 320, y: 45,  width: 20, height: 30 },
-   { name: "Medio   Derecho", x: 355, y: 35,  width: 20, height: 30 },
+   // { name: "Meñique Derecho", x: 275, y: 80,  width: 20, height: 30 },
+   // { name: "Anular  Derecho", x: 320, y: 45,  width: 20, height: 30 },
+   // { name: "Medio   Derecho", x: 355, y: 35,  width: 20, height: 30 },
    { name: "Indice  Derecho", x: 400, y: 55,  width: 20, height: 30 },
    { name: "Pulgar  Derecho", x: 465, y: 170, width: 30, height: 30 }
 ]
