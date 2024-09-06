@@ -1,6 +1,6 @@
 "use client"
 
-import { faCircleDollarToSlot, faFingerprint, faHeartPulse, faListCheck, faMoneyBill1, faPeopleGroup, faPhotoFilm, faPiggyBank, faPuzzlePiece, faRibbon, faUserNinja, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons"
+import { faCircleDollarToSlot, faFingerprint, faHeartPulse, faListCheck, faMoneyBill1, faPeopleGroup, faPhotoFilm, faPiggyBank, faPuzzlePiece, faRibbon, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Accordion, AccordionItem } from "@nextui-org/accordion"
 import { Avatar } from "@nextui-org/avatar"
@@ -16,13 +16,13 @@ import hands from '../../../public/hands.jpeg'
 const areas = [
    { name: "Pulgar  Izquierdo", x: 25,  y: 170, width: 30, height: 30 },
    { name: "Índice  Izquierdo", x: 100, y: 55,  width: 20, height: 30 },
-   { name: "Medio   Izquierdo", x: 145, y: 35,  width: 20, height: 30 },
-   { name: "Anular  Izquierdo", x: 185, y: 45,  width: 20, height: 30 },
-   { name: "Meñique Izquierdo", x: 225, y: 85,  width: 20, height: 30 },
+   // { name: "Medio   Izquierdo", x: 145, y: 35,  width: 20, height: 30 },
+   // { name: "Anular  Izquierdo", x: 185, y: 45,  width: 20, height: 30 },
+   // { name: "Meñique Izquierdo", x: 225, y: 85,  width: 20, height: 30 },
 
-   { name: "Meñique Derecho", x: 275, y: 80,  width: 20, height: 30 },
-   { name: "Anular  Derecho", x: 320, y: 45,  width: 20, height: 30 },
-   { name: "Medio   Derecho", x: 355, y: 35,  width: 20, height: 30 },
+   // { name: "Meñique Derecho", x: 275, y: 80,  width: 20, height: 30 },
+   // { name: "Anular  Derecho", x: 320, y: 45,  width: 20, height: 30 },
+   // { name: "Medio   Derecho", x: 355, y: 35,  width: 20, height: 30 },
    { name: "Indice  Derecho", x: 400, y: 55,  width: 20, height: 30 },
    { name: "Pulgar  Derecho", x: 465, y: 170, width: 30, height: 30 }
 ]
@@ -56,24 +56,26 @@ export default function Beneficiary () {
       canvas.width  = img.width;
       canvas.height = img.height;
 
-      ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-      areas.forEach(area => {
-         ctx.fillRect(area.x, area.y, area.width, area.height);
-         ctx.fill();
-      });
-
-      canvas.addEventListener('click', function(event:any) {
-         const rect = canvas.getBoundingClientRect();
-         const    x = event.clientX - rect.left;
-         const    y = event.clientY - rect.top;
-         ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+      if(ctx) {
+         ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
          areas.forEach(area => {
-            if (x > area.x && x < area.x + area.width && y > area.y && y < area.y + area.height) {
-               ctx.fillRect(area.x, area.y, area.width, area.height);
-               ctx.fill();
-            }
+            ctx.fillRect(area.x, area.y, area.width, area.height);
+            ctx.fill();
          });
-      })
+
+         canvas.addEventListener('click', function(event:any) {
+            const rect = canvas.getBoundingClientRect();
+            const    x = event.clientX - rect.left;
+            const    y = event.clientY - rect.top;
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+            areas.forEach(area => {
+               if (x > area.x && x < area.x + area.width && y > area.y && y < area.y + area.height) {
+                  ctx.fillRect(area.x, area.y, area.width, area.height);
+                  ctx.fill();
+               }
+            });
+         })
+      }
    }, [])
 
    const itemClasses = {
@@ -129,6 +131,7 @@ export default function Beneficiary () {
                      <AccordionItem
                         key="1"
                         data-testid="expanded"
+                        textValue="menu1"
                         title={
                            <Listbox
                               variant="flat"
@@ -157,7 +160,11 @@ export default function Beneficiary () {
                               >
                                  FOTOGRAFIAS
                               </ListboxItem>
-                              <ListboxItem key="huella" className="" endContent={<FontAwesomeIcon icon={faFingerprint}/>}>
+                              <ListboxItem
+                                 key="huella"
+                                 className=""
+                                 endContent={<FontAwesomeIcon icon={faFingerprint}/>}
+                              >
                                  HUELLAS
                               </ListboxItem>
                            </ListboxSection>
@@ -166,6 +173,7 @@ export default function Beneficiary () {
                      <AccordionItem
                         hideIndicator={true}
                         key="2"
+                        textValue="menu2"
                         title={
                            <Listbox variant="flat" aria-label="Listbox menu police">
                               <ListboxSection title="Datos especificos como policia">
@@ -195,6 +203,7 @@ export default function Beneficiary () {
                      <AccordionItem
                         hideIndicator={true}
                         key="beneficiares"
+                        textValue="beneficiaries"
                         title={
                            <Listbox variant="flat" aria-label="beneficiaries">
                               <ListboxSection title="Listado de los beneficiarios">
@@ -224,7 +233,8 @@ export default function Beneficiary () {
                   >
                   <AccordionItem
                      hideIndicator={true}
-                     key="beneficiaries"
+                     key="contributions"
+                     textValue="contributions"
                      title={
                         <Listbox variant="flat" aria-label="Listbox menu with sections">
                         <ListboxSection title="Listado de aportes">
@@ -253,6 +263,7 @@ export default function Beneficiary () {
                   >
                   <AccordionItem
                      key="procedure1"
+                     textValue="procedures"
                      title={
                         <Listbox variant="flat" aria-label="Listbox menu with sections">
                         <ListboxSection title="Trámites realizados">
@@ -327,6 +338,7 @@ export default function Beneficiary () {
                         src={hands}
                         alt="hands"
                         width={500}
+                        height={300}
                         className="relative"
                      />
                      <canvas id="canvas" className="absolute top-5 left-4"></canvas>
