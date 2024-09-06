@@ -8,23 +8,20 @@ import { Pagination } from "@nextui-org/pagination";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 import { Button } from "@nextui-org/button";
 import { useRouter } from "next/navigation";
+import { apiClient } from "@/services";
 
 
 export default function Beneficiaries({ _beneficiaries } : any) {
 
    useEffect(() => {
       try {
-         const fetchBeneficiaries = async () => {
-            const response = await fetch('http://192.168.2.194:3080/api/persons');
-            if (!response.ok) {
-               throw new Error(`Error: ${response.status} ${response.statusText}`);
-            }
-            const data = await response.json();
-            setBeneficiaries(data);
-         };
-         fetchBeneficiaries();
+         apiClient.GET('api/persons').then((response: any) => {
+            setBeneficiaries(response)
+         })
+         .catch((error: any) => {
+            throw error
+         })
       } catch(e) {
-         console.log("error")
          console.log(e)
       }
    }, [])

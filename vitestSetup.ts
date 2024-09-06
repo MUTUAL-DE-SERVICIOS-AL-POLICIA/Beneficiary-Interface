@@ -5,6 +5,7 @@ import { beforeAll, vi } from "vitest";
 // })
 
 beforeAll(() => {
+   HTMLCanvasElement.prototype.getContext = () => null
    vi.mock("next/navigation", () => ({
       _esModule: true,
       useRouter: () => ({
