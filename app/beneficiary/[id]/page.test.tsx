@@ -9,9 +9,8 @@ import userEvent from "@testing-library/user-event";
 
 
 const server = setupServer(
-   http.get('http://192.168.2.194:3080/api/persons/:id', ({ params }) => {
+   http.get(/\/api\/persons\/([^\/]+)/, ({ params }) => {
       const { id } = params
-      // console.log("esto es id: ", id)
       return HttpResponse.json(
          {
             id: 14,
