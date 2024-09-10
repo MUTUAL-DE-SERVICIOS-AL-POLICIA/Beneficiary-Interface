@@ -1,31 +1,21 @@
 "use client"
 
-import { faCircleDollarToSlot, faFingerprint, faHeartPulse, faListCheck, faMoneyBill1, faPeopleGroup, faPhotoFilm, faPiggyBank, faPuzzlePiece, faRibbon, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Accordion, AccordionItem } from "@nextui-org/accordion"
-import { Avatar } from "@nextui-org/avatar"
-import { Card, CardBody, CardHeader } from "@nextui-org/card"
-import { Divider } from "@nextui-org/divider"
+import { faCircleDollarToSlot, faFingerprint, faHeartPulse, faListCheck,
+         faMoneyBill1, faPeopleGroup, faPhotoFilm, faPiggyBank, faPuzzlePiece,
+         faRibbon, faUserNurse, faUserTie }     from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon }                      from "@fortawesome/react-fontawesome"
+import { Accordion, AccordionItem }             from "@nextui-org/accordion"
+import { Avatar }                               from "@nextui-org/avatar"
+import { Card, CardBody, CardHeader }           from "@nextui-org/card"
+import { Divider }                              from "@nextui-org/divider"
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox"
-import { useParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import Image from 'next/image'
-import fullName from "@/helpers/utils"
-import hands from '../../../public/hands.jpeg'
+import { useParams }                            from "next/navigation"
+import { useEffect, useState }                  from "react"
+import { apiClient }                            from "@/services"
 
-const areas = [
-   { name: "Pulgar  Izquierdo", x: 25,  y: 170, width: 30, height: 30 },
-   { name: "Índice  Izquierdo", x: 100, y: 55,  width: 20, height: 30 },
-   // { name: "Medio   Izquierdo", x: 145, y: 35,  width: 20, height: 30 },
-   // { name: "Anular  Izquierdo", x: 185, y: 45,  width: 20, height: 30 },
-   // { name: "Meñique Izquierdo", x: 225, y: 85,  width: 20, height: 30 },
+import fullName                                 from "@/helpers/utils"
+import Hands                                    from "@/components/hands"
 
-   // { name: "Meñique Derecho", x: 275, y: 80,  width: 20, height: 30 },
-   // { name: "Anular  Derecho", x: 320, y: 45,  width: 20, height: 30 },
-   // { name: "Medio   Derecho", x: 355, y: 35,  width: 20, height: 30 },
-   { name: "Indice  Derecho", x: 400, y: 55,  width: 20, height: 30 },
-   { name: "Pulgar  Derecho", x: 465, y: 170, width: 30, height: 30 }
-]
 
 export default function Beneficiary () {
    const { id } = useParams()
@@ -35,60 +25,30 @@ export default function Beneficiary () {
 
    useEffect(() => {
       try {
-         const fetchBeneficiary = async() => {
-            // const id = 962
-            const response = await fetch(`http://192.168.2.194:3080/api/persons/${id}`)
-            if(!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`)
-            const data = await response.json()
-            setBeneficiary(data)
-         }
-         fetchBeneficiary()
+         // apiClient.GET(`api/persons/${id}`)
+         //    .then((response:any) => {
+         //       setBeneficiary(response)
+         //    })
+         //    .catch((error: any) => {
+         //       throw error
+         //    })
       } catch(e) {
          console.log(e)
       }
    }, [])
 
-   useEffect(() => {
-      const img:any    = document.getElementById('hands')
-      const canvas:any = document.getElementById('canvas')
-      const ctx        = canvas!.getContext('2d')
-
-      canvas.width  = img.width;
-      canvas.height = img.height;
-
-      if(ctx) {
-         ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-         areas.forEach(area => {
-            ctx.fillRect(area.x, area.y, area.width, area.height);
-            ctx.fill();
-         });
-
-         canvas.addEventListener('click', function(event:any) {
-            const rect = canvas.getBoundingClientRect();
-            const    x = event.clientX - rect.left;
-            const    y = event.clientY - rect.top;
-            ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
-            areas.forEach(area => {
-               if (x > area.x && x < area.x + area.width && y > area.y && y < area.y + area.height) {
-                  ctx.fillRect(area.x, area.y, area.width, area.height);
-                  ctx.fill();
-               }
-            });
-         })
-      }
-   }, [])
 
    const itemClasses = {
-      base: "py-0 my-0 overflow-hidden",
-      title: "font-normal text-medium",
-      trigger: "px-2 py-10 data-[hover=true]:bg-default-100 h-14 flex items-center rounded-small",
+      base:      "py-0 my-0 overflow-hidden",
+      title:     "font-normal text-medium",
+      trigger:   "px-2 py-10 data-[hover=true]:bg-default-100 h-14 flex items-center rounded-small",
       indicator: "text-medium",
-      content: "text-small py-0",
+      content:   "text-small py-0",
    }
 
    const classNames = {
-      title: "text-small text-default-400",
-      description: "font-semibold text-xs text-default-500",
+      title:        "text-small text-default-400",
+      description:  "font-semibold text-xs text-default-500",
       selectedIcon: "primary"
    }
 
@@ -323,32 +283,26 @@ export default function Beneficiary () {
                </CardBody>
             </Card>
          </div>
-         <Card
-            className="grow border-small rounded-small border-default-200 dark:border-default-100"
-            style={{
-               width: document.getElementById('uno')?.offsetWidth || '340px',
-               height: document.getElementById('uno')?.offsetHeight || 'auto',
-            }}
-         >
-            <CardBody className="justify-between">
-               <div className="flex flex-row items-center md:py-5 md:px-4">
-                  <div className="flex-col">
-                     <Image
-                        id="hands"
-                        src={hands}
-                        alt="hands"
-                        width={500}
-                        height={300}
-                        className="relative"
-                     />
-                     <canvas id="canvas" className="absolute top-5 left-4"></canvas>
+         <div className="flex flex-col">
+            <Card
+               className="grow border-small rounded-small border-default-200 dark:border-default-100"
+               style={{
+                  width:  '940px',
+                  height:  'auto',
+               }}
+            >
+               <CardBody className="justify-between">
+                  <div className="flex flex-row gap-5 md:py-5 md:px-4">
+                     <div className="flex-col">
+                        <Hands/>
+                     </div>
+                     <div className="flex-col">
+                        <h4>Calidad de la imagen</h4>
+                     </div>
                   </div>
-                  <div className="flex-col">
-                     <h4>Calidad de la imagen</h4>
-                  </div>
-               </div>
-            </CardBody>
-         </Card>
+               </CardBody>
+            </Card>
+         </div>
    </div>
    )
 }
