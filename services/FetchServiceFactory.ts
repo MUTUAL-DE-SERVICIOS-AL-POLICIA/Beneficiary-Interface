@@ -1,6 +1,6 @@
-import { APIConnection } from "./APIConnection";
+import { APIConnection }        from "./APIConnection";
 import { APIConnectionFactory } from "./APIConnectionFactory";
-import { FetchService } from "./FetchService";
+import { FetchService }         from "./FetchService";
 
 export class FetchServiceFactory extends APIConnectionFactory {
    private baseUrl: string;

@@ -1,8 +1,8 @@
 
 interface Props {
-   first_name: string
-   second_name: string
-   last_name: string
+   first_name       : string
+   second_name      : string
+   last_name        : string
    mothers_last_name: string
 }
 

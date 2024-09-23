@@ -6,12 +6,20 @@ export class FetchService extends APIConnection {
       super(baseUrl)
    }
 
-   async GET(endpoint:string): Promise<any> {
-      const url = this.buildUrl(endpoint)
+   async GET(endpoint:string, params?: Record<string, string>): Promise<any> {
+      let url = this.buildUrl(endpoint)
+      if (params) {
+         const queryParams = new URLSearchParams(params).toString();
+         url += `?${queryParams}`;
+      }
       const requestConfig = this.addInterceptors({
          method: 'GET'
       })
       const response = await fetch(url, requestConfig)
+
+      if(!response.ok) {
+         throw new Error(`HTTP error! status: ${response.status}`)
+      }
       return await response.json()
    }
 
@@ -22,6 +30,9 @@ export class FetchService extends APIConnection {
          body: JSON.stringify(body)
       })
       const response = await fetch(url, requestConfig)
+      if(!response.ok) {
+         throw new Error(`HTTP error! status: ${response.status}`)
+      }
       return await response.json()
    }
 
@@ -32,6 +43,9 @@ export class FetchService extends APIConnection {
          body: JSON.stringify(body)
       })
       const response = await fetch(url, requestConfig)
+      if(!response.ok) {
+         throw new Error(`HTTP error! status: ${response.status}`)
+      }
       return await response.json()
    }
    async DELETE(endpoint: string): Promise<any> {
@@ -40,6 +54,9 @@ export class FetchService extends APIConnection {
          method: 'DELETE',
       })
       const response = await fetch(url, requestConfig)
+      if(!response.ok) {
+         throw new Error(`HTTP error! status: ${response.status}`)
+      }
       return await response.json()
    }
 

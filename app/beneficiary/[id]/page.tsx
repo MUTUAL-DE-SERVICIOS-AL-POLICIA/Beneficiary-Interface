@@ -1,9 +1,5 @@
 "use client"
 
-import { faCircleDollarToSlot, faFingerprint, faHeartPulse, faListCheck,
-         faMoneyBill1, faPeopleGroup, faPhotoFilm, faPiggyBank, faPuzzlePiece,
-         faRibbon, faUserNurse, faUserTie }     from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon }                      from "@fortawesome/react-fontawesome"
 import { Accordion, AccordionItem }             from "@nextui-org/accordion"
 import { Avatar }                               from "@nextui-org/avatar"
 import { Card, CardBody, CardHeader }           from "@nextui-org/card"
@@ -15,28 +11,28 @@ import { apiClient }                            from "@/services"
 
 import fullName                                 from "@/helpers/utils"
 import Hands                                    from "@/components/hands"
+import { sidebarConfig, SidebarItem }           from "@/config/static"
+import { AccordionComponent }                   from "@/components/accordion"
 
 
 export default function Beneficiary () {
    const { id } = useParams()
 
    const [ beneficiary, setBeneficiary ] = useState<any>({})
-   const [ selectedKey, setSelectedKey ] = useState("photo")
 
    useEffect(() => {
       try {
-         // apiClient.GET(`api/persons/${id}`)
-         //    .then((response:any) => {
-         //       setBeneficiary(response)
-         //    })
-         //    .catch((error: any) => {
-         //       throw error
-         //    })
+         apiClient.GET(`api/persons/${id}`)
+            .then((response:any) => {
+               setBeneficiary(response)
+            })
+            .catch((error: any) => {
+               throw error
+            })
       } catch(e) {
          console.log(e)
       }
    }, [])
-
 
    const itemClasses = {
       base:      "py-0 my-0 overflow-hidden",
@@ -44,12 +40,6 @@ export default function Beneficiary () {
       trigger:   "px-2 py-10 data-[hover=true]:bg-default-100 h-14 flex items-center rounded-small",
       indicator: "text-medium",
       content:   "text-small py-0",
-   }
-
-   const classNames = {
-      title:        "text-small text-default-400",
-      description:  "font-semibold text-xs text-default-500",
-      selectedIcon: "primary"
    }
 
    return (
@@ -78,210 +68,61 @@ export default function Beneficiary () {
                               </p>
                            </div>
                         </div>
-                        )}
+                     )}
                   </div>
                </CardHeader>
                <Divider/>
                <CardBody>
                   <Accordion
                      isCompact
-                     showDivider={false}
-                     itemClasses={itemClasses}
+                     showDivider={ false }
+                     itemClasses={ itemClasses }
                   >
-                     <AccordionItem
-                        key="1"
-                        data-testid="expanded"
-                        textValue="menu1"
-                        title={
-                           <Listbox
-                              variant="flat"
-                              aria-label="Listbox menu data general"
-                           >
-                              <ListboxSection title="Datos generales de la persona" showDivider>
-                                 <ListboxItem
-                                    key="person"
-                                    description="Información general"
-                                    startContent={<FontAwesomeIcon icon={faUserTie} size="lg" />}
-                                    className="m-0 p-0"
-                                 >
-                                    DATOS DE LA PERSONA
-                                 </ListboxItem>
-                              </ListboxSection>
-                           </Listbox>
-                        }
-                     >
-                        <Listbox variant="flat" aria-label="sub listbox">
-                           <ListboxSection>
-                              <ListboxItem
-                                 data-testid="esto"
-                                 key="photo"
-                                 endContent={<FontAwesomeIcon icon={faPhotoFilm} />}
-                                 className={selectedKey === "photo" ? "bg-selected": ""}
+                     { sidebarConfig.sidebarItems.slice(0, 2).map((sidebarItem: SidebarItem) => (
+                        <AccordionItem
+                           key={ sidebarItem.key }
+                           data-testid="expanded"
+                           textValue="menu1"
+                           title={
+                              <Listbox
+                                 variant="flat"
+                                 aria-label="Listbox menu data general"
                               >
-                                 FOTOGRAFIAS
-                              </ListboxItem>
-                              <ListboxItem
-                                 key="huella"
-                                 className=""
-                                 endContent={<FontAwesomeIcon icon={faFingerprint}/>}
-                              >
-                                 HUELLAS
-                              </ListboxItem>
-                           </ListboxSection>
-                        </Listbox>
-                     </AccordionItem>
-                     <AccordionItem
-                        hideIndicator={true}
-                        key="2"
-                        textValue="menu2"
-                        title={
-                           <Listbox variant="flat" aria-label="Listbox menu police">
-                              <ListboxSection title="Datos especificos como policia">
-                                 <ListboxItem
-                                    key="police"
-                                    description="Datos especificos de policia"
-                                    startContent={<FontAwesomeIcon icon={faUserNurse} size="lg"/>}
-                                    className="m-0 p-0"
-                                 >
-                                    DATOS DE POLICIA
-                                 </ListboxItem>
-                              </ListboxSection>
-                           </Listbox>
-                        }
-                     ></AccordionItem>
+                                 <ListboxSection title={ sidebarItem.topTitle } showDivider>
+                                    <ListboxItem
+                                       key={ sidebarItem.key }
+                                       description ={ sidebarItem.description }
+                                       startContent={ sidebarItem.icon }
+                                       className="m-0 p-0"
+                                    >
+                                       { sidebarItem.title }
+                                    </ListboxItem>
+                                 </ListboxSection>
+                              </Listbox>
+                           }
+                        >
+                           { sidebarItem.subMenu && sidebarItem.subMenu.length && (
+                              <Listbox variant="flat" aria-label="sub listbox">
+                                 <ListboxSection>
+                                    { sidebarItem.subMenu.map((menu) => (
+                                       <ListboxItem
+                                          key       ={ menu.key }
+                                          endContent={ menu.icon }
+                                       >
+                                          { menu.title }
+                                       </ListboxItem>
+                                    ))}
+                                 </ListboxSection>
+                              </Listbox>
+                           )}
+                        </AccordionItem>
+                     ))}
                   </Accordion>
                </CardBody>
             </Card>
-            {/* BENEFICIARIOS */}
-            <Card className="max-w-[340px] border-small rounded-small border-default-200 dark:border-default-200 mb-3">
-               <CardBody>
-                  <Accordion
-                     isCompact
-                     showDivider={false}
-                     itemClasses={itemClasses}
-                  >
-                     <AccordionItem
-                        hideIndicator={true}
-                        key="beneficiares"
-                        textValue="beneficiaries"
-                        title={
-                           <Listbox variant="flat" aria-label="beneficiaries">
-                              <ListboxSection title="Listado de los beneficiarios">
-                                 <ListboxItem
-                                    key="beneficiaries"
-                                    description="Listado de beneficiarios"
-                                    startContent={<FontAwesomeIcon icon={faPeopleGroup} size="lg"/>}
-                                    className="m-0 p-0"
-                                 >
-                                    BENEFICIARIOS
-                                 </ListboxItem>
-                              </ListboxSection>
-                           </Listbox>
-                        }
-                     >
-                     </AccordionItem>
-                  </Accordion>
-               </CardBody>
-            </Card>
-            {/* APORTES */}
-            <Card className="max-w-[340px] border-small rounded-small border-default-200 dark:border-default-100 mb-3">
-               <CardBody>
-                  <Accordion
-                  isCompact
-                  showDivider={false}
-                  itemClasses={itemClasses}
-                  >
-                  <AccordionItem
-                     hideIndicator={true}
-                     key="contributions"
-                     textValue="contributions"
-                     title={
-                        <Listbox variant="flat" aria-label="Listbox menu with sections">
-                        <ListboxSection title="Listado de aportes">
-                           <ListboxItem
-                              key="contributions"
-                              description="Listado de aportes"
-                              startContent={<FontAwesomeIcon size="lg" icon={faCircleDollarToSlot} />}
-                              className="m-0 p-0"
-                           >
-                              APORTES
-                              </ListboxItem>
-                           </ListboxSection>
-                        </Listbox>
-                     }
-                     ></AccordionItem>
-                  </Accordion>
-               </CardBody>
-            </Card>
-            {/* TRAMITES REALIZADOS */}
-            <Card className="max-w-[340px] border-small rounded-small border-default-200 dark:border-default-100">
-               <CardBody>
-                  <Accordion
-                  isCompact
-                  showDivider={false}
-                  itemClasses={itemClasses}
-                  >
-                  <AccordionItem
-                     key="procedure1"
-                     textValue="procedures"
-                     title={
-                        <Listbox variant="flat" aria-label="Listbox menu with sections">
-                        <ListboxSection title="Trámites realizados">
-                           <ListboxItem
-                              key="procedures"
-                              description="Trámites realizados"
-                              startContent={<FontAwesomeIcon size="lg" icon={faListCheck} />}
-                              className="m-0 p-0"
-                           >
-                              TRÁMITES REALIZADOS
-                           </ListboxItem>
-                        </ListboxSection>
-                        </Listbox>
-                     }
-                  >
-                     <Listbox variant="flat" aria-label="sub listbox">
-                        <ListboxSection>
-                        <ListboxItem
-                           key="FR"
-                           title="Trámites de"
-                           description="FONDO DE RETIRO"
-                           endContent={<FontAwesomeIcon size="lg" icon={faPiggyBank}/>}
-                           classNames={classNames}
-                        />
-                        <ListboxItem
-                           key="CE"
-                           title="Trámites de"
-                           description="COMPLEMENTO ECONÓMICO"
-                           endContent={<FontAwesomeIcon size="lg" icon={faPuzzlePiece}/>}
-                           classNames={classNames}
-                        />
-                        <ListboxItem
-                           key="AM"
-                           title="Trámites de"
-                           description="AUXILIO MORTUORIO"
-                           classNames={classNames}
-                           endContent={<FontAwesomeIcon size="lg" icon={faHeartPulse}/>}
-                        />
-                        <ListboxItem
-                           key="QM"
-                           title="Trámites de"
-                           description="CUOTA MORTUORIA"
-                           classNames={classNames}
-                           endContent={<FontAwesomeIcon size="lg" icon={faRibbon}/>}
-                        />
-                        <ListboxItem
-                           key="PR"
-                           title="Trámites de"
-                           description="PRÉSTAMOS"
-                           classNames={classNames}
-                           endContent={<FontAwesomeIcon size="lg" icon={faMoneyBill1}/>}
-                        />
-                        </ListboxSection>
-                     </Listbox>
-                  </AccordionItem>
-                  </Accordion>
-               </CardBody>
-            </Card>
+            { sidebarConfig.sidebarItems.slice(2).map((sidebarItem: SidebarItem) => (
+               <AccordionComponent { ...sidebarItem } />
+            ))}
          </div>
          <div className="flex flex-col">
             <Card
