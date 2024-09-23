@@ -11,10 +11,10 @@ export abstract class APIConnection {
       return `${this.baseUrl}${endpoint}`
    }
 
-   abstract GET(url: string, options?: any): Promise<any>
-   abstract POST(url: string, body: any, options?:any): Promise<any>
-   abstract PUT(url: string, body: any, options?:any): Promise<any>
-   abstract DELETE(url: string, options?:any): Promise<any>
+   abstract GET(url   : string, options?: any): Promise<any>
+   abstract POST(url  : string, body    : any, options?:any): Promise<any>
+   abstract PUT(url   : string, body    : any, options?:any): Promise<any>
+   abstract DELETE(url: string, options?: any): Promise<any>
 
    protected addInterceptors(requestConfig: RequestInit): RequestInit {
       const interceptors = {
