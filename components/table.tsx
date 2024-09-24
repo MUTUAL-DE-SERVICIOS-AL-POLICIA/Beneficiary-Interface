@@ -72,8 +72,6 @@ export const TableComponent = ({ headerColumns, data, total, startPage, startRow
 
    const handlePageChange = async (newPage: number) => {
       const { persons } =  await getBeneficiaries(rowsPerPage, newPage)
-      console.log("esto es persons")
-      console.log(persons)
       setRows(persons)
       setPage(newPage)
    }
