@@ -8,7 +8,8 @@ export abstract class APIConnection {
    }
 
    protected buildUrl(endpoint: string): string {
-      return `${this.baseUrl}${endpoint}`
+      console.log(`${this.baseUrl.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`)
+      return `${this.baseUrl.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`;
    }
 
    abstract GET(url   : string, options?: any): Promise<any>
@@ -28,6 +29,25 @@ export abstract class APIConnection {
             ...requestConfig.headers,
             ...interceptors.headers
          }
+      }
+   }
+
+   protected async handleRequest(endpoint: string, requestConfig: RequestInit): Promise<any> {
+      const url = this.buildUrl(endpoint)
+
+      try {
+         const response = await fetch(url, requestConfig)
+         if(!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.message || `HTTP error! Status: ${response.status}`)
+         }
+
+         return await response.json()
+      } catch (error:any) {
+         if(error.name === "TypeError" && error.message === "Failed to fetch") {
+            console.error("Error de Red o CORS")
+         }
+         throw error
       }
    }
 }

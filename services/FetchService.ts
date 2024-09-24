@@ -7,7 +7,7 @@ export class FetchService extends APIConnection {
    }
 
    async GET(endpoint:string, params?: Record<string, string>): Promise<any> {
-      let url = this.buildUrl(endpoint)
+      let url = endpoint
       if (params) {
          const queryParams = new URLSearchParams(params).toString();
          url += `?${queryParams}`;
@@ -15,49 +15,28 @@ export class FetchService extends APIConnection {
       const requestConfig = this.addInterceptors({
          method: 'GET'
       })
-      const response = await fetch(url, requestConfig)
-
-      if(!response.ok) {
-         throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      return await response.json()
+      return this.handleRequest(url, requestConfig)
    }
 
    async POST(endpoint: string, body: any): Promise<any> {
-      const url = this.buildUrl(endpoint)
       const requestConfig = this.addInterceptors({
          method: 'POST',
-         body: JSON.stringify(body)
+         body  : JSON.stringify(body)
       })
-      const response = await fetch(url, requestConfig)
-      if(!response.ok) {
-         throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      return await response.json()
+      return this.handleRequest(endpoint, requestConfig)
    }
 
    async PUT(endpoint: string, body: any): Promise<any> {
-      const url = this.buildUrl(endpoint)
       const requestConfig = this.addInterceptors({
          method: 'PUT',
-         body: JSON.stringify(body)
+         body  : JSON.stringify(body)
       })
-      const response = await fetch(url, requestConfig)
-      if(!response.ok) {
-         throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      return await response.json()
+      return this.handleRequest(endpoint, requestConfig)
    }
    async DELETE(endpoint: string): Promise<any> {
-      const url = this.buildUrl(endpoint)
       const requestConfig = this.addInterceptors({
          method: 'DELETE',
       })
-      const response = await fetch(url, requestConfig)
-      if(!response.ok) {
-         throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      return await response.json()
+      return this.handleRequest(endpoint, requestConfig)
    }
-
 }
