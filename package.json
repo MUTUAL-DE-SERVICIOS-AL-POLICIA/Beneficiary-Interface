@@ -26,6 +26,7 @@
 		"@nextui-org/listbox": "2.1.25",
 		"@nextui-org/navbar": "2.0.36",
 		"@nextui-org/pagination": "^2.0.35",
+		"@nextui-org/select": "^2.2.7",
 		"@nextui-org/snippet": "2.0.41",
 		"@nextui-org/switch": "2.0.33",
 		"@nextui-org/system": "2.2.5",
@@ -41,7 +42,8 @@
 		"next-themes": "^0.2.1",
 		"nextui-cli": "^0.3.4",
 		"react": "18.3.1",
-		"react-dom": "18.3.1"
+		"react-dom": "18.3.1",
+		"use-debounce": "^10.0.3"
 	},
 	"devDependencies": {
 		"@testing-library/jest-dom": "^6.5.0",

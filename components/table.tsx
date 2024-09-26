@@ -1,7 +1,6 @@
 "use client"
 import { useCallback, useEffect, useMemo, useState             } from 'react';
 import { useRouter                                             } from 'next/navigation';
-import { getBeneficiaries                                      } from '@/app/beneficiaries/service';
 
 import { faEllipsisVertical, faSearch                          } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon                                       } from '@fortawesome/react-fontawesome';
@@ -12,7 +11,8 @@ import { Button                                                } from '@nextui-o
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/dropdown';
 import { Table, TableColumn, TableHeader, TableBody, TableRow,
          TableCell, SortDescriptor                             } from '@nextui-org/table';
-
+import { useDebounce                                           } from 'use-debounce';
+import { Card                                                  } from '@nextui-org/card';
 
 export interface Column {
    id       : number
@@ -27,35 +27,48 @@ interface PropsTable {
    headerColumns    : Column[]
    startPage        : number
    startRowsPerPage : number
+   getData          : (rowsPerPage: number, page?: number, searchValue?: string|undefined) => Promise<any>
 }
 
-export const TableComponent = ({ headerColumns, data, total, startPage, startRowsPerPage }: PropsTable ) => {
+export const TableComponent = ({ headerColumns, data, total, startPage, startRowsPerPage, getData }: PropsTable ) => {
 
    const router = useRouter()
 
-   const [ filterValue   , setFilterValue    ] = useState("")
+   const [ filterValue   , setFilterValue    ] = useState<string>("")
    const [ page          , setPage           ] = useState(startPage)
    const [ rowsPerPage   , setRowsPerPage    ] = useState(startRowsPerPage)
-   const [ rows          , setRows           ] = useState(data)
    const [ sortDescriptor, setSortDescriptor ] = useState<SortDescriptor>({
       column:    "first_name", //TODO
       direction: "ascending"
    })
+   const [ filtered, setFiltered ] = useState<Item[]>(data);
+   const [ all, setAll ] = useState<number>(total)
 
    type Item = typeof data[0]
 
    const hasSearchFilter = Boolean(filterValue)
-   const pages           = Math.ceil(total / rowsPerPage)
+   const pages           = Math.ceil(all / rowsPerPage)
 
-   const filtered = useMemo(() => {
-      let filteredItems = [...rows]
-      if(hasSearchFilter) {
-         filteredItems = filteredItems.filter((item) =>
-            item.first_name.toLowerCase().includes(filterValue.toLocaleLowerCase()) //TODO
-         )
-      }
-      return filteredItems
-   }, [ rows, filterValue ])
+   const [ debouncedFilterValue ] = useDebounce(filterValue, 200)
+
+   const handleViewPerson = (id: number) => {
+      router.push(`/beneficiary/${id}`)
+   }
+
+   useEffect(() => {
+      const fetchFilteredItems = async () => {
+         if (hasSearchFilter) {
+            const searchValue = debouncedFilterValue.toLowerCase()
+            const { persons, total } = await getData(rowsPerPage, page, searchValue)
+            setFiltered(persons)
+            setAll(total)
+         } else {
+            setAll(total)
+         }
+      };
+
+      fetchFilteredItems();
+   }, [  debouncedFilterValue, rowsPerPage ]);
 
    const sortedItems = useMemo(() => {
       return [...filtered].sort((a: Item, b: Item) => {
@@ -64,22 +77,22 @@ export const TableComponent = ({ headerColumns, data, total, startPage, startRow
          const cmp    = first < second ? -1 : first > second ? 1 : 0
          return sortDescriptor.direction === "descending" ? -cmp : cmp
       })
-   }, [ sortDescriptor, rows ])
+   }, [ sortDescriptor, filtered ])
 
-   const handleViewPerson = (id: number) => {
-      router.push(`/beneficiary/${id}`)
-   }
 
    const handlePageChange = async (newPage: number) => {
-      const { persons } =  await getBeneficiaries(rowsPerPage, newPage)
-      setRows(persons)
+      const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined
+      const { persons } = await getData(rowsPerPage, newPage, searchValue)
+      setFiltered(persons)
       setPage(newPage)
    }
 
    /* PAGINATION COMPONENT */
    const bottomContent = useMemo(() => {
       const classNames = {
-         cursor: "bg-foreground text-background"
+         wrapper: "gap-1",
+         cursor : "bg-foreground text-background font-bold w-15 text-small px-1 py-0",
+         item   : "w-15 px-1 text-small"
       }
       return (
          <div
@@ -93,34 +106,42 @@ export const TableComponent = ({ headerColumns, data, total, startPage, startRow
                page      ={page}
                total     ={pages}
                classNames={classNames}
-               isDisabled={hasSearchFilter}
                onChange  ={handlePageChange}
             />
          </div>
       )
-   }, [ rows.length, page, hasSearchFilter, pages, handlePageChange ])
+   }, [ page, pages, filterValue, rowsPerPage ])
 
    /* SEARCH COMPONENT */
    const onRowsPerPageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setPage(1)
       const newRowsPerPage = Number(e.target.value)
       setRowsPerPage(Number(newRowsPerPage))
-      const { persons } = await getBeneficiaries(newRowsPerPage)
-      setRows(persons)
+      const { persons } = await getData(newRowsPerPage)
+      setFiltered(persons)
    }, [])
 
    const onSearchChange = useCallback((value?: string) => {
       if(value) {
          setFilterValue(value)
-         setPage(1)
-      } else
+      } else {
          setFilterValue("")
+      }
+      setPage(1)
    }, [])
+
+   const onClear = useCallback(() => {
+      setFilterValue("")
+      setFiltered(data)
+      setRowsPerPage(10)
+   }, [data])
 
    const topContent = useMemo(() => {
       const classNames = {
-         base:         "w-full sm:max-w-[44%]",
+         base        : "w-full sm:max-w-[44%]",
          inputWrapper: "border-1"
       }
+      const isDisabled = all < rowsPerPage
       return (
          <div className="flex flex-col gap-4">
             <div className="flex justify-between gap-3 item-end">
@@ -131,18 +152,20 @@ export const TableComponent = ({ headerColumns, data, total, startPage, startRow
                   placeholder  ="Buscar por ..."
                   value        ={filterValue}
                   classNames   ={classNames}
-                  onClear      ={() => setFilterValue("")}
+                  onClear      ={onClear}
                   onValueChange={onSearchChange}
-                  startContent ={<FontAwesomeIcon size="sm" icon={faSearch} />}
+                  startContent ={<FontAwesomeIcon className="text-sm" size="sm" icon={faSearch} />}
                />
             </div>
             <div className="flex justify-between items-center">
-               <span className="text-default-400 text-small"> <b>Total: </b>{total}</span>
+               <span className="text-default-700 text text-small">Total: <b>{ all }</b></span>
                <label className="flex items-center text default-400 text-small">
                   Filas por página:
                   <select
                      onChange ={onRowsPerPageChange}
-                     className="bg-transparent outline-none text-default-400 text-small"
+                     value={rowsPerPage}
+                     className="text-default-700 text-small text-black dark:text-white"
+                     disabled={isDisabled}
                   >
                      <option value={startRowsPerPage     }>{startRowsPerPage     }</option>
                      <option value={startRowsPerPage + 5 }>{startRowsPerPage + 5 }</option>
@@ -152,7 +175,7 @@ export const TableComponent = ({ headerColumns, data, total, startPage, startRow
             </div>
          </div>
       )
-   }, [ filterValue, onSearchChange, data.length, hasSearchFilter, onRowsPerPageChange ])
+   }, [filterValue, all, rowsPerPage ])
 
    const renderCell = useCallback((item:Item, columnKey:any) => {
       const cellValue = item[columnKey]
@@ -194,44 +217,46 @@ export const TableComponent = ({ headerColumns, data, total, startPage, startRow
    )
 
    return (
-      <Table
-         isCompact
-         removeWrapper
-         shadow                ='lg'
-         aria-label            ="Table of content"
-         selectionMode         ='single'
-         classNames            ={classNames}
-         topContent            ={topContent}
-         topContentPlacement   ='outside'
-         bottomContent         ={bottomContent}
-         bottomContentPlacement='outside'
-         data-testid           ="beneficiaries-table"
-         sortDescriptor        ={sortDescriptor}
-         onSortChange          ={setSortDescriptor}
-      >
-         <TableHeader columns={headerColumns}>
-            {(column: Column) => (
-               <TableColumn
-                  key          ={column.key}
-                  allowsSorting={column.sortable}
-                  className    ='text-default-900'
-                  align        ={column.key == 'identity_card' ? 'end' : 'start'}
-               >
-                  {column.name}
-               </TableColumn>
-            )}
-         </TableHeader>
-         <TableBody emptyContent={"Sin datos"} items={sortedItems}>
-            {(item: Column) => (
-               <TableRow key={item.id}>
-                  {(columnKey) =>
-                     <TableCell className='text-default-600'>
-                        {renderCell(item, columnKey)}
-                     </TableCell>
-                  }
-               </TableRow>
-            )}
-         </TableBody>
-      </Table>
+      <Card className="border-small rounded-small border-default-100 dark:border-default-200 p-10">
+         <Table
+            isCompact
+            removeWrapper
+            shadow                ='lg'
+            aria-label            ="Table of content"
+            selectionMode         ='single'
+            classNames            ={classNames}
+            topContent            ={topContent}
+            topContentPlacement   ='outside'
+            bottomContent         ={bottomContent}
+            bottomContentPlacement='outside'
+            data-testid           ="beneficiaries-table"
+            sortDescriptor        ={sortDescriptor}
+            onSortChange          ={setSortDescriptor}
+         >
+            <TableHeader columns={headerColumns}>
+               {(column: Column) => (
+                  <TableColumn
+                     key          ={column.key}
+                     allowsSorting={column.sortable}
+                     className    ='text-default-900 font-semibold'
+                     align        ={column.key == 'identity_card' ? 'end' : 'start'}
+                  >
+                     {column.name}
+                  </TableColumn>
+               )}
+            </TableHeader>
+            <TableBody emptyContent={"Sin datos"} items={sortedItems}>
+               {(item: Column) => (
+                  <TableRow key={item.id}>
+                     {(columnKey) =>
+                        <TableCell className='text-default-600'>
+                           {renderCell(item, columnKey)}
+                        </TableCell>
+                     }
+                  </TableRow>
+               )}
+            </TableBody>
+         </Table>
+      </Card>
    )
 }

@@ -1,6 +1,5 @@
-
 import { TableComponent }                           from "@/components/table";
-import { getBeneficiaries }                         from "./service";
+import { getBeneficiaries }                         from './service';
 import { beneficiaryTableHeaders as headerColumns } from "@/config/static";
 
 export default async function Beneficiaries() {
@@ -14,6 +13,7 @@ export default async function Beneficiaries() {
          total           ={total}
          startPage       ={1}
          startRowsPerPage={10}
+         getData         ={getBeneficiaries}
       />
    )
 }
