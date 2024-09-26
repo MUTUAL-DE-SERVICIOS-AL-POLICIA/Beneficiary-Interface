@@ -1,11 +1,12 @@
+"use server"
 import { apiClient } from "@/services"
 
-
-export const getBeneficiaries = async (limit: number = 10, page: number = 1): Promise<any> => {
+export const getBeneficiaries = async (limit: number = 10, page: number = 1, filter?:string ): Promise<any> => {
    try {
       const beneficiaries = await apiClient.GET('api/persons', {
          limit,
-         page
+         page,
+         ...(filter ? { filter } : {})
       })
       return beneficiaries
    } catch(e:any) {
