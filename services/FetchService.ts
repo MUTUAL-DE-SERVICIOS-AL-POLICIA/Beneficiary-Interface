@@ -21,6 +21,7 @@ export class FetchService extends APIConnection {
    async POST(endpoint: string, body: any): Promise<any> {
       const requestConfig = this.addInterceptors({
          method: 'POST',
+         credentials: 'include',
          body  : JSON.stringify(body)
       })
       return this.handleRequest(endpoint, requestConfig)
