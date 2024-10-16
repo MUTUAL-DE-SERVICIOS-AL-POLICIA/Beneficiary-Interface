@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+import { checkCookie } from '../helpers/cookies_helper';
 export abstract class APIConnection {
   protected baseUrl: string;
 
@@ -32,12 +32,7 @@ export abstract class APIConnection {
   }
 
   protected async handleRequest(endpoint: string, requestConfig: RequestInit): Promise<any> {
-    const getCookie = async (name: string) => {
-      return cookies().get(name)?.value ?? '';
-    };
-
-    const cookie = await getCookie('Set-Cookie');
-
+    const cookie = await checkCookie();
     if (cookie != undefined) {
       requestConfig.headers = {
         ...requestConfig.headers,
