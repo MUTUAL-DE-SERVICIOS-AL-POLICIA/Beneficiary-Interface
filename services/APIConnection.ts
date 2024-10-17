@@ -1,4 +1,4 @@
-import { checkCookie } from '../helpers/cookies_helper';
+import { checkCookie } from '../helpers/cookie';
 export abstract class APIConnection {
   protected baseUrl: string;
 
@@ -7,7 +7,7 @@ export abstract class APIConnection {
   }
 
   protected buildUrl(endpoint: string): string {
-    console.log(`${this.baseUrl.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`);
+    // console.log(`${this.baseUrl.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`);
     return `${this.baseUrl.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`;
   }
 
@@ -42,19 +42,15 @@ export abstract class APIConnection {
 
     const url = this.buildUrl(endpoint);
 
-    try {
-      const response = await fetch(url, requestConfig);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+    const response = await fetch(url, requestConfig);
+    const contentType = response.headers.get('content-type') || '';
+    if (!response.ok) {
+      if (contentType.includes('application/json')) {
+        return response;
       }
-
-      return await response.json();
-    } catch (error: any) {
-      if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-        console.error('Error de Red o CORS');
-      }
-      throw error;
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
     }
+    return response;
   }
 }

@@ -14,7 +14,8 @@ export const getBeneficiaries = async (
       page,
       ...(filter ? { filter } : {}),
     });
-    return beneficiaries;
+    const data = await beneficiaries.json()
+    return data;
   } catch (e: any) {
     throw e;
   }

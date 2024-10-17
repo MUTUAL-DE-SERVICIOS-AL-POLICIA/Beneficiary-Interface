@@ -4,27 +4,24 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-} from "@nextui-org/navbar";
-import { Kbd } from "@nextui-org/kbd";
-import { Input } from "@nextui-org/input";
-import NextLink from "next/link";
+} from '@nextui-org/navbar';
+import { Kbd } from '@nextui-org/kbd';
+import { Input } from '@nextui-org/input';
+import NextLink from 'next/link';
 
-import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  SearchIcon,
-  Logo,
-} from "@/components/icons";
+import { ThemeSwitch } from '@/components/theme-switch';
+import { SearchIcon, Logo } from '@/components/icons';
 
 export const Navbar = () => {
   const searchInput = (
     <Input
       aria-label="Search"
       classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
+        inputWrapper: 'bg-default-100',
+        input: 'text-sm',
       }}
       endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
+        <Kbd className="hidden lg:inline-block" keys={['command']}>
           K
         </Kbd>
       }
@@ -48,10 +45,7 @@ export const Navbar = () => {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
+      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>

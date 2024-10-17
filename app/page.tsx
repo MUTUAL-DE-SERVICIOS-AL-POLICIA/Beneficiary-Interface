@@ -1,4 +1,4 @@
-import Page  from './beneficiaries/page'
+import Page from './beneficiaries/page';
 
 export default function Home() {
   return (
