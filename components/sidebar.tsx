@@ -19,6 +19,7 @@ export default function Sidebar() {
   const router = useRouter()
 
   const [beneficiary, setBeneficiary] = useState<any>({});
+  const [ activePath, setActivePath ] = useState('')
 
   useEffect(() => {
     try {
@@ -44,6 +45,7 @@ export default function Sidebar() {
   };
 
   const handleAction = (path: string) => {
+    setActivePath(path);
     router.push(`/beneficiary/${id}/${path}`)
   }
 
@@ -125,6 +127,7 @@ export default function Sidebar() {
                           key={menu.key}
                           endContent={menu.icon}
                           onClick={() => handleAction(menu.path)}
+                          className={activePath === menu.path ? 'bg-slate-300 hover:bg-slate-400' : ''}
                         >
                           {menu.title}
                         </ListboxItem>
