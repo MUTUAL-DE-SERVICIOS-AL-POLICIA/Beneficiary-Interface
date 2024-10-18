@@ -65,6 +65,7 @@ export const TableComponent = ({
   const [debouncedFilterValue] = useDebounce(filterValue, 200);
 
   const handleViewPerson = (id: number) => {
+    // router.push(`/beneficiary/${id}`);
     router.push(`/beneficiary/${id}`);
   };
 
