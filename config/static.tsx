@@ -30,7 +30,7 @@ export interface SidebarItem {
   description: string;
   icon?: React.ReactNode;
   customKey: string | number;
-  path?: string;
+  path: string;
 }
 
 interface SidebarConfig {
@@ -62,6 +62,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Información general',
       customKey: 'menu-1',
       icon: <FontAwesomeIcon size="lg" icon={faUserTie} />,
+      path: '',
       subMenu: [
         {
           title: 'FOTOGRAFIAS',
@@ -83,6 +84,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Datos especificos de policía',
       customKey: 'menu-2',
       icon: <FontAwesomeIcon size="lg" icon={faUserNurse} />,
+      path: ''
     },
     {
       topTitle: 'Listado de los beneficiarios',
@@ -90,6 +92,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Listado de beneficiarios',
       icon: <FontAwesomeIcon size="lg" icon={faPeopleGroup} />,
       customKey: 'menu-3',
+      path: ''
     },
     {
       topTitle: 'Listado de aportes',
@@ -97,6 +100,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Listado de aportes',
       icon: <FontAwesomeIcon size="lg" icon={faCircleDollarToSlot} />,
       customKey: 'menu-4',
+      path: ''
     },
     {
       topTitle: 'Trámites realizados',
@@ -104,6 +108,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Trámites realizados',
       icon: <FontAwesomeIcon size="lg" icon={faListCheck} />,
       customKey: 'menu-5',
+      path: '',
       subMenu: [
         {
           topTitle: 'Trámites de',

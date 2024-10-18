@@ -7,11 +7,11 @@ import { Divider } from '@nextui-org/divider';
 import { Listbox, ListboxItem, ListboxSection } from '@nextui-org/listbox';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { apiClient } from '@/services';
 
 import fullName from '@/helpers/utils';
 import { sidebarConfig, SidebarItem } from '@/config/static';
 import { AccordionComponent } from '@/components/accordion';
+import { getBeneficiary } from '@/app/beneficiary/service';
 
 export default function Sidebar() {
   const { id } = useParams();
@@ -23,14 +23,12 @@ export default function Sidebar() {
 
   useEffect(() => {
     try {
-      apiClient
-        .GET(`api/persons/${id}`)
-        .then((response: any) => {
-          setBeneficiary(response);
-        })
-        .catch((error: any) => {
-          throw error;
-        });
+      getBeneficiary(`${id}`).then((response: any) => {
+        setBeneficiary(response)
+      })
+      .catch((error:any) => {
+        throw error
+      })
     } catch (e) {
       console.log(e);
     }
@@ -108,12 +106,14 @@ export default function Sidebar() {
                         description={sidebarItem.description}
                         startContent={sidebarItem.icon}
                         className="m-0 p-0"
+                        onClick={() => handleAction(sidebarItem.path)}
                       >
                         {sidebarItem.title}
                       </ListboxItem>
                     </ListboxSection>
                   </Listbox>
                 }
+                onPress={() => handleAction(sidebarItem.path)}
               >
                 {sidebarItem.subMenu && sidebarItem.subMenu.length && (
                   <Listbox
