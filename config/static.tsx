@@ -84,7 +84,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Datos especificos de policía',
       customKey: 'menu-2',
       icon: <FontAwesomeIcon size="lg" icon={faUserNurse} />,
-      path: ''
+      path: '/affiliate-data'
     },
     {
       topTitle: 'Listado de los beneficiarios',

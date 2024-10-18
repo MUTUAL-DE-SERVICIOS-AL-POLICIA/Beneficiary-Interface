@@ -51,7 +51,7 @@ export default function PersonDataPage() {
               <Input
                 label="Primer nombre"
                 labelPlacement="outside"
-                placeholder="Leonel"
+                placeholder="Primer nombre"
                 name=""
                 type="text"
                 variant="faded"
@@ -63,7 +63,7 @@ export default function PersonDataPage() {
               <Input
                 label="Segundo nombre"
                 labelPlacement="outside"
-                placeholder="Maximo"
+                placeholder="Segundo nombre"
                 name=""
                 type="text"
                 variant="faded"
@@ -75,7 +75,7 @@ export default function PersonDataPage() {
               <Input
                 label="Apellido paterno"
                 labelPlacement="outside"
-                placeholder="Vargas"
+                placeholder="Apellido paterno"
                 name=""
                 type="text"
                 variant="faded"
@@ -87,7 +87,7 @@ export default function PersonDataPage() {
               <Input
                 label="Apellido materno"
                 labelPlacement="outside"
-                placeholder="Ramírez"
+                placeholder="Apellido materno"
                 name=""
                 type="text"
                 variant="faded"
@@ -99,7 +99,7 @@ export default function PersonDataPage() {
               <Input
                 label="Carnet Identidad"
                 labelPlacement="outside"
-                placeholder="9101918"
+                placeholder="Carnet Identidad"
                 name=""
                 type="text"
                 variant="faded"
@@ -114,7 +114,7 @@ export default function PersonDataPage() {
               <Input
                 label="Fecha Nacimiento"
                 labelPlacement="outside"
-                placeholder="22 de enero de 1994"
+                placeholder="Fecha Nacimiento"
                 name=""
                 type="text"
                 variant="faded"
@@ -126,7 +126,7 @@ export default function PersonDataPage() {
               <Input
                 label="Lugar Nacimiento"
                 labelPlacement="outside"
-                placeholder="La Paz"
+                placeholder="Lugar Nacimiento"
                 name=""
                 type="text"
                 variant="faded"
@@ -275,6 +275,7 @@ export default function PersonDataPage() {
                 value={beneficiary.account_number ?? "Sin dato"}
                 variant="faded"
                 radius="sm"
+                type="text"
               />
             </div>
             <div className="space-y-2">
