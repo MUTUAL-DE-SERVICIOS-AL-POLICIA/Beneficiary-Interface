@@ -1,12 +1,19 @@
 "use client"
 import { Checkbox, CheckboxGroup } from "@nextui-org/checkbox";
 import { Divider } from "@nextui-org/divider";
-import { Input } from "@nextui-org/input";
 import { cn } from "@nextui-org/theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { EntryInfo } from "./(sections)/EntryInfo";
+import { StateInfo } from "./(sections)/StateInfo";
+import { ServiceInfo } from "./(sections)/ServiceInfo";
+import { DerelictInfo } from "./(sections)/DerelictInfo";
+import { useParams } from "next/navigation";
 
 export default function AffiliateDataPage() {
   const [groupSelected, setGroupSelected] = useState<any>([]);
+  const [ affiliate, setAffiliate ] = useState<any>({})
+
+  const { id } = useParams()
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
@@ -17,151 +24,18 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <div className="flex gap-6">
           <div className="flex flex-col w-1/2">
-            <div className="flex flex-row">
-              <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
-                <legend className="text-sm uppercase px-2">
-                  <span className="flex items-center font-semibold">
-                    Datos de ingreso policial
-                  </span>
-                </legend>
-                <div className="flex gap-6">
-                  <div className="flex flex-col w-1/2 space-y-2">
-                    <Input
-                      label="Fecha de ingreso"
-                      labelPlacement="outside"
-                      value="07-09-1976"
-                      variant="faded"
-                      radius="sm"
-                    />
-                  </div>
-                  <div className="flex flex-col w-1/2 space-y-2">
-                    <Input
-                      label="Matricula"
-                      labelPlacement="outside"
-                      value="44080ACG"
-                      variant="faded"
-                      radius="sm"
-                    />
-                  </div>
-                </div>
-              </fieldset>
-            </div>
+            <EntryInfo/>
           </div>
           <div className="flex flex-col w-1/2">
-            <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
-              <legend className="text-sm uppercase px-2">
-                <span className="flex items-center font-semibold">
-                  ESTADO DEL POLICIA
-                </span>
-              </legend>
-              <div className="flex gap-6">
-                <div className="flex flex-col w-1/2">
-                  <Input
-                    label="Estado"
-                    labelPlacement="outside"
-                    value="Servicio"
-                    variant="faded"
-                    radius="sm"
-                  />
-                </div>
-                <div className="flex flex-col w-1/2">
-                  <Input
-                    label="Tipo"
-                    labelPlacement="outside"
-                    value="Activo"
-                    variant="faded"
-                    radius="sm"
-                  />
-                </div>
-              </div>
-            </fieldset>
+            <StateInfo />
           </div>
         </div>
       </div>
       <div className="px-3 py-1">
-        <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
-          <legend className="text-sm uppercase px-2">
-            <span className="flex items-center font-semibold">
-              Información de Servicio
-            </span>
-          </legend>
-          <div className="flex gap-6">
-            <div className="flex flex-col w-1/4 mt-2">
-              <Input
-                label="Años servicio"
-                labelPlacement="outside"
-                value="41"
-                variant="faded"
-                radius="sm"
-              />
-            </div>
-            <div className="flex flex-col w-1/4 mt-2">
-              <Input
-                label="Meses servicio"
-                labelPlacement="outside"
-                value="10"
-                variant="faded"
-                radius="sm"
-              />
-            </div>
-            <div className="flex flex-col w-1/4 mt-2">
-              <Input
-                label="Categoria"
-                labelPlacement="outside"
-                value="50%"
-                variant="faded"
-                radius="sm"
-              />
-            </div>
-            <div className="flex flex-col w-1/4 mt-2">
-              <Input
-                label="Grado"
-                labelPlacement="outside"
-                value="CORONEL"
-                variant="faded"
-                radius="sm"
-              />
-            </div>
-            <div className="flex flex-col w-1/3 space-y-2 mt-2">
-              <Input
-                label="Unidad Policial"
-                labelPlacement="outside"
-                value="TRANSITO"
-                variant="faded"
-                radius="sm"
-              />
-            </div>
-          </div>
-        </fieldset>
+        <ServiceInfo/>
       </div>
       <div className="px-3 py-1">
-        <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
-          <legend className="text-sm uppercase px-2">
-            <span className="flex items-center font-semibold">
-              Información de desvinculación
-            </span>
-          </legend>
-          <div className="flex gap-6">
-            <div className="flex flex-col w-1/2 space-y-2">
-              <Input
-                label="Fecha de desvinculación"
-                labelPlacement="outside"
-                value="08-09-2020"
-                variant="faded"
-                radius="sm"
-              />
-            </div>
-            <div className="flex flex-col w-1/2 space-y-2">
-              <Input
-                label="Motivo de desvinculación"
-                labelPlacement="outside"
-                value="Baja forzosa"
-                variant="faded"
-                radius="sm"
-              />
-            </div>
-          </div>
-        </fieldset>
+        <DerelictInfo/>
       </div>
       <div className="flex justify-between items-center">
         <h1 className="text-md uppercase font-semibold">Documentos presentados</h1>
@@ -183,10 +57,11 @@ export default function AffiliateDataPage() {
                   color="default"
                   classNames={{
                     base: cn(
-                      "inline-flex max-w-full w-full bg-content1 m-0",
-                      "hover:bg-content2 items-center justify-start",
-                      "cursor-pointer rounded-lg gap-2 p-4 border-2 border-transparent",
-                      "data-[selected=true]:border-default"
+                      "inline-flex max-w-full w-full bg-content1 m-0 border-gray-400",
+                      "hover:bg-content3 items-center justify-start",
+                      "dark:hover:border-lime-400 bg-content2 items-center justify-start",
+                      "cursor-pointer rounded-lg gap-2 p-4 border",
+                      "data-[selected=true]:border"
                     ),
                     label: "w-full",
                   }}
@@ -200,10 +75,11 @@ export default function AffiliateDataPage() {
                   color="default"
                   classNames={{
                     base: cn(
-                      "inline-flex max-w-full w-full bg-content1 m-0 border-2 border-gray-400",
-                      "hover:bg-content2 items-center justify-start",
-                      "cursor-pointer rounded-lg gap-2 p-4 border-2 border-gray-500",
-                      "data-[selected=true]:border-default"
+                      "inline-flex max-w-full w-full bg-content1 m-0 border-gray-400",
+                      "hover:bg-content3 items-center justify-start",
+                      "dark:hover:border-lime-400 bg-content2 items-center justify-start",
+                      "cursor-pointer rounded-lg gap-2 p-4 border",
+                      "data-[selected=true]:border"
                     ),
                     label: "w-full",
                   }}
@@ -218,9 +94,10 @@ export default function AffiliateDataPage() {
                   classNames={{
                     base: cn(
                       "inline-flex max-w-full w-full bg-content1 m-0 border-2 border-gray-400",
-                      "hover:bg-content2 items-center justify-start",
-                      "cursor-pointer rounded-lg gap-2 p-4 border-2 border-gray-500",
-                      "data-[selected=true]:border-default"
+                      "hover:bg-content3 items-center justify-start",
+                      "dark:hover:border-lime-400 bg-content2 items-center justify-start",
+                      "cursor-pointer rounded-lg gap-2 p-4 border",
+                      "data-[selected=true]:border"
                     ),
                     label: "w-full",
                   }}
