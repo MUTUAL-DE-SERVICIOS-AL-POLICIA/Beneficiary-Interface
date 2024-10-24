@@ -45,11 +45,11 @@ export const siteConfig = {
 };
 
 export const beneficiaryTableHeaders: Column[] = [
-  { id: 1, name: 'PRIMER NOMBRE', key: 'first_name', sortable: true },
-  { id: 2, name: 'SEGUNDO NOMBRE', key: 'second_name', sortable: true },
-  { id: 3, name: 'APELLIDO PATERNO', key: 'last_name', sortable: true },
-  { id: 4, name: 'APELLIDO MATERNO', key: 'mothers_last_name', sortable: true },
-  { id: 5, name: 'CARNET IDENTIDAD', key: 'identity_card', sortable: true },
+  { id: 1, name: 'PRIMER NOMBRE', key: 'firstName', sortable: true },
+  { id: 2, name: 'SEGUNDO NOMBRE', key: 'secondName', sortable: true },
+  { id: 3, name: 'APELLIDO PATERNO', key: 'lastName', sortable: true },
+  { id: 4, name: 'APELLIDO MATERNO', key: 'mothersLastName', sortable: true },
+  { id: 5, name: 'CARNET IDENTIDAD', key: 'identityCard', sortable: true },
   { id: 6, name: 'GENERO', key: 'gender' },
   { id: 7, name: 'ACCION', key: 'actions' },
 ];
@@ -84,7 +84,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Datos especificos de policía',
       customKey: 'menu-2',
       icon: <FontAwesomeIcon size="lg" icon={faUserNurse} />,
-      path: ''
+      path: '/affiliate-data'
     },
     {
       topTitle: 'Listado de los beneficiarios',
