@@ -8,12 +8,28 @@ import { StateInfo } from "./(sections)/StateInfo";
 import { ServiceInfo } from "./(sections)/ServiceInfo";
 import { DerelictInfo } from "./(sections)/DerelictInfo";
 import { useParams } from "next/navigation";
+import { getAffiliate, getBeneficiary } from "@/app/beneficiary/service";
 
 export default function AffiliateDataPage() {
   const [groupSelected, setGroupSelected] = useState<any>([]);
   const [ affiliate, setAffiliate ] = useState<any>({})
 
   const { id } = useParams()
+
+  useEffect(() => {
+    getBeneficiary(`${id}`).then((response:any) => {
+      // console.log("response: ", response.personAffiliate.length)
+      if(response.personAffiliate.length >= 1) {
+        const affiliateId = response.personAffiliate[0].typeId
+        getAffiliate(`${affiliateId}`).then((response:any) => {
+          // console.log(response)
+          setAffiliate(response)
+        }).catch((error:any)=> {
+          console.log("obtener el afilaido salio mal: ", error)
+        })
+      } else console.log("no, lo es")
+    })
+  }, [])
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
@@ -24,18 +40,18 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <div className="flex gap-6">
           <div className="flex flex-col w-1/2">
-            <EntryInfo/>
+            <EntryInfo affiliate={affiliate}/>
           </div>
           <div className="flex flex-col w-1/2">
-            <StateInfo />
+            <StateInfo affiliate={affiliate}/>
           </div>
         </div>
       </div>
       <div className="px-3 py-1">
-        <ServiceInfo/>
+        <ServiceInfo affiliate={affiliate}/>
       </div>
       <div className="px-3 py-1">
-        <DerelictInfo/>
+        <DerelictInfo affiliate={affiliate}/>
       </div>
       <div className="flex justify-between items-center">
         <h1 className="text-md uppercase font-semibold">Documentos presentados</h1>

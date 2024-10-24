@@ -9,14 +9,14 @@ export const AddressInfo: React.FC = () => (
       <div className="flex flex-col w-1/3 space-y-2">
         <InputCustom
           label="Ciudad"
-          value="CHOCHABAMBA"
+          value=""
           type="text"
         />
       </div>
       <div className="flex flex-col space-y-2">
         <InputCustom
           label="Zona"
-          value="VILLA EL CARMEN"
+          value=""
           type="text"
         />
       </div>
@@ -25,7 +25,7 @@ export const AddressInfo: React.FC = () => (
       <div className="flex flex-col w-full space-y-2 mt-6">
         <InputCustom
           label="Calle"
-          value="AV. EUSEBIO GUTIERREZ"
+          value=""
           type="text"
         />
       </div>

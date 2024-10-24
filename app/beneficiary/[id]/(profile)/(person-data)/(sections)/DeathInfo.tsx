@@ -11,14 +11,14 @@ export const DeathInfo: React.FC<DeathInfoProps> = ({ beneficiary }) => (
       <div className="flex flex-col w-1/2 space-y-2">
         <InputCustom
           label="Nro certificado"
-          value={beneficiary.death_certificate_number ?? 'Sin dato'}
+          value={beneficiary.deathCertificateNumber ?? 'Sin dato'}
           type="text"
         />
       </div>
       <div className="flex flex-col w-1/2 space-y-2">
         <InputCustom
           label="Fecha fallecimiento"
-          value={beneficiary.date_death ?? 'Sin dato'}
+          value={beneficiary.dateDeath ?? 'Sin dato'}
           type="date"
         />
       </div>
@@ -27,7 +27,7 @@ export const DeathInfo: React.FC<DeathInfoProps> = ({ beneficiary }) => (
       <div className="flex flex-col w-full space-y-2 mt-6">
         <InputCustom
           label="Motivo fallecimiento"
-          value={beneficiary.reason_death ?? 'Sin dato'}
+          value={beneficiary.reasonDeath ?? 'Sin dato'}
           type="text"
         />
       </div>

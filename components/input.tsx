@@ -29,7 +29,7 @@ export const InputCustom = (props: InputCustomProps) => {
     <Input
       label={label}
       labelPlacement={labelPlacement ?? 'outside'}
-      placeholder={placeholder ?? label}
+      placeholder={placeholder ?? 'Sin dato'}
       variant={variant ?? 'faded'}
       radius={radius ?? 'sm'}
       value={value ?? 'Sin dato'}

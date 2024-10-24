@@ -11,14 +11,25 @@ export const FinancialData: React.FC<FinancialDataProps> = ({ beneficiary }) => 
       <div className="flex flex-col w-full space-y-2">
         <InputCustom
           label="Número de cuenta"
-          value={beneficiary.account_number ?? "Sin dato"}
+          value={beneficiary.accountNumber ?? "Sin dato"}
           type="text"
         />
+      </div>
+      <div className="flex flex-col w-full space-y-2">
+        {
+          (beneficiary.financialEntity && beneficiary.financialEntity.status) && (
+            <InputCustom
+              label="Entidad financiera"
+              value={beneficiary.financialEntity.name ?? "Sin dato"}
+              type="text"
+            />
+          )
+        }
       </div>
       <div className="space-y-2">
         <InputCustom
           label="Estado Sigep"
-          value={beneficiary.sigep_status ?? "Sin dato"}
+          value={beneficiary.sigepStatus ?? "Sin dato"}
           type="text"
         />
       </div>

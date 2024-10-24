@@ -251,7 +251,7 @@ export const TableComponent = ({
               key={column.key}
               allowsSorting={column.sortable}
               className="text-default-900 font-semibold"
-              align={column.key == 'identity_card' ? 'end' : 'start'}
+              align={column.key == 'identityCard' ? 'end' : 'start'}
             >
               {column.name}
             </TableColumn>
