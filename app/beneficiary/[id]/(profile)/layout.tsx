@@ -1,4 +1,3 @@
-"use client"
 import { Card, CardBody } from "@nextui-org/card";
 import { ReactNode } from "react";
 

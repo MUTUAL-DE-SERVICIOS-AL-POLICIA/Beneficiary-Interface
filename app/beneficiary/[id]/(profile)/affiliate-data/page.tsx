@@ -2,7 +2,7 @@
 import { Checkbox, CheckboxGroup } from "@nextui-org/checkbox";
 import { Divider } from "@nextui-org/divider";
 import { cn } from "@nextui-org/theme";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { EntryInfo } from "./(sections)/EntryInfo";
 import { StateInfo } from "./(sections)/StateInfo";
 import { ServiceInfo } from "./(sections)/ServiceInfo";
@@ -18,11 +18,9 @@ export default function AffiliateDataPage() {
 
   useEffect(() => {
     getBeneficiary(`${id}`).then((response:any) => {
-      // console.log("response: ", response.personAffiliate.length)
       if(response.personAffiliate.length >= 1) {
         const affiliateId = response.personAffiliate[0].typeId
         getAffiliate(`${affiliateId}`).then((response:any) => {
-          // console.log(response)
           setAffiliate(response)
         }).catch((error:any)=> {
           console.log("obtener el afilaido salio mal: ", error)

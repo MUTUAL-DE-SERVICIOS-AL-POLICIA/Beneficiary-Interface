@@ -2,6 +2,7 @@ import { apiClient } from "@/services"
 
 export const getBeneficiary = async (beneficiaryId: string): Promise<any> => {
   try {
+    console.log("getBeneficiary")
     const beneficiary = await apiClient.GET(`api/persons/findPersonAffiliatesWithDetails/${beneficiaryId}`)
     const data = await beneficiary.json()
     return data
