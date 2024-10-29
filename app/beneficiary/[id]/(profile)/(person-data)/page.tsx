@@ -16,16 +16,21 @@ export default function PersonDataPage() {
   const { id } = useParams()
 
   useEffect(() => {
-    try {
-      getBeneficiary(`${id}`).then((response: any) => {
-        setBeneficiary(response)
-      })
-      .catch((error:any) => {
-        throw error
-      })
-    } catch (e) {
-      console.log(e);
+    const fetchBeneficiary = async () => {
+      const beneficiary = await getBeneficiary(`${id}`)
+      setBeneficiary(beneficiary)
     }
+    fetchBeneficiary()
+    // try {
+    //   getBeneficiary(`${id}`).then((response: any) => {
+    //     setBeneficiary(response)
+    //   })
+    //   .catch((error:any) => {
+    //     throw error
+    //   })
+    // } catch (e) {
+    //   console.log(e);
+    // }
   }, []);
 
   return (

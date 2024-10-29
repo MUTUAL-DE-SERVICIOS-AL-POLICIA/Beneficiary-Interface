@@ -28,21 +28,21 @@ export const ServiceInfo:React.FC<AffiliateProps> = ({ affiliate}) => {
         <div className="flex flex-col w-1/4 mt-2">
           <InputCustom
             label="Categoria"
-            value={affiliate.category.name ?? 'Sin dato'}
+            value={(affiliate.category && affiliate.category.name) ?? 'Sin dato'}
             type="text"
           />
         </div>
         <div className="flex flex-col w-1/4 mt-2">
           <InputCustom
             label="Grado"
-            value={affiliate.degree.name ?? 'Sin dato'}
+            value={(affiliate.degree && affiliate.degree.name) ?? 'Sin dato'}
             type="text"
           />
         </div>
         <div className="flex flex-col w-1/3 space-y-2 mt-2">
           <InputCustom
             label="Unidad Policial"
-            value={affiliate.unit.name ?? 'Sin dato'}
+            value={(affiliate.unit && affiliate.unit.name) ?? 'Sin dato'}
             type="text"
           />
         </div>

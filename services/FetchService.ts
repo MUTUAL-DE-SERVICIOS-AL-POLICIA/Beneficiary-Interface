@@ -5,7 +5,7 @@ export class FetchService extends APIConnection {
     super(baseUrl);
   }
 
-  async GET(endpoint: string, params?: Record<string, string>): Promise<any> {
+  async GET(endpoint: string, params?: Record<string, string>, contentType: string = 'application/json'): Promise<any> {
     let url = endpoint;
     if (params) {
       const queryParams = new URLSearchParams(params).toString();
@@ -14,7 +14,7 @@ export class FetchService extends APIConnection {
     const requestConfig = this.addInterceptors({
       method: 'GET',
       credentials: 'include',
-    });
+    }, contentType);
     return this.handleRequest(url, requestConfig);
   }
 

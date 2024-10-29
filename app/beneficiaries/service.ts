@@ -1,7 +1,5 @@
 'use server';
 import { apiClient } from '@/services';
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
 
 export const getBeneficiaries = async (
   limit: number = 10,
