@@ -16,10 +16,13 @@ export abstract class APIConnection {
   abstract PUT(url: string, body: any, options?: any): Promise<any>;
   abstract DELETE(url: string, options?: any): Promise<any>;
 
-  protected addInterceptors(requestConfig: RequestInit): RequestInit {
+  protected addInterceptors(
+    requestConfig: RequestInit,
+    contentType: string = 'application/json'
+  ): RequestInit {
     const interceptors = {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': contentType
       },
     };
     return {

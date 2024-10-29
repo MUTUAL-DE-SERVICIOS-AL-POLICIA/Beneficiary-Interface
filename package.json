@@ -42,6 +42,7 @@
     "next-router-mock": "^0.9.13",
     "next-themes": "^0.2.1",
     "nextui-cli": "^0.3.4",
+    "print-js": "^1.6.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "use-debounce": "^10.0.3"
