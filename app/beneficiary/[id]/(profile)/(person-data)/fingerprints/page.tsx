@@ -34,7 +34,6 @@ export default function FingerPrintPage () {
   const getRegisteredFingerprints = async () => {
     const response = await apiClient.GET(`/api/persons/showPersonFingerprint/${id}`)
     const data = await response.json()
-    console.log("fingerprints: ", data.fingerprints)
     setRegisteredFingerprints(data.fingerprints)
   }
 

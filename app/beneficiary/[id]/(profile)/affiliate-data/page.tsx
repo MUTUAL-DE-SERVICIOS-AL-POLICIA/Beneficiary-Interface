@@ -32,8 +32,7 @@ export default function AffiliateDataPage() {
     }
     fetchBeneficiary()
     const fetchDocuments = async () => {
-      // const documents = await obtainAffiliateDocuments(`${id}`)
-      const documents = await obtainAffiliateDocuments("105")
+      const documents = await obtainAffiliateDocuments(`${id}`)
       setDocuments(documents)
     }
     fetchDocuments()
@@ -41,15 +40,13 @@ export default function AffiliateDataPage() {
 
   const handleDownloadDocument = (value:any) => {
     if(affiliate !== undefined) {
-      // printAffiliateDocument(affiliate.id, value)
-      printAffiliateDocument("105", value)
+      printAffiliateDocument(affiliate.id, value)
     } else {
       alert("sin id")
     }
   }
 
   const hasNoDocuments = documents && documents.status
-  console.log(documents)
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">

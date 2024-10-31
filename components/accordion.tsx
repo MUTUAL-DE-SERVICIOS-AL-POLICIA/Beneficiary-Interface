@@ -5,11 +5,11 @@ import { SidebarItem } from '@/config/static';
 
 export const AccordionComponent = (sidebarItem: SidebarItem) => {
   const itemClasses = {
-    base: 'py-0 my-0 overflow-hidden',
-    title: 'font-normal text-medium',
-    trigger: 'px-2 py-10 data-[hover=true]:bg-default-100 h-14 flex items-center rounded-small',
+    base: 'py-1 my-0 overflow-hidden',
+    title: 'my-0 font-bold text-medium',
+    trigger: 'px-2 py-10 bg-default-100 data-[open=true]:bg-default-200 data-[hover=true]:bg-default-200 h-14 flex items-center rounded-small',
     indicator: 'text-medium',
-    content: 'text-small py-0',
+    content: 'text-small',
   };
 
   const classNames = {
@@ -17,6 +17,12 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
     description: 'font-semibold text-xs text-default-500',
     selectedIcon: 'primary',
   };
+
+  const itemClassesSection = {
+    base: "",
+    list: "mb-0",
+    heading: "text-slate-700 pb-0 mb-0",
+  }
 
   return (
     <Card className="max-w-[340px] border-small rounded-small border-default-200 dark:border-default-200 mb-3">
@@ -27,7 +33,9 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
             textValue="procedures"
             title={
               <Listbox variant="flat" aria-label="listbox menu with section">
-                <ListboxSection title={sidebarItem.topTitle}>
+                <ListboxSection title={sidebarItem.topTitle}
+                  classNames={itemClassesSection}
+                >
                   <ListboxItem
                     key={"ListboxItem" + sidebarItem.customKey}
                     description={sidebarItem.description}
