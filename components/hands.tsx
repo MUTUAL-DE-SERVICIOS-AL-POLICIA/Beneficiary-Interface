@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { apiClientBiometric } from '@/services';
 import Image from 'next/image';
 import hands from '@/public/hands1.png';
@@ -12,18 +12,30 @@ interface Area {
   y: number;
   width: number;
   height: number;
+  group: string;
+}
+
+interface HandsProps {
+  withDetails: boolean
+  selectedOption: string | undefined
+  fingerprints: any[]
 }
 
 const AREAS: Area[] = [
-  { id: 1, name: 'Pulgar Izquierdo', x: 105, y: 260, width: 30, height: 30 },
-  { id: 2, name: 'Indice Izquierdo', x: 183, y: 143, width: 20, height: 30 },
-  { id: 3, name: 'Pulgar Derecho', x: 565, y: 260, width: 30, height: 30 },
-  { id: 4, name: 'Indice Derecho', x: 497, y: 143, width: 20, height: 30 },
+  { id: 1, name: 'Pulgar Derecho', x: 565, y: 262, width: 30, height: 30, group: 'Pulgares' },
+  { id: 2, name: 'Índice Derecho', x: 497, y: 143, width: 20, height: 30, group: 'Indices' },
+  { id: 3, name: 'Pulgar Izquierdo', x: 105, y: 262, width: 30, height: 30, group: 'Pulgares' },
+  { id: 4, name: 'Índice Izquierdo', x: 183, y: 143, width: 20, height: 30, group: 'Indices' },
 ];
 
-const SELECTED = 'rgba(0, 255, 0, 0.5)';
-const UNSELECTED = 'rgba(255, 0, 0, 0.4)';
-const HOVER = 'rgba(128, 128, 128, 0.6)';
+const NOPROCESS = 'rgba(255, 255, 255, 1)'
+const HOVER = 'rgba(0, 90, 255, 0.4)';
+
+const colors = {
+  PROCESS: 'rgba(255, 255, 0, 0.5)',
+  REGISTERED: 'rgba(0, 255, 0, 0.5)',
+  UNREGISTERED: 'rgba(255, 0, 0, 0.4)',
+}
 
 const LINE_COLOR = 'gray'
 const LINE_WIDTH = 2
@@ -31,32 +43,6 @@ const LINE_WIDTH = 2
 const MARKER_COLOR = 'gray'
 const MARKER_SIZE = 4
 
-const drawAndPaintFingers = (area: Area, ctx: CanvasRenderingContext2D, color: string) => {
-  ctx.fillStyle = color;
-  ctx.beginPath();
-  if (area.id == 1 || area.id == 3) {
-    ctx.ellipse(
-      area.x + area.width / 2,
-      area.y + area.height / 2,
-      (area.width / 2) * 1.2,
-      (area.height / 2) * 0.7,
-      0,
-      0,
-      2 * Math.PI,
-    );
-  } else {
-    ctx.ellipse(
-      area.x + area.width / 2,
-      area.y + area.height / 2,
-      area.width / 2,
-      area.height / 2,
-      0,
-      0,
-      2 * Math.PI,
-    );
-  }
-  ctx.fill();
-};
 
 const checkActionArea = (area: Area, x: number, y: number) => {
   const dx = x - (area.x + area.width / 2);
@@ -108,10 +94,9 @@ const drawRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, wi
   ctx.closePath();
 }
 
-const drawTextBox = (ctx: CanvasRenderingContext2D, x: number, y: number, text: string) => {
-  ctx.font = "11px 'DejaVu Sans'";
+const drawTextBox = (ctx: CanvasRenderingContext2D, x: number, y: number, text: string, status: string) => {
+  ctx.font = "600 10px 'DejaVu Sans'";
   const padding = 5
-
   const boxWidth = 160
   const boxHeight = 70
   const radius = 5
@@ -119,19 +104,25 @@ const drawTextBox = (ctx: CanvasRenderingContext2D, x: number, y: number, text: 
   ctx.fillStyle = "white"
   drawRoundedRect(ctx, x - 50, y, boxWidth - 50, boxHeight, radius);
   ctx.fill()
-
   ctx.strokeStyle = "black"
   ctx.lineWidth = 1
   drawRoundedRect(ctx, x - 50, y, boxWidth - 50, boxHeight, radius);
   ctx.stroke()
-
+  ctx.font = "600 11px 'DejaVu Sans'";
   ctx.fillStyle = "black"
   ctx.fillText(text, (x - 50) + padding, y + 20)
-
+  ctx.font = "11px 'DejaVu Sans'";
   ctx.fillStyle = "black"
-  ctx.fillText("precisión: 67.4%", (x - 50) + padding, y + 35)
-
-  ctx.fillText("Registrado: si", (x - 50) + padding, y + 50)
+  ctx.fillText("Estado:", (x - 50) + padding, y + 35)
+  ctx.font = "600 10px 'DejaVu Sans'";
+  if(status == 'Registrado') {
+    ctx.fillStyle = "green"
+  } else if(status == 'No Registrado') {
+    ctx.fillStyle = "red"
+  } else {
+    ctx.fillStyle = "rgba(255, 165, 0, 1)"
+  }
+  ctx.fillText(status, (x - 35) + padding, y + 50)
 }
 
 const drawLineMarkerWithBox = (
@@ -141,21 +132,126 @@ const drawLineMarkerWithBox = (
   diagonalEndX: number,
   diagonalEndY: number,
   horizontalEndX: number,
-  text: string
+  text: string,
+  status: string
 ) => {
   drawLineMarker(ctx, startX, startY, diagonalEndX, diagonalEndY, horizontalEndX);
-  drawTextBox(ctx, diagonalEndX, horizontalEndX - 30, text)
+  drawTextBox(ctx, diagonalEndX, horizontalEndX - 30, text, status)
 }
 
-interface HandsProps {
-  withDetails: boolean
-}
 
 export default function Hands(props: HandsProps) {
 
-  const { withDetails } = props
-  const [selectedAreas, setSelectedAreas] = useState<number[]>([]);
-  const [hoverArea, setHoverArea] = useState<number | null>(null);
+  const { withDetails, selectedOption, fingerprints } = props
+
+  const [ selectedAreas, setSelectedAreas ] = useState<number[]>([]);
+  const [ hoverArea, setHoverArea ] = useState<number | null>(null);
+
+  const drawAndPaintFingers = (area: Area, ctx: CanvasRenderingContext2D, color: string) => {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      if (area.id == 1 || area.id == 3) {
+        ctx.ellipse(
+          area.x + area.width / 2,
+          area.y + area.height / 2,
+          (area.width / 2) * 1.2,
+          (area.height / 2) * 0.7,
+          0,
+          0,
+          2 * Math.PI,
+        );
+      } else {
+        ctx.ellipse(
+          area.x + area.width / 2,
+          area.y + area.height / 2,
+          area.width / 2,
+          area.height / 2,
+          0,
+          0,
+          2 * Math.PI,
+        );
+      }
+      ctx.fill();
+  }
+
+  const drawLegend = (ctx: CanvasRenderingContext2D, x: number, y:number, color: string, text:string) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, 40, 10);
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 0.3;
+    ctx.strokeRect(x, y, 40, 10);
+    ctx.font = "500 11px 'Courier New'";
+    ctx.fillStyle = "black";
+    ctx.fillText(text, x+45, y+9);
+  }
+
+  const draw = (areas: any, ctx:CanvasRenderingContext2D, color: string, status: string) => {
+    areas.forEach((area: Area) => {
+      drawAndPaintFingers(area, ctx, color)
+      const centerX = area.x + area.width / 2
+      const centerY = area.y + area.height / 2
+      if (withDetails) {
+        drawMaker(ctx, centerX, centerY)
+        switch (area.name) {
+          case 'Pulgar Derecho':
+            drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 250, centerX - 380, area.name, status)
+            break;
+          case 'Índice Derecho':
+            drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 120, centerX - 430, area.name, status)
+            break;
+          case 'Pulgar Izquierdo':
+            drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 250, centerX + 80, area.name, status)
+            break;
+          case 'Índice Izquierdo':
+            drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 120, centerX - 120, area.name, status)
+            break;
+        }
+      } else {
+        const hoverAreaObj = AREAS.find((area) => area.id === hoverArea)
+        switch (area.name) {
+          case 'Pulgar Derecho':
+            if (hoverArea !== null && hoverArea == 1) {
+              if (hoverAreaObj) {
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
+                drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 250, centerX - 380, area.name, status)
+              }
+            }
+            break;
+          case 'Índice Derecho':
+            if (hoverArea !== null && hoverArea == 2) {
+              if (hoverAreaObj) {
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
+                drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 120, centerX - 430, area.name, status )
+              }
+            }
+            break;
+          case 'Pulgar Izquierdo':
+            if (hoverArea !== null && hoverArea == 3) {
+              if (hoverAreaObj) {
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
+                drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 250, centerX + 80, area.name, status)
+              }
+            }
+            break;
+          case 'Índice Izquierdo':
+            if (hoverArea !== null && hoverArea == 4) {
+              if (hoverAreaObj) {
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
+                drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 120, centerX - 120, area.name, status)
+              }
+            }
+            break;
+        }
+      }
+    });
+    if (hoverArea !== null) {
+      const hoverAreaObj = AREAS.find((area) => area.id === hoverArea);
+      if (hoverAreaObj) {
+        drawAndPaintFingers(hoverAreaObj, ctx, HOVER);
+        // drawAndPaintFingers();
+      }
+    }
+  }
 
   useEffect(() => {
     const img = document.getElementById('hands') as HTMLImageElement | null;
@@ -168,13 +264,14 @@ export default function Hands(props: HandsProps) {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
-        ctx.fillStyle = SELECTED;
+        ctx.fillStyle = colors['REGISTERED'];
 
         AREAS.forEach((area: Area) => {
           if (checkActionArea(area, x, y)) {
             apiClientBiometric
               .GET('api/biometrico/capturar/huella')
               .then((response: any) => {
+                console.log(response)
                 setSelectedAreas((prev) => [...prev, area.id]);
               })
               .catch((error: any) => {
@@ -186,76 +283,33 @@ export default function Hands(props: HandsProps) {
     };
     const drawAreas = () => {
       if (ctx) {
-        ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+        ctx.clearRect(0, 0, canvas!.width, canvas!.height); // borrar dibujo
         // ctx, "text", "x", "y"
         drawTextOnCanvas(ctx, "MANO IZQUIERDA", 160, 440)
         drawTextOnCanvas(ctx, "MANO DERECHA", 390, 440)
-        AREAS.forEach((area: Area) => {
-          const color = selectedAreas.includes(area.id) ? SELECTED : UNSELECTED;
-          drawAndPaintFingers(area, ctx, color);
 
-          const centerX = area.x + area.width / 2
-          const centerY = area.y + area.height / 2
+        // Dibujar leyenda
+        drawLegend(ctx, 20, 450, colors['REGISTERED'], 'REGISTRADO')
+        drawLegend(ctx, 20, 465, colors['UNREGISTERED'], 'NO REGISTRADO')
+        drawLegend(ctx, 20, 480, colors['PROCESS'], 'EN PROCESO')
 
-          if (withDetails) {
-            drawMaker(ctx, centerX, centerY)
-            switch (area.name) {
-              case 'Pulgar Derecho':
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 250, centerX - 380, area.name)
-                break;
-              case 'Indice Derecho':
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 120, centerX - 430, area.name)
-                break;
-              case 'Pulgar Izquierdo':
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 250, centerX + 80, area.name)
-                break;
-              case 'Indice Izquierdo':
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 120, centerX - 120, area.name)
-                break;
-            }
+        const registeredFootprints:Area[] = AREAS.filter(item1 =>
+          fingerprints.some(item2 => item2.id === item1.id)
+        )
+        draw(registeredFootprints, ctx, colors['REGISTERED'], 'Registrado')
+        const unregisteredFootprints:Area[] = AREAS.filter(item1 =>
+          !fingerprints.some(item2 => item2.id === item1.id)
+        )
+        draw(unregisteredFootprints, ctx, colors['UNREGISTERED'], 'No Registrado')
+        let selectedFootprints:Area[] = []
+        if(selectedOption) {
+          if(selectedOption == 'Pulgares' || selectedOption == 'Indices') {
+            selectedFootprints = AREAS.filter(item => item.group == selectedOption)
           } else {
-            const hoverAreaObj = AREAS.find((area) => area.id === hoverArea)
-            switch (area.name) {
-              case 'Pulgar Derecho':
-                if (hoverArea !== null && hoverArea == 3) {
-                  if (hoverAreaObj) {
-                    drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                    drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 250, centerX - 380, area.name)
-                  }
-                }
-                break;
-              case 'Indice Derecho':
-                if (hoverArea !== null && hoverArea == 4) {
-                  if (hoverAreaObj) {
-                    drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                    drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 120, centerX - 430, area.name)
-                  }
-                }
-                break;
-              case 'Pulgar Izquierdo':
-                if (hoverArea !== null && hoverArea == 1) {
-                  if (hoverAreaObj) {
-                    drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                    drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 250, centerX + 80, area.name)
-                  }
-                }
-                break;
-              case 'Indice Izquierdo':
-                if (hoverArea !== null && hoverArea == 2) {
-                  if (hoverAreaObj) {
-                    drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                    drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 120, centerX - 120, area.name)
-                  }
-                }
-                break;
-            }
+            selectedFootprints = AREAS.filter(item => item.id.toString() == selectedOption)
           }
-        });
-        if (hoverArea !== null) {
-          const hoverAreaObj = AREAS.find((area) => area.id === hoverArea);
-          if (hoverAreaObj) {
-            drawAndPaintFingers(hoverAreaObj, ctx, HOVER);
-          }
+          draw(selectedFootprints, ctx, NOPROCESS, '')
+          draw(selectedFootprints, ctx, colors['PROCESS'], 'En proceso')
         }
       }
     };
@@ -285,7 +339,7 @@ export default function Hands(props: HandsProps) {
         canvas.height = img.height + 200;
 
         drawAreas();
-        canvas.addEventListener('click', handleCanvasClick);
+        // canvas.addEventListener('click', handleCanvasClick);
         canvas.addEventListener('mousemove', handleMouseMove);
       }
     };
@@ -299,7 +353,7 @@ export default function Hands(props: HandsProps) {
         canvas.removeEventListener('mousemove', handleMouseMove);
       }
     };
-  }, [selectedAreas, hoverArea, withDetails]);
+  }, [selectedAreas, hoverArea, withDetails, selectedOption, fingerprints.length]);
 
   return (
     <div className="relative flex justify-center items-center mx-auto">
