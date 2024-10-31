@@ -35,12 +35,18 @@ export default function Sidebar() {
   }, []);
 
   const itemClasses = {
-    base: 'py-0 my-0 overflow-hidden',
-    title: 'font-normal text-medium',
-    trigger: 'px-2 py-10 data-[hover=true]:bg-default-100 h-14 flex items-center rounded-small',
+    base: 'py-1 my-0 overflow-hidden',
+    title: 'my-0 font-bold text-medium',
+    trigger: 'px-2 py-10 bg-default-100 data-[open=true]:bg-default-200 data-[hover=true]:bg-default-200 h-14 flex items-center rounded-small',
     indicator: 'text-medium',
-    content: 'text-small py-0',
+    content: 'text-small',
   };
+
+  const itemClassesSection = {
+    base: "",
+    list: "mb-0",
+    heading: "text-slate-700 pb-0 mb-0",
+  }
 
   const handleAction = (path: string) => {
     setActivePath(path);
@@ -100,7 +106,11 @@ export default function Sidebar() {
                     variant="flat"
                     aria-label="Listbox menu data general"
                   >
-                    <ListboxSection title={sidebarItem.topTitle} showDivider>
+                    <ListboxSection
+                      title={sidebarItem.topTitle}
+                      showDivider
+                      classNames={itemClassesSection}
+                    >
                       <ListboxItem
                         key={"item" + sidebarItem.customKey + index.toString()}
                         description={sidebarItem.description}
@@ -127,7 +137,6 @@ export default function Sidebar() {
                           key={menu.key}
                           endContent={menu.icon}
                           onClick={() => handleAction(menu.path)}
-                          className={activePath === menu.path ? 'bg-slate-300 hover:bg-slate-400' : ''}
                         >
                           {menu.title}
                         </ListboxItem>
