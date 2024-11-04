@@ -2,51 +2,54 @@
 import { Checkbox, CheckboxGroup } from "@nextui-org/checkbox";
 import { Divider } from "@nextui-org/divider";
 import { cn } from "@nextui-org/theme";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { EntryInfo } from "./(sections)/EntryInfo";
 import { StateInfo } from "./(sections)/StateInfo";
 import { ServiceInfo } from "./(sections)/ServiceInfo";
 import { DerelictInfo } from "./(sections)/DerelictInfo";
-import { useParams } from "next/navigation";
-import { getAffiliate, getBeneficiary, obtainAffiliateDocuments, printAffiliateDocument } from "@/app/beneficiary/service";
+import { getAffiliate, obtainAffiliateDocuments } from "@/app/beneficiary/service";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { useBeneficiary } from "@/context/BeneficiaryContext";
+import { apiClient } from "@/services";
 
 export default function AffiliateDataPage() {
   const [groupSelected, setGroupSelected] = useState<any>([]);
   const [affiliate, setAffiliate] = useState<any>({})
   const [documents, setDocuments] = useState<any>([])
-
-  const { id } = useParams()
+  const { beneficiaryData } = useBeneficiary()
 
   useEffect(() => {
-    const fetchBeneficiary = async () => {
-      const beneficiary = await getBeneficiary(`${id}`)
-      if (beneficiary.personAffiliate.length >= 1) {
-        const affiliateId = beneficiary.personAffiliate[0].typeId
-        const affiliate = await getAffiliate(`${affiliateId}`)
-        setAffiliate(affiliate)
+    const fetchData = async () => {
+      if (beneficiaryData.personAffiliate.length >= 1) {
+        const affiliateId = beneficiaryData.personAffiliate[0].typeId
+        const [ affiliateData, documentsData ] = await Promise.all([
+          getAffiliate(`${affiliateId}`),
+          obtainAffiliateDocuments(`${beneficiaryData.id}`)
+        ])
+        setAffiliate(affiliateData)
+        setDocuments(documentsData)
       } else {
         console.log("es persona")
       }
     }
-    fetchBeneficiary()
-    const fetchDocuments = async () => {
-      const documents = await obtainAffiliateDocuments(`${id}`)
-      setDocuments(documents)
-    }
-    fetchDocuments()
-  }, [])
+    fetchData()
+  }, [beneficiaryData])
 
-  const handleDownloadDocument = (value:any) => {
-    if(affiliate !== undefined) {
-      printAffiliateDocument(affiliate.id, value)
+  const handleDownloadDocument = useCallback(async (value:any) => {
+    if(typeof window !== "undefined" && affiliate) {
+      const printJS = (await import("print-js")).default
+      const response = await apiClient.GET(`/api/affiliates/${affiliate.id}/documents/${value}`)
+      const pdfBlob = await response.blob()
+      const pdfURL = URL.createObjectURL(pdfBlob)
+      printJS({printable: pdfURL, type: 'pdf', showModal: true})
+      URL.revokeObjectURL(pdfURL)
     } else {
       alert("sin id")
     }
-  }
+  }, [affiliate])
 
-  const hasNoDocuments = documents && documents.status
+  const hasNoDocuments = useMemo(() => documents && documents.status, [documents])
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
@@ -109,7 +112,6 @@ export default function AffiliateDataPage() {
                               "data-[selected=true]:border",
                             ),
                           }}
-                          isSelected={true}
                           icon={<FontAwesomeIcon icon={faArrowDown} fontSize="lg"/>}
                           onValueChange={(isSelected) => {
                             if (isSelected) {

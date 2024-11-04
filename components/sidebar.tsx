@@ -19,7 +19,7 @@ export default function Sidebar() {
 
   const router = useRouter()
 
-  const [ activePath, setActivePath ] = useState('')
+  const [activePath, setActivePath] = useState('')
 
   const itemClasses = {
     base: 'py-1 my-0 overflow-hidden',
@@ -83,60 +83,116 @@ export default function Sidebar() {
         <Divider />
         <CardBody>
           <Accordion isCompact showDivider={false} itemClasses={itemClasses}>
-            {sidebarConfig.sidebarItems.slice(0, 2).map((sidebarItem: SidebarItem, index: number) => (
-              <AccordionItem
-                key={"person" + sidebarItem.customKey + index.toString()}
-                data-testid="expanded"
-                textValue="menu1"
-                title={
-                  <Listbox
-                    variant="flat"
-                    aria-label="Listbox menu data general"
-                  >
-                    <ListboxSection
-                      title={sidebarItem.topTitle}
-                      showDivider
-                      classNames={itemClassesSection}
-                    >
-                      <ListboxItem
-                        key={"item" + sidebarItem.customKey + index.toString()}
-                        description={sidebarItem.description}
-                        startContent={sidebarItem.icon}
-                        className="m-0 p-0"
-                        onClick={() => handleAction(sidebarItem.path)}
-                      >
-                        {sidebarItem.title}
-                      </ListboxItem>
-                    </ListboxSection>
-                  </Listbox>
-                }
-                onPress={() => handleAction(sidebarItem.path)}
-              >
-                {sidebarItem.subMenu && sidebarItem.subMenu.length && (
-                  <Listbox
-                    variant="flat"
-                    aria-label="sub listbox"
-                    defaultSelectedKeys="all"
-                  >
-                    <ListboxSection>
-                      {sidebarItem.subMenu.map((menu) => (
-                        <ListboxItem
-                          key={menu.key}
-                          endContent={menu.icon}
-                          onClick={() => handleAction(menu.path)}
+            {sidebarConfig.sidebarItems.slice(0, 2).map((sidebarItem: SidebarItem, index: number) => {
+              if (sidebarItem.title == 'DATOS DE POLICIA') {
+                if (beneficiaryData.personAffiliate && beneficiaryData.personAffiliate.length > 0) {
+                  return (
+                    <AccordionItem
+                      key={"person" + sidebarItem.customKey + index.toString()}
+                      data-testid="expanded"
+                      textValue="menu1"
+                      title={
+                        <Listbox
+                          variant="flat"
+                          aria-label="Listbox menu data general"
                         >
-                          {menu.title}
-                        </ListboxItem>
-                      ))}
-                    </ListboxSection>
-                  </Listbox>
-                )}
-              </AccordionItem>
-            ))}
+                          <ListboxSection
+                            title={sidebarItem.topTitle}
+                            showDivider
+                            classNames={itemClassesSection}
+                          >
+                            <ListboxItem
+                              key={"item" + sidebarItem.customKey + index.toString()}
+                              description={sidebarItem.description}
+                              startContent={sidebarItem.icon}
+                              className="m-0 p-0"
+                              onClick={() => handleAction(sidebarItem.path)}
+                            >
+                              {sidebarItem.title}
+                            </ListboxItem>
+                          </ListboxSection>
+                        </Listbox>
+                      }
+                      onPress={() => handleAction(sidebarItem.path)}
+                    >
+                      {sidebarItem.subMenu && sidebarItem.subMenu.length && (
+                        <Listbox
+                          variant="flat"
+                          aria-label="sub listbox"
+                          defaultSelectedKeys="all"
+                        >
+                          <ListboxSection>
+                            {sidebarItem.subMenu.map((menu) => (
+                              <ListboxItem
+                                key={menu.key}
+                                endContent={menu.icon}
+                                onClick={() => handleAction(menu.path)}
+                              >
+                                {menu.title}
+                              </ListboxItem>
+                            ))}
+                          </ListboxSection>
+                        </Listbox>
+                      )}
+                    </AccordionItem>
+                  )
+                } else return null
+              } else
+                return (
+                  <AccordionItem
+                    key={"person" + sidebarItem.customKey + index.toString()}
+                    data-testid="expanded"
+                    textValue="menu1"
+                    title={
+                      <Listbox
+                        variant="flat"
+                        aria-label="Listbox menu data general"
+                      >
+                        <ListboxSection
+                          title={sidebarItem.topTitle}
+                          showDivider
+                          classNames={itemClassesSection}
+                        >
+                          <ListboxItem
+                            key={"item" + sidebarItem.customKey + index.toString()}
+                            description={sidebarItem.description}
+                            startContent={sidebarItem.icon}
+                            className="m-0 p-0"
+                            onClick={() => handleAction(sidebarItem.path)}
+                          >
+                            {sidebarItem.title}
+                          </ListboxItem>
+                        </ListboxSection>
+                      </Listbox>
+                    }
+                    onPress={() => handleAction(sidebarItem.path)}
+                  >
+                    {sidebarItem.subMenu && sidebarItem.subMenu.length && (
+                      <Listbox
+                        variant="flat"
+                        aria-label="sub listbox"
+                        defaultSelectedKeys="all"
+                      >
+                        <ListboxSection>
+                          {sidebarItem.subMenu.map((menu) => (
+                            <ListboxItem
+                              key={menu.key}
+                              endContent={menu.icon}
+                              onClick={() => handleAction(menu.path)}
+                            >
+                              {menu.title}
+                            </ListboxItem>
+                          ))}
+                        </ListboxSection>
+                      </Listbox>
+                    )}
+                  </AccordionItem>
+                )
+            }).filter(item => item !== null)}
           </Accordion>
         </CardBody>
       </Card>
-      {sidebarConfig.sidebarItems.slice(2).map((sidebarItem: SidebarItem, index:number) => {
+      {sidebarConfig.sidebarItems.slice(2).map((sidebarItem: SidebarItem, index: number) => {
         const { customKey, ...props } = sidebarItem;
         return <AccordionComponent customKey={customKey} key={index} {...props} />;
       })}
