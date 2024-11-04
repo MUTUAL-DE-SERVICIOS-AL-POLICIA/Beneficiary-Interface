@@ -10,22 +10,22 @@ export const ServiceInfo:React.FC<AffiliateProps> = ({ affiliate}) => {
       <legend className="text-sm uppercase px-2 font-semibold">
         Información de Servicio
       </legend>
-      <div className="flex gap-6">
-        <div className="flex flex-col w-1/4 mt-2">
+      <div className="flex gap-5">
+        <div className="flex flex-col w-1/6 mt-2">
           <InputCustom
             label="Años servicio"
             value={affiliate.serviceYears ?? 'Sin dato'}
             type="text"
           />
         </div>
-        <div className="flex flex-col w-1/4 mt-2">
+        <div className="flex flex-col w-1/5 mt-2">
           <InputCustom
             label="Meses servicio"
             value={affiliate.serviceMonths ?? 'Sin dato'}
             type="text"
           />
         </div>
-        <div className="flex flex-col w-1/4 mt-2">
+        <div className="flex flex-col w-1/6 mt-2">
           <InputCustom
             label="Categoria"
             value={(affiliate.category && affiliate.category.name) ?? 'Sin dato'}
