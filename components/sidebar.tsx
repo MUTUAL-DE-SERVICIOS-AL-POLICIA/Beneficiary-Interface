@@ -43,13 +43,10 @@ export default function Sidebar() {
   return (
     <>
       <Card className="max-w-[340px] border-small rounded-small border-default-200 dark:border-default-100 mb-3">
-        <CardHeader className="justify-between">
-          <div className="flex gap-5 items-center justify-center my-4">
+        <CardHeader className="justify-center">
+          <div className="flex my-4">
             {beneficiaryData && (
-              <div className="flex flex-col gap-1 items-center mx-8">
-                <h4 className="text-small font-semibold leading-none text-default-700">
-                  SUB TENIENTE {beneficiaryData.firstName}
-                </h4>
+              <div className="flex flex-col gap-1 items-center">
                 <Avatar
                   showFallback
                   isBordered
@@ -58,7 +55,7 @@ export default function Sidebar() {
                   src="https://nextui.org/avatars/avatars1.png"
                   className="my-2"
                 />
-                <h4 className="text-small font-semibold leading-none text-default-800 text-pretty text-center">
+                <h4 className="text-medium font-semibold leading-none text-default-800 text-pretty text-center">
                   {fullName({
                     first_name: beneficiaryData.firstName,
                     second_name: beneficiaryData.secondName,

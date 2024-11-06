@@ -1,10 +1,11 @@
 import { InputCustom } from "@/components/input"
+import React from "react"
 
 interface AffiliateProps {
   affiliate: any
 }
 
-export const DerelictInfo:React.FC<AffiliateProps> = ({ affiliate }) => {
+export const DerelictInfo:React.FC<AffiliateProps> = React.memo(({ affiliate }) => {
   return (
     <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
       <legend className="text-sm uppercase px-2">
@@ -30,4 +31,4 @@ export const DerelictInfo:React.FC<AffiliateProps> = ({ affiliate }) => {
       </div>
     </fieldset>
   )
-}
+})

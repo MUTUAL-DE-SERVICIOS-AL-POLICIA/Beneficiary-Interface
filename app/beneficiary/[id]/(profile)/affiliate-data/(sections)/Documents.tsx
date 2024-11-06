@@ -2,13 +2,14 @@ import { apiClient } from "@/services";
 import { Checkbox, CheckboxGroup } from "@nextui-org/checkbox";
 import { useCallback, useMemo, useState } from "react";
 import { cn } from "@nextui-org/theme";
+import React from "react";
 
 interface AffiliateDocumentsProps {
   affiliate: any
   documents: any
 }
 
-export const AffiliateDocuments = ({affiliate, documents}: AffiliateDocumentsProps) => {
+export const AffiliateDocuments = React.memo(({affiliate, documents}: AffiliateDocumentsProps) => {
   const [groupSelected, setGroupSelected] = useState<any>([]);
 
   const handleDownloadDocument = useCallback(async (value:any) => {
@@ -78,4 +79,4 @@ export const AffiliateDocuments = ({affiliate, documents}: AffiliateDocumentsPro
       }
     </div>
   )
-}
+})

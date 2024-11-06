@@ -4,9 +4,15 @@ import { cookies } from 'next/headers';
 import { buildBackendUrl } from './helpers/utils';
 
 export const middleware = (request: NextRequest) => {
+  const response = NextResponse.next()
   const cookieStore = cookies();
   const cookie = cookieStore.get('Set-Cookie');
   const token = cookie?.value;
+
+  response.headers.set("Access-Control-Allow-Origin", process.env.ACCESS_CONTROL_ALLOW_ORIGIN!);
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, next-action, next-router-state-tree");
+  response.headers.set("Access-Control-Allow-Credentials", "true");
 
   const host = process.env.NEXT_PUBLIC_SERVER_FRONTEND || ''
   const port = process.env.LOGIN_FRONTEND_PORT || ''
