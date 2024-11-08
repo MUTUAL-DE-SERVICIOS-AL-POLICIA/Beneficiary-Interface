@@ -97,7 +97,6 @@ export const TableComponent = ({
   }, [debouncedFilterValue, rowsPerPage]);
 
   const sortedItems = useMemo(() => {
-    console.log("filtered: ", filtered)
     return [...filtered].sort((a: Item, b: Item) => {
       const first = a[sortDescriptor.column as keyof Item] as number;
       const second = b[sortDescriptor.column as keyof Item] as number;

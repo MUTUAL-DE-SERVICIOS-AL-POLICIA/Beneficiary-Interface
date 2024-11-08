@@ -14,6 +14,7 @@ export const getBeneficiaries = async (
     });
     const statusCode = beneficiaries.status
     const responseData = await beneficiaries.json()
+    console.log(responseData)
     if(statusCode >= 400) {
       return {
         error: true,
