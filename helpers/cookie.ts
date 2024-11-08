@@ -9,7 +9,7 @@ export const checkCookie = async () => {
   const cookie = await getCookie('Set-Cookie');
   if (cookie == undefined) {
     console.log('Sin cookie');
-    redirect(`http://${host}:${port}/`);
+    // redirect(`http://${host}:${port}/`);
   }
   if (cookie) return cookie;
 };
