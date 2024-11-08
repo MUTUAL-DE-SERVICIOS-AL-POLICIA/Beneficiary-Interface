@@ -6,6 +6,8 @@ import { Select, SelectItem } from "@nextui-org/select";
 import { Switch } from "@nextui-org/switch";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { captureOneFingerprint, captureTwoFingerprints, getAllFingerprintsIds, getRegisteredFingerprints, registerFingerprints } from "../servicePersonData";
+import { useAlert } from "@/hooks/useAlerts";
 
 interface Fingerprint {
   fingerprintTypeId: number
@@ -19,6 +21,7 @@ const fingerprintRegistrationOptions = [
 ]
 
 export default function FingerPrintPage () {
+  const { Alert } = useAlert()
   const [ isSelected, setIsSelected ] = useState<boolean>(true)
   const [ selectedTwoFinger, setSelectedTwoFinger ] = useState<string | undefined>(undefined)
   const [ selectedOneFinger, setSelectedOneFinger ] = useState<string | undefined>(undefined)
@@ -31,36 +34,66 @@ export default function FingerPrintPage () {
   const { id }  = useParams()
   const personId = parseInt(Array.isArray(id) ? id[0] : id, 10)
 
-  const getRegisteredFingerprints = async () => {
-    const response = await apiClient.GET(`/api/persons/showPersonFingerprint/${id}`)
-    const data = await response.json()
-    setRegisteredFingerprints(data.fingerprints)
+  const getFingerprints = async () => {
+    const response  = await getRegisteredFingerprints(personId)
+    const error = response!.error
+    if(!error) {
+      const data = response!.data
+      const fingerprints = data.fingerprints
+      setRegisteredFingerprints(fingerprints)
+    } else {
+      Alert({message: response!.message, variant: "error"})
+    }
   }
 
   const getFingerprintIds = async () => {
-    const response = await apiClient.GET(`/api/persons/showListFingerprint`)
-    const data = await response.json()
-    setFingerprintIds(data)
+    const response = await getAllFingerprintsIds()
+    const error = response!.error
+    if(!error) {
+      const data = response!.data
+      setFingerprintIds(data)
+    } else {
+      Alert({message: response!.message, variant: "error"})
+    }
   }
 
   const captureTwoFingerPrints = async () => {
-    const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huellas`)
-    const { data } = await response.json()
-    return data
+    const response = await captureTwoFingerprints()
+    const error = response!.error
+    if(!error) {
+      const data = response!.data
+      Alert({message: response!.message, variant: "success"})
+      return data
+    } else {
+      Alert({message: response!.message, variant: "error"})
+      return null
+    }
   }
   const captureOneFingerPrint = async () => {
-    const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huella`)
-    const { data } = await response.json()
-    return data
+    try {
+      const response = await captureOneFingerprint()
+      const error = response!.error
+      if(!error) {
+        const data = response!.data
+        Alert({message: response!.message, variant: "success"})
+        return data
+      } else {
+        Alert({message: response!.message, variant: "error"})
+        return null
+      }
+    } catch(e:any) {
+      Alert({message: "Error en la aplicación", variant: "default"})
+    }
   }
 
   const registerFingerPrints = async (fingerprints: any) => {
-    const response = await apiClient.POST('/api/persons/createPersonFingerprint', {
-      personId,
-      fingerprints
-    })
-    const data = await response.json()
-    console.log(data)
+    const response = await registerFingerprints(personId, fingerprints)
+    const error = response!.error
+    if(!error) {
+      Alert({message: response!.message, variant: "success"})
+    } else {
+      Alert({message: response!.message, variant: "error"})
+    }
   }
 
   const createFingerprint = (fingerTypeName: string, wsq: string, quality: number): Fingerprint | undefined => {
@@ -91,7 +124,7 @@ export default function FingerPrintPage () {
           await registerFingerPrints(fingerprints)
           clearInterval(interval)
           setProgress(100)
-          await getRegisteredFingerprints()
+          await getFingerprints()
           setSelectedTwoFinger(undefined)
         } else {
           console.log("vuelve a intentarlo")
@@ -117,13 +150,16 @@ export default function FingerPrintPage () {
       const interval = setInterval(() => {
         setProgress((prev) => (prev >= 85 ? prev : prev + 1))
       }, 100)
-      const { wsq, quality} = await captureOneFingerPrint()
-      const body = [{ fingerprintTypeId, wsq, quality }]
-      await registerFingerPrints(body)
-      clearInterval(interval)
-      setProgress(100)
-      await getRegisteredFingerprints()
-      setSelectedOneFinger(undefined)
+      const response = await captureOneFingerPrint()
+      if(response) {
+        const { wsq, quality} = response
+        const body = [{ fingerprintTypeId, wsq, quality }]
+        await registerFingerPrints(body)
+        clearInterval(interval)
+        setProgress(100)
+        await getFingerprints()
+        setSelectedOneFinger(undefined)
+      }
     } catch (e:any) {
       console.log(e)
     } finally  {
@@ -136,7 +172,7 @@ export default function FingerPrintPage () {
   }
 
   useEffect(() => {
-    getRegisteredFingerprints()
+    getFingerprints()
     getFingerprintIds()
   }, [])
 

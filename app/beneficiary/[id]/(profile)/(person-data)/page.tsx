@@ -2,36 +2,25 @@
 import { Button } from "@nextui-org/button"
 import { useEffect, useState } from "react"
 import { Divider } from '@nextui-org/divider';
-import { getBeneficiary } from "@/app/beneficiary/service";
-import { useParams } from "next/navigation";
 import { PersonalInfo } from "./(sections)/PersonalInfo";
 import { DeathInfo } from "./(sections)/DeathInfo";
 import { FinancialData } from "./(sections)/FinancialData";
 import { AddressInfo } from "./(sections)/AddressInfo";
+import { useBeneficiary } from "@/context/BeneficiaryContext";
+import { useAlert } from "@/hooks/useAlerts";
 
 export default function PersonDataPage() {
   const [isEditing, setIsEditing] = useState(false)
-  const [ beneficiary, setBeneficiary ] = useState<any>({})
 
-  const { id } = useParams()
+  const { beneficiaryData, error } = useBeneficiary()
+  const { Alert } = useAlert()
 
   useEffect(() => {
-    const fetchBeneficiary = async () => {
-      const beneficiary = await getBeneficiary(`${id}`)
-      setBeneficiary(beneficiary)
+    if(error) {
+      Alert({ message: 'Error al obtener datos de una persona', variant: "error"})
     }
-    fetchBeneficiary()
-    // try {
-    //   getBeneficiary(`${id}`).then((response: any) => {
-    //     setBeneficiary(response)
-    //   })
-    //   .catch((error:any) => {
-    //     throw error
-    //   })
-    // } catch (e) {
-    //   console.log(e);
-    // }
-  }, []);
+  }, [error])
+
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
@@ -47,7 +36,7 @@ export default function PersonDataPage() {
       </div>
       <Divider className="bg-gray-400 mb-5 w-full"/>
       <div className="px-3 py-1">
-        <PersonalInfo beneficiary={beneficiary}/>
+        <PersonalInfo beneficiary={beneficiaryData}/>
       </div>
       <div className="px-3 py-1">
         <div className="flex gap-6">
@@ -55,12 +44,12 @@ export default function PersonDataPage() {
             <AddressInfo/>
           </div>
           <div className="flex flex-col w-1/2">
-            <DeathInfo beneficiary={beneficiary} />
+            <DeathInfo beneficiary={beneficiaryData} />
           </div>
         </div>
       </div>
       <div className="px-3 py-1">
-        <FinancialData beneficiary={beneficiary}/>
+        <FinancialData beneficiary={beneficiaryData}/>
       </div>
     </div>
   )

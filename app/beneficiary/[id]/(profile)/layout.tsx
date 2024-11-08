@@ -1,7 +1,9 @@
+"use client"
 import { Card, CardBody } from "@nextui-org/card";
 import { ReactNode } from "react";
 
 export default function ProfileLayout ({ children }: { children: ReactNode}) {
+
   return (
     <Card
       className="grow border-small rounded-small border-default-200 dark:border-default-100"

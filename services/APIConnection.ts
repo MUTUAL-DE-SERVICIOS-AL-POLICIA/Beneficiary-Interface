@@ -35,13 +35,13 @@ export abstract class APIConnection {
   }
 
   protected async handleRequest(endpoint: string, requestConfig: RequestInit): Promise<any> {
-    const cookie = await checkCookie();
-    if (cookie != undefined) {
-      requestConfig.headers = {
-        ...requestConfig.headers,
-        Cookie: `Set-Cookie=${cookie};`,
-      };
-    }
+    // const cookie = await checkCookie();
+    // if (cookie != undefined) {
+    //   requestConfig.headers = {
+    //     ...requestConfig.headers,
+    //     Cookie: `Set-Cookie=${cookie};`,
+    //   };
+    // }
 
     const url = this.buildUrl(endpoint);
 

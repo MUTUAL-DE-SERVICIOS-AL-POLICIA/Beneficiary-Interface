@@ -1,52 +1,50 @@
 "use client"
-import { Checkbox, CheckboxGroup } from "@nextui-org/checkbox";
 import { Divider } from "@nextui-org/divider";
-import { cn } from "@nextui-org/theme";
 import { useEffect, useState } from "react";
 import { EntryInfo } from "./(sections)/EntryInfo";
 import { StateInfo } from "./(sections)/StateInfo";
 import { ServiceInfo } from "./(sections)/ServiceInfo";
 import { DerelictInfo } from "./(sections)/DerelictInfo";
-import { useParams } from "next/navigation";
-import { getAffiliate, getBeneficiary, obtainAffiliateDocuments, printAffiliateDocument } from "@/app/beneficiary/service";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { getAffiliate, obtainAffiliateDocuments } from "@/app/beneficiary/service";
+import { useBeneficiary } from "@/context/BeneficiaryContext";
+import { AffiliateDocuments } from "./(sections)/Documents";
+import { useAlert } from "@/hooks/useAlerts";
 
 export default function AffiliateDataPage() {
-  const [groupSelected, setGroupSelected] = useState<any>([]);
   const [affiliate, setAffiliate] = useState<any>({})
   const [documents, setDocuments] = useState<any>([])
+  const { beneficiaryData, error } = useBeneficiary()
 
-  const { id } = useParams()
+  const { Alert } = useAlert()
 
   useEffect(() => {
-    const fetchBeneficiary = async () => {
-      const beneficiary = await getBeneficiary(`${id}`)
-      if (beneficiary.personAffiliate.length >= 1) {
-        const affiliateId = beneficiary.personAffiliate[0].typeId
-        const affiliate = await getAffiliate(`${affiliateId}`)
-        setAffiliate(affiliate)
+    const fetchData = async () => {
+      if(!error) {
+        if (beneficiaryData.personAffiliate.length >= 1) {
+          const affiliateId = beneficiaryData.personAffiliate[0].typeId
+          const [ affiliateData, documentsData ] = await Promise.all([
+            getAffiliate(`${affiliateId}`),
+            obtainAffiliateDocuments(`${beneficiaryData.id}`)
+          ])
+          if(!affiliateData.error) {
+            const data = affiliateData.data
+            setAffiliate(data)
+          } else {
+            Alert({ message: affiliateData.message, variant: "error"})
+          }
+          if(!documentsData.error) {
+            const data = documentsData.data
+            setDocuments(documentsData)
+          } else {
+            Alert({ message: affiliateData.message, variant: "error"})
+          }
+        }
       } else {
-        console.log("es persona")
+        Alert({ message: beneficiaryData.message, variant: "error"})
       }
     }
-    fetchBeneficiary()
-    const fetchDocuments = async () => {
-      const documents = await obtainAffiliateDocuments(`${id}`)
-      setDocuments(documents)
-    }
-    fetchDocuments()
-  }, [])
-
-  const handleDownloadDocument = (value:any) => {
-    if(affiliate !== undefined) {
-      printAffiliateDocument(affiliate.id, value)
-    } else {
-      alert("sin id")
-    }
-  }
-
-  const hasNoDocuments = documents && documents.status
+    fetchData()
+  }, [beneficiaryData])
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
@@ -77,58 +75,7 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <div className="flex gap-1">
           <div className="flex flex-col w-full">
-            <div className="flex flex-">
-              {
-                !hasNoDocuments ? (
-                  <div className="flex items-center justify-center text-center h-full w-full">
-                    <fieldset className="border border-gray-400 rounded-md py-10 w-full">
-                      <legend> </legend>
-                      <span className="">Sin documentos</span>
-                    </fieldset>
-                  </div>
-                ) : (
-                  <CheckboxGroup
-                    value={groupSelected}
-                    onChange={setGroupSelected}
-                    classNames={{ base: "w-full" }}
-                  >
-                    {
-                      documents.documentsAffiliate.length >= 0 && documents.documentsAffiliate.map((document: any) => (
-                        <Checkbox
-                          key={document.procedureDocumentId}
-                          value={document.procedureDocumentId}
-                          color="default"
-                          size="lg"
-                          radius="sm"
-                          classNames={{
-                            base: cn(
-                              "inline-flex max-w-full w-full bg-content1 m-0 border-gray-400",
-                              "hover:bg-content3 items-center justify-start",
-                              "dark:hover:border-lime-400 bg-content2 items-center justify-start",
-                              "cursor-pointer rounded-lg gap-2 p-4 border",
-                              "data-[selected=true]:border",
-                            ),
-                          }}
-                          isSelected={true}
-                          icon={<FontAwesomeIcon icon={faArrowDown} fontSize="lg"/>}
-                          onValueChange={(isSelected) => {
-                            if (isSelected) {
-                              handleDownloadDocument(document.procedureDocumentId);
-                            }
-                          }}
-                        >
-                          <div className="flex items-start w-full">
-                            <div className="w-[97%] text-small">
-                              {document.name}
-                            </div>
-                          </div>
-                        </Checkbox>
-                      ))
-                    }
-                  </CheckboxGroup>
-                )
-              }
-            </div>
+            <AffiliateDocuments affiliate={affiliate} documents={documents}/>
           </div>
         </div>
       </div>
