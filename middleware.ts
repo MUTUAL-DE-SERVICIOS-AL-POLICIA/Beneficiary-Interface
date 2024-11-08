@@ -46,6 +46,15 @@ export const middleware = (request: NextRequest) => {
         return NextResponse.redirect(constructedURL);
       }
     }
+    if(request.nextUrl.pathname.startsWith("/beneficiary")) {
+      if(token) {
+        return NextResponse.next()
+      } else {
+        const url = request.nextUrl.clone()
+        url.pathname = "/login"
+        return NextResponse.redirect(constructedURL)
+      }
+    }
   } catch (e) {
     console.log('Error verficando token en middleware');
     return NextResponse.redirect(constructedURL);

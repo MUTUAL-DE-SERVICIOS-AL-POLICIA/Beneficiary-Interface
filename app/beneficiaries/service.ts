@@ -12,9 +12,26 @@ export const getBeneficiaries = async (
       page,
       ...(filter ? { filter } : {}),
     });
-    const data = await beneficiaries.json()
-    return data;
+    const statusCode = beneficiaries.status
+    const responseData = await beneficiaries.json()
+    if(statusCode >= 400) {
+      return {
+        error: true,
+        message: responseData.message
+      }
+    }
+    if(statusCode == 200) {
+      return {
+        error: false,
+        message: "Get persons successful",
+        data: responseData
+      }
+    }
   } catch (e: any) {
-    throw e;
+    console.error(e)
+    return {
+      error: true,
+      message: "Error al obtener el listado de personas"
+    }
   }
 };

@@ -11,10 +11,12 @@ interface BeneficiaryLayoutProps {
 
 export default async function BeneficiaryLayout({ children, params }: BeneficiaryLayoutProps) {
 
-  const beneficiaryData = await getBeneficiary(params.id)
+  const response = await getBeneficiary(params.id)
+  const error = response.error
+  const beneficiaryData = !error ? response.data : []
 
   return (
-    <BeneficiaryProvider value={beneficiaryData}>
+    <BeneficiaryProvider data={beneficiaryData} error={error}>
       <div className="flex flex-row gap-4 w-[1280px]">
         <div className="flex flex-col">
           <Sidebar/>

@@ -8,24 +8,39 @@ import { DerelictInfo } from "./(sections)/DerelictInfo";
 import { getAffiliate, obtainAffiliateDocuments } from "@/app/beneficiary/service";
 import { useBeneficiary } from "@/context/BeneficiaryContext";
 import { AffiliateDocuments } from "./(sections)/Documents";
+import { useAlert } from "@/hooks/useAlerts";
 
 export default function AffiliateDataPage() {
   const [affiliate, setAffiliate] = useState<any>({})
   const [documents, setDocuments] = useState<any>([])
-  const { beneficiaryData } = useBeneficiary()
+  const { beneficiaryData, error } = useBeneficiary()
+
+  const { Alert } = useAlert()
 
   useEffect(() => {
     const fetchData = async () => {
-      if (beneficiaryData.personAffiliate.length >= 1) {
-        const affiliateId = beneficiaryData.personAffiliate[0].typeId
-        const [ affiliateData, documentsData ] = await Promise.all([
-          getAffiliate(`${affiliateId}`),
-          obtainAffiliateDocuments(`${beneficiaryData.id}`)
-        ])
-        setAffiliate(affiliateData)
-        setDocuments(documentsData)
+      if(!error) {
+        if (beneficiaryData.personAffiliate.length >= 1) {
+          const affiliateId = beneficiaryData.personAffiliate[0].typeId
+          const [ affiliateData, documentsData ] = await Promise.all([
+            getAffiliate(`${affiliateId}`),
+            obtainAffiliateDocuments(`${beneficiaryData.id}`)
+          ])
+          if(!affiliateData.error) {
+            const data = affiliateData.data
+            setAffiliate(data)
+          } else {
+            Alert({ message: affiliateData.message, variant: "error"})
+          }
+          if(!documentsData.error) {
+            const data = documentsData.data
+            setDocuments(documentsData)
+          } else {
+            Alert({ message: affiliateData.message, variant: "error"})
+          }
+        }
       } else {
-        console.log("es persona")
+        Alert({ message: beneficiaryData.message, variant: "error"})
       }
     }
     fetchData()

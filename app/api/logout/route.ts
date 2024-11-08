@@ -1,17 +1,7 @@
-import { buildBackendUrl } from "@/helpers/utils";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function POST() {
-
-  const host = process.env.NEXT_PUBLIC_SERVER_FRONTEND || ''
-  const port = process.env.LOGIN_FRONTEND_PORT || ''
-
-  const constructedURL = buildBackendUrl({
-    host,
-    port,
-    path: 'login'
-  })
 
   try {
     const cookieStore = cookies();

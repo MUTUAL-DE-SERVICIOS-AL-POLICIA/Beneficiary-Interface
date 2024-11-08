@@ -20,6 +20,7 @@ import {
 } from '@nextui-org/table';
 import { useDebounce } from 'use-debounce';
 import { Card } from '@nextui-org/card';
+import { useAlert } from '@/hooks/useAlerts';
 
 export interface Column {
   id: number;
@@ -35,6 +36,7 @@ interface PropsTable {
   startPage: number;
   startRowsPerPage: number;
   getData: (rowsPerPage: number, page?: number, searchValue?: string | undefined) => Promise<any>;
+  error: boolean
 }
 
 export const TableComponent = ({
@@ -44,8 +46,10 @@ export const TableComponent = ({
   startPage,
   startRowsPerPage,
   getData,
+  error
 }: PropsTable) => {
   const router = useRouter();
+  const { Alert } = useAlert()
 
   const [filterValue, setFilterValue] = useState<string>('');
   const [page, setPage] = useState(startPage);
@@ -69,10 +73,19 @@ export const TableComponent = ({
   };
 
   useEffect(() => {
+    if(error) {
+      Alert({ message: 'Error al obtener los datos', variant: 'error'})
+    }
+  }, [error])
+
+  useEffect(() => {
     const fetchFilteredItems = async () => {
       if (hasSearchFilter) {
         const searchValue = debouncedFilterValue.toLowerCase();
-        const { persons, total } = await getData(rowsPerPage, page, searchValue);
+        // const { persons, total } = await getData(rowsPerPage, page, searchValue);
+        const response = await getData(rowsPerPage, page, searchValue);
+        const persons = !response.error ? response.data.persons : []
+        const total = !response.error ? response.data.total : 0
         setFiltered(persons);
         setAll(total);
       } else {
@@ -84,6 +97,7 @@ export const TableComponent = ({
   }, [debouncedFilterValue, rowsPerPage]);
 
   const sortedItems = useMemo(() => {
+    console.log("filtered: ", filtered)
     return [...filtered].sort((a: Item, b: Item) => {
       const first = a[sortDescriptor.column as keyof Item] as number;
       const second = b[sortDescriptor.column as keyof Item] as number;
@@ -94,7 +108,9 @@ export const TableComponent = ({
 
   const handlePageChange = async (newPage: number) => {
     const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
-    const { persons } = await getData(rowsPerPage, newPage, searchValue);
+    const response = await getData(rowsPerPage, newPage, searchValue);
+    const persons = !response.error ? response.data.persons : []
+    console.log("handlePageChange: ", persons)
     setFiltered(persons);
     setPage(newPage);
   };
@@ -126,7 +142,8 @@ export const TableComponent = ({
     setPage(1);
     const newRowsPerPage = Number(e.target.value);
     setRowsPerPage(Number(newRowsPerPage));
-    const { persons } = await getData(newRowsPerPage);
+    const response = await getData(newRowsPerPage);
+    const persons = !response.error ? response.data.persons : []
     setFiltered(persons);
   }, []);
 

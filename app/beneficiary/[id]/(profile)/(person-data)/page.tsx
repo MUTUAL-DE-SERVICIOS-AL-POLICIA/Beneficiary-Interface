@@ -1,17 +1,26 @@
 "use client"
 import { Button } from "@nextui-org/button"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Divider } from '@nextui-org/divider';
 import { PersonalInfo } from "./(sections)/PersonalInfo";
 import { DeathInfo } from "./(sections)/DeathInfo";
 import { FinancialData } from "./(sections)/FinancialData";
 import { AddressInfo } from "./(sections)/AddressInfo";
 import { useBeneficiary } from "@/context/BeneficiaryContext";
+import { useAlert } from "@/hooks/useAlerts";
 
 export default function PersonDataPage() {
   const [isEditing, setIsEditing] = useState(false)
 
-  const { beneficiaryData } = useBeneficiary()
+  const { beneficiaryData, error } = useBeneficiary()
+  const { Alert } = useAlert()
+
+  useEffect(() => {
+    if(error) {
+      Alert({ message: 'Error al obtener datos de una persona', variant: "error"})
+    }
+  }, [error])
+
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
