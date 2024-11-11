@@ -31,6 +31,8 @@ export interface SidebarItem {
   icon?: React.ReactNode;
   customKey: string | number;
   path: string;
+  selectedPath?: string;
+  handleSelection?:any
 }
 
 interface SidebarConfig {
@@ -64,12 +66,12 @@ export const sidebarConfig: SidebarConfig = {
       icon: <FontAwesomeIcon size="lg" icon={faUserTie} />,
       path: '',
       subMenu: [
-        {
-          title: 'FOTOGRAFIAS',
-          key: 'photo',
-          icon: <FontAwesomeIcon icon={faPhotoFilm} />,
-          path: '/photos'
-        },
+        // {
+        //   title: 'FOTOGRAFIAS',
+        //   key: 'photo',
+        //   icon: <FontAwesomeIcon icon={faPhotoFilm} />,
+        //   path: '/photos'
+        // },
         {
           title: 'HUELLAS',
           key: 'finger',
@@ -92,60 +94,60 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Listado de beneficiarios',
       icon: <FontAwesomeIcon size="lg" icon={faPeopleGroup} />,
       customKey: 'menu-3',
-      path: ''
+      path: '/relations'
     },
-    {
-      topTitle: 'Listado de aportes',
-      title: 'APORTES',
-      description: 'Listado de aportes',
-      icon: <FontAwesomeIcon size="lg" icon={faCircleDollarToSlot} />,
-      customKey: 'menu-4',
-      path: ''
-    },
-    {
-      topTitle: 'Trámites realizados',
-      title: 'TRÁMITES REALIZADOS',
-      description: 'Trámites realizados',
-      icon: <FontAwesomeIcon size="lg" icon={faListCheck} />,
-      customKey: 'menu-5',
-      path: '',
-      subMenu: [
-        {
-          topTitle: 'Trámites de',
-          title: 'FONDO DE RETIRO',
-          key: 'FR',
-          icon: <FontAwesomeIcon size="lg" icon={faPiggyBank} />,
-          path: ''
-        },
-        {
-          topTitle: 'Trámites de',
-          title: 'COMPLEMENTO ECONÓMICO',
-          key: 'CE',
-          icon: <FontAwesomeIcon size="lg" icon={faPuzzlePiece} />,
-          path: ''
-        },
-        {
-          topTitle: 'Trámites de',
-          title: 'AUXILIO MORTUORIO',
-          key: 'AM',
-          icon: <FontAwesomeIcon size="lg" icon={faHeartPulse} />,
-          path: ''
-        },
-        {
-          topTitle: 'Trámites de',
-          title: 'CUOTA MORTUORIA',
-          key: 'CM',
-          icon: <FontAwesomeIcon size="lg" icon={faRibbon} />,
-          path: ''
-        },
-        {
-          topTitle: 'Trámites de',
-          title: 'PRÉSTAMOS',
-          key: 'PR',
-          icon: <FontAwesomeIcon size="lg" icon={faMoneyBill} />,
-          path: ''
-        },
-      ],
-    },
+    // {
+    //   topTitle: 'Listado de aportes',
+    //   title: 'APORTES',
+    //   description: 'Listado de aportes',
+    //   icon: <FontAwesomeIcon size="lg" icon={faCircleDollarToSlot} />,
+    //   customKey: 'menu-4',
+    //   path: ''
+    // },
+    // {
+    //   topTitle: 'Trámites realizados',
+    //   title: 'TRÁMITES REALIZADOS',
+    //   description: 'Trámites realizados',
+    //   icon: <FontAwesomeIcon size="lg" icon={faListCheck} />,
+    //   customKey: 'menu-5',
+    //   path: '',
+    //   subMenu: [
+    //     {
+    //       topTitle: 'Trámites de',
+    //       title: 'FONDO DE RETIRO',
+    //       key: 'FR',
+    //       icon: <FontAwesomeIcon size="lg" icon={faPiggyBank} />,
+    //       path: ''
+    //     },
+    //     {
+    //       topTitle: 'Trámites de',
+    //       title: 'COMPLEMENTO ECONÓMICO',
+    //       key: 'CE',
+    //       icon: <FontAwesomeIcon size="lg" icon={faPuzzlePiece} />,
+    //       path: ''
+    //     },
+    //     {
+    //       topTitle: 'Trámites de',
+    //       title: 'AUXILIO MORTUORIO',
+    //       key: 'AM',
+    //       icon: <FontAwesomeIcon size="lg" icon={faHeartPulse} />,
+    //       path: ''
+    //     },
+    //     {
+    //       topTitle: 'Trámites de',
+    //       title: 'CUOTA MORTUORIA',
+    //       key: 'CM',
+    //       icon: <FontAwesomeIcon size="lg" icon={faRibbon} />,
+    //       path: ''
+    //     },
+    //     {
+    //       topTitle: 'Trámites de',
+    //       title: 'PRÉSTAMOS',
+    //       key: 'PR',
+    //       icon: <FontAwesomeIcon size="lg" icon={faMoneyBill} />,
+    //       path: ''
+    //     },
+    //   ],
+    // },
   ],
 };

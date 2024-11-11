@@ -1,3 +1,4 @@
+"use client"
 import { InputCustom } from "@/components/input";
 
 interface FinancialDataProps {

@@ -4,10 +4,11 @@ import { Listbox, ListboxItem, ListboxSection } from '@nextui-org/listbox';
 import { SidebarItem } from '@/config/static';
 
 export const AccordionComponent = (sidebarItem: SidebarItem) => {
+  const { selectedPath, handleSelection } = sidebarItem
   const itemClasses = {
     base: 'py-1 my-0 overflow-hidden',
     title: 'my-0 font-bold text-medium',
-    trigger: 'px-2 py-10 bg-default-100 data-[open=true]:bg-default-200 data-[hover=true]:bg-default-200 h-14 flex items-center rounded-small',
+    trigger: 'px-2 py-10 bg-default-100 data-[open=true]:bg-default-300 data-[hover=true]:bg-default-200 h-14 flex items-center rounded-small',
     indicator: 'text-medium',
     content: 'text-small',
   };
@@ -21,7 +22,7 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
   const itemClassesSection = {
     base: "",
     list: "mb-0",
-    heading: "text-slate-700 pb-0 mb-0",
+    heading: "text-default-700 pb-0 mb-0",
   }
 
   return (
@@ -41,12 +42,14 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
                     description={sidebarItem.description}
                     startContent={sidebarItem.icon}
                     className="m-0 p-0"
+                    // onClick={() => handleSelection(sidebarItem.path)}
                   >
                     {sidebarItem.title}
                   </ListboxItem>
                 </ListboxSection>
               </Listbox>
             }
+            onPress={() => handleSelection(sidebarItem.path)}
           >
             {sidebarItem.subMenu && sidebarItem.subMenu.length && (
               <Listbox variant="flat" aria-label="sub listbox">
@@ -58,6 +61,7 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
                       description={menu.title}
                       endContent={menu.icon}
                       classNames={classNames}
+                      onClick={() => handleSelection(menu.path)}
                     />
                   ))}
                 </ListboxSection>
