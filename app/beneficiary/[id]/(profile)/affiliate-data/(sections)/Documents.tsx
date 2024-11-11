@@ -1,3 +1,4 @@
+"use client"
 import { apiClient } from "@/services";
 import { Checkbox, CheckboxGroup } from "@nextui-org/checkbox";
 import { useCallback, useMemo, useState } from "react";

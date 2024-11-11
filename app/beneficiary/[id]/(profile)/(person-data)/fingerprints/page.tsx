@@ -220,23 +220,26 @@ export default function FingerPrintPage () {
       <div className="flex justify-center items-center min-h-[500px]">
         <div className="flex justify-center w-full max-w-[500px]">
           { isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-10 z-10">
-              <CircularProgress
-                aria-label="Registrando..."
-                size="lg"
-                value={progress}
-                color="success"
-                showValueLabel={true}
-                classNames={{
-                  base: "w-[120px] h-[120px]",
-                  svgWrapper: "w-[120px] h-[120px]",
-                  svg: "w-full h-full",
-                  track: "stroke-[4px]",
-                  indicator: "stroke-[4px]",
-                  value: "text-lg font-semibold",
-                }}
-              />
+            <div className="absolute inset-0 flex items-center justify-center backdrop-blur z-10">
+              <div className="text-3xl font-semibold text-default-900">Registrando huellas...</div>
             </div>
+            // <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-10 z-10">
+            //   <CircularProgress
+            //     aria-label="Registrando..."
+            //     size="lg"
+            //     value={progress}
+            //     color="success"
+            //     showValueLabel={true}
+            //     classNames={{
+            //       base: "w-[120px] h-[120px]",
+            //       svgWrapper: "w-[120px] h-[120px]",
+            //       svg: "w-full h-full",
+            //       track: "stroke-[4px]",
+            //       indicator: "stroke-[4px]",
+            //       value: "text-lg font-semibold",
+            //     }}
+            //   />
+            // </div>
           )}
           <Hands
             withDetails={isSelected}

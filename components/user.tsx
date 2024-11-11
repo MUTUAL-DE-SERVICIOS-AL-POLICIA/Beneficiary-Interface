@@ -1,6 +1,6 @@
 "use client";
 import { apiServerFrontend } from "@/services";
-import { Avatar } from "@nextui-org/avatar";
+import { Avatar, AvatarIcon } from "@nextui-org/avatar";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 
 export default function UserComponent () {
@@ -21,7 +21,7 @@ export default function UserComponent () {
           isBordered
           as="button"
           className="transition-transform"
-          src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          icon={<AvatarIcon />}
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">

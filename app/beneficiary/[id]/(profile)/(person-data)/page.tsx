@@ -26,13 +26,13 @@ export default function PersonDataPage() {
     <div className="w-full max-w-4xl mx-auto space-y-3">
       <div className="flex justify-between items-center">
         <h1 className="text-md uppercase font-semibold">Datos de la persona</h1>
-        <Button
+        {/* <Button
           onClick={() => setIsEditing(!isEditing)}
           size="sm"
           className={isEditing ? "bg-lime-400 hover:bg-lime-500" : "bg-gray-400 hover:bg-gray-500"}
         >
           {isEditing ? "Guardar" : "Editar"}
-        </Button>
+        </Button> */}
       </div>
       <Divider className="bg-gray-400 mb-5 w-full"/>
       <div className="px-3 py-1">

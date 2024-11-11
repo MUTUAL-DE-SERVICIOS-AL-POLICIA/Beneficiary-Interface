@@ -19,12 +19,12 @@ export default function Sidebar() {
 
   const router = useRouter()
 
-  const [activePath, setActivePath] = useState('')
+  const [ selectedPath, setSelectedPath ] = useState('')
 
   const itemClasses = {
     base: 'py-1 my-0 overflow-hidden',
     title: 'my-0 font-bold text-medium',
-    trigger: 'px-2 py-10 bg-default-100 data-[open=true]:bg-default-200 data-[hover=true]:bg-default-200 h-14 flex items-center rounded-small',
+    trigger: 'px-2 py-10 bg-default-100 data-[open=true]:bg-default-300 data-[hover=true]:bg-default-200 h-14 flex items-center rounded-small',
     indicator: 'text-medium',
     content: 'text-small',
   };
@@ -32,11 +32,11 @@ export default function Sidebar() {
   const itemClassesSection = {
     base: "",
     list: "mb-0",
-    heading: "text-slate-700 pb-0 mb-0",
+    heading: "text-default-700 pb-0 mb-0",
   }
 
   const handleAction = (path: string) => {
-    setActivePath(path);
+    setSelectedPath(path)
     router.push(`/beneficiary/${beneficiaryData.id}/${path}`)
   }
 
@@ -191,7 +191,12 @@ export default function Sidebar() {
       </Card>
       {sidebarConfig.sidebarItems.slice(2).map((sidebarItem: SidebarItem, index: number) => {
         const { customKey, ...props } = sidebarItem;
-        return <AccordionComponent customKey={customKey} key={index} {...props} />;
+        return <AccordionComponent
+          customKey={customKey}
+          key={index}
+          selectedPath={selectedPath}
+          handleSelection={handleAction}
+          {...props} />;
       })}
     </>
   );
