@@ -6,7 +6,7 @@ const host = process.env.NEXT_PUBLIC_SERVER_FRONTEND;
 const port = process.env.LOGIN_FRONTEND_PORT;
 
 export const checkCookie = async () => {
-  const cookie = await getCookie('Set-Cookie');
+  const cookie = await getCookie('msp');
   if (cookie == undefined) {
     console.log('Sin cookie');
     // redirect(`http://${host}:${port}/`);
