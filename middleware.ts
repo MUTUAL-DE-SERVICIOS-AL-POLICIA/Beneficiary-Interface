@@ -6,7 +6,7 @@ import { buildBackendUrl } from './helpers/utils';
 export const middleware = (request: NextRequest) => {
   const response = NextResponse.next()
   const cookieStore = cookies();
-  const cookie = cookieStore.get('Set-Cookie');
+  const cookie = cookieStore.get('msp');
   const token = cookie?.value;
 
   response.headers.set("Access-Control-Allow-Origin", process.env.ACCESS_CONTROL_ALLOW_ORIGIN!);
