@@ -39,7 +39,7 @@ export abstract class APIConnection {
     if (cookie != undefined) {
       requestConfig.headers = {
         ...requestConfig.headers,
-        Cookie: `Set-Cookie=${cookie};`,
+        "Set-Cookie": `msp=${cookie};`,
       };
     }
 

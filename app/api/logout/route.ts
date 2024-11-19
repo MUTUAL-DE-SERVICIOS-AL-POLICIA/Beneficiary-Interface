@@ -5,7 +5,7 @@ export async function POST() {
 
   try {
     const cookieStore = cookies();
-    cookieStore.delete('Set-Cookie'); // Elimina la cookie de sesión
+    cookieStore.delete('msp'); // Elimina la cookie de sesión
     return new NextResponse("cerrado de sesión exitoso", { status : 200 })
   } catch (e: any) {
     console.error("Ocurrio un error en salir sesión")
