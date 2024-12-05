@@ -1,6 +1,24 @@
 "use server"
 import { apiClient, apiClientBiometric } from "@/services";
 
+export const checkBiometricStatus = async () => {
+  try {
+    const response = await apiClientBiometric.GET('/api/biometrico/dispositivos')
+    const responseData = await response.json()
+    if(Array.isArray(responseData)) {
+      if(responseData.length > 0) {
+        return true
+      } else return false
+    } else return false
+  } catch(e: any) {
+    console.error(e)
+    return {
+      error: true,
+      message: "Servicio de biometrico no disponible"
+    }
+  }
+}
+
 export const getRegisteredFingerprints = async (personId: number) => {
   try {
     const response = await apiClient.GET(`/api/persons/showPersonFingerprint/${personId}`)
@@ -59,54 +77,70 @@ export const getAllFingerprintsIds = async () => {
 
 export const captureTwoFingerprints = async () => {
   try {
-    const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huellas`)
-    const statusCode = response.status
-    const responseData = await response.json()
-    if(statusCode >= 400) {
+    const result = await checkBiometricStatus()
+    if(result) {
+      const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huellas`)
+      const statusCode = response.status
+      const responseData = await response.json()
+      if(statusCode >= 400) {
+        return {
+          error: true,
+          message: responseData.message
+        }
+      }
+      if(statusCode == 200) {
+        return {
+          error: false,
+          message: responseData.message,
+          data: responseData.data
+        }
+      }
+    } else {
       return {
         error: true,
-        message: responseData.message
-      }
-    }
-    if(statusCode == 200) {
-      return {
-        error: false,
-        message: responseData.message,
-        data: responseData.data
+        message: "Dispositivo biométrico desconectado"
       }
     }
   } catch(e: any) {
     console.error(e)
     return {
       error: true,
-      message: "Error al capturar dos huellas"
+      message: "Error al capturar las huellas"
     }
   }
 }
 
 export const captureOneFingerprint = async () => {
   try {
-    const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huella`)
-    const statusCode = response.status
-    const responseData = await response.json()
-    if(statusCode >= 400) {
+    const result = await checkBiometricStatus()
+    if(result) {
+      const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huella`)
+      const statusCode = response.status
+      const responseData = await response.json()
+      if(statusCode >= 400) {
+        return {
+          error: true,
+          message: responseData.message
+        }
+      }
+      if(statusCode == 200) {
+        return {
+          error: false,
+          message: responseData.message,
+          data: responseData.data
+        }
+      }
+    } else {
       return {
         error: true,
-        message: responseData.message
-      }
-    }
-    if(statusCode == 200) {
-      return {
-        error: false,
-        message: responseData.message,
-        data: responseData.data
+        message: "Dispositivo biométrico desconectado"
       }
     }
   } catch(e: any) {
     console.error(e)
     return {
       error: true,
-      message: "Error al capturar una huellas"
+      message: "Error al capturar una huella"
     }
   }
 }
