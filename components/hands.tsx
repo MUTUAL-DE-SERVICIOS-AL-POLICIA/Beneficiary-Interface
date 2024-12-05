@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiClientBiometric } from '@/services';
 import Image from 'next/image';
 import hands from '@/public/hands1.png';
+import { useTheme } from 'next-themes';
 
 interface Area {
   id: number;
@@ -16,9 +17,9 @@ interface Area {
 }
 
 interface HandsProps {
-  withDetails: boolean
-  selectedOption: string | undefined
-  fingerprints: any[]
+  withDetails: boolean;
+  selectedOption: string | undefined;
+  fingerprints: any[];
 }
 
 const AREAS: Area[] = [
@@ -28,59 +29,78 @@ const AREAS: Area[] = [
   { id: 4, name: 'Índice Izquierdo', x: 183, y: 143, width: 20, height: 30, group: 'Indices' },
 ];
 
-const NOPROCESS = 'rgba(255, 255, 255, 1)'
+const NOPROCESS = 'rgba(255, 255, 255, 1)';
 const HOVER = 'rgba(0, 90, 255, 0.4)';
 
 const colors = {
   PROCESS: 'rgba(255, 255, 0, 0.5)',
   REGISTERED: 'rgba(0, 255, 0, 0.5)',
   UNREGISTERED: 'rgba(255, 0, 0, 0.4)',
-}
+};
 
-const LINE_COLOR = 'gray'
-const LINE_WIDTH = 2
+const LINE_COLOR = 'gray';
+const LINE_WIDTH = 2;
 
-const MARKER_COLOR = 'gray'
-const MARKER_SIZE = 4
-
+const MARKER_COLOR = 'gray';
+const MARKER_SIZE = 4;
 
 const checkActionArea = (area: Area, x: number, y: number) => {
   const dx = x - (area.x + area.width / 2);
   const dy = y - (area.y + area.height / 2);
   return (
     (dx * dx) / ((area.width / 2) * (area.width / 2)) +
-    (dy * dy) / ((area.height / 2) * (area.height / 2)) <=
+      (dy * dy) / ((area.height / 2) * (area.height / 2)) <=
     1
   );
 };
 
-const drawTextOnCanvas = (ctx: CanvasRenderingContext2D, text: string, x: number, y: number) => {
-  ctx.font = "500 20px 'Courier New'"
-  ctx.fillStyle = "black"
-  ctx.fillText(text, x, y)
-}
+const drawTextOnCanvas = (
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  theme: string,
+) => {
+  ctx.font = "500 20px 'Courier New'";
+  ctx.fillStyle = theme === 'dark' ? 'lightgray' : 'black';
+  ctx.fillText(text, x, y);
+};
 
-const drawLineMarker = (ctx: CanvasRenderingContext2D, startX: number, startY: number, diagonalEndX: number, diagonalEndY: number, horizontalEndX: number,) => {
-  ctx.strokeStyle = LINE_COLOR
-  ctx.lineWidth = LINE_WIDTH
-  ctx.beginPath()
+const drawLineMarker = (
+  ctx: CanvasRenderingContext2D,
+  startX: number,
+  startY: number,
+  diagonalEndX: number,
+  diagonalEndY: number,
+  horizontalEndX: number,
+) => {
+  ctx.strokeStyle = LINE_COLOR;
+  ctx.lineWidth = LINE_WIDTH;
+  ctx.beginPath();
   // Parte diagonal
-  ctx.moveTo(startX, startY)
-  ctx.lineTo(diagonalEndX, diagonalEndY)
+  ctx.moveTo(startX, startY);
+  ctx.lineTo(diagonalEndX, diagonalEndY);
 
   // Parete horizontal
-  ctx.lineTo(diagonalEndX, horizontalEndX)
-  ctx.stroke()
-}
+  ctx.lineTo(diagonalEndX, horizontalEndX);
+  ctx.stroke();
+};
 
 const drawMaker = (ctx: CanvasRenderingContext2D, x: number, y: number) => {
-  ctx.fillStyle = MARKER_COLOR
-  ctx.beginPath()
-  ctx.arc(x, y, MARKER_SIZE, 0, 2 * Math.PI)
-  ctx.fill()
-}
+  ctx.fillStyle = MARKER_COLOR;
+  ctx.beginPath();
+  ctx.arc(x, y, MARKER_SIZE, 0, 2 * Math.PI);
+  ctx.fill();
+};
 
-const drawRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
+const drawRoundedRect = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+) => {
   ctx.beginPath();
   ctx.moveTo(x + radius, y); // Mover a la esquina superior izquierda
   ctx.lineTo(x + width - radius, y); // Línea superior
@@ -92,38 +112,45 @@ const drawRoundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, wi
   ctx.lineTo(x, y + radius); // Línea izquierda
   ctx.arcTo(x, y, x + radius, y, radius); // Esquina superior izquierda
   ctx.closePath();
-}
+};
 
-const drawTextBox = (ctx: CanvasRenderingContext2D, x: number, y: number, text: string, status: string) => {
+const drawTextBox = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  text: string,
+  status: string,
+  theme: string,
+) => {
   ctx.font = "600 10px 'DejaVu Sans'";
-  const padding = 5
-  const boxWidth = 160
-  const boxHeight = 70
-  const radius = 5
+  const padding = 5;
+  const boxWidth = 160;
+  const boxHeight = 70;
+  const radius = 5;
 
-  ctx.fillStyle = "white"
+  ctx.fillStyle = theme === 'dark' ? '#333339' : 'white';
   drawRoundedRect(ctx, x - 50, y, boxWidth - 50, boxHeight, radius);
-  ctx.fill()
-  ctx.strokeStyle = "black"
-  ctx.lineWidth = 1
+  ctx.fill();
+  ctx.strokeStyle = theme === 'dark' ? '#626267' : 'black';
+  ctx.lineWidth = 1;
   drawRoundedRect(ctx, x - 50, y, boxWidth - 50, boxHeight, radius);
-  ctx.stroke()
+  ctx.stroke();
   ctx.font = "600 11px 'DejaVu Sans'";
-  ctx.fillStyle = "black"
-  ctx.fillText(text, (x - 50) + padding, y + 20)
+  ctx.fillStyle = theme === 'dark' ? 'white' : 'black';
+  ctx.fillText(text, x - 50 + padding, y + 20);
   ctx.font = "11px 'DejaVu Sans'";
-  ctx.fillStyle = "black"
-  ctx.fillText("Estado:", (x - 50) + padding, y + 35)
+  ctx.fillStyle = theme === 'dark' ? 'white' : 'black';
+  ctx.fillText('Estado:', x - 50 + padding, y + 35);
   ctx.font = "600 10px 'DejaVu Sans'";
-  if(status == 'Registrado') {
-    ctx.fillStyle = "green"
-  } else if(status == 'No Registrado') {
-    ctx.fillStyle = "red"
+  if (status == 'Registrado') {
+    ctx.fillStyle = 'green';
+  } else if (status == 'No Registrado') {
+    ctx.fillStyle = 'red';
   } else {
-    ctx.fillStyle = "rgba(255, 165, 0, 1)"
+    ctx.fillStyle = 'rgba(255, 165, 0, 1)';
   }
-  ctx.fillText(status, (x - 35) + padding, y + 50)
-}
+  ctx.fillText(status, x - 35 + padding, y + 50);
+};
 
 const drawLineMarkerWithBox = (
   ctx: CanvasRenderingContext2D,
@@ -133,111 +160,198 @@ const drawLineMarkerWithBox = (
   diagonalEndY: number,
   horizontalEndX: number,
   text: string,
-  status: string
+  status: string,
+  theme: string,
 ) => {
   drawLineMarker(ctx, startX, startY, diagonalEndX, diagonalEndY, horizontalEndX);
-  drawTextBox(ctx, diagonalEndX, horizontalEndX - 30, text, status)
-}
+  drawTextBox(ctx, diagonalEndX, horizontalEndX - 30, text, status, theme);
+};
 
+const drawLegend = (
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  color: string,
+  text: string,
+  theme: string,
+) => {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, 40, 10);
+  ctx.strokeStyle = theme === 'dark' ? 'lightgray' : 'black';
+  ctx.lineWidth = 0.3;
+  ctx.strokeRect(x, y, 40, 10);
+  ctx.font = "600 11px 'Courier New'";
+  ctx.fillStyle = theme === 'dark' ? 'lightgray' : 'black';
+  ctx.fillText(text, x + 45, y + 9);
+};
 
 export default function Hands(props: HandsProps) {
+  const { withDetails, selectedOption, fingerprints } = props;
+  const { theme } = useTheme();
 
-  const { withDetails, selectedOption, fingerprints } = props
-
-  const [ selectedAreas, setSelectedAreas ] = useState<number[]>([]);
-  const [ hoverArea, setHoverArea ] = useState<number | null>(null);
+  const [selectedAreas, setSelectedAreas] = useState<number[]>([]);
+  const [hoverArea, setHoverArea] = useState<number | null>(null);
 
   const drawAndPaintFingers = (area: Area, ctx: CanvasRenderingContext2D, color: string) => {
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      if (area.id == 1 || area.id == 3) {
-        ctx.ellipse(
-          area.x + area.width / 2,
-          area.y + area.height / 2,
-          (area.width / 2) * 1.2,
-          (area.height / 2) * 0.7,
-          0,
-          0,
-          2 * Math.PI,
-        );
-      } else {
-        ctx.ellipse(
-          area.x + area.width / 2,
-          area.y + area.height / 2,
-          area.width / 2,
-          area.height / 2,
-          0,
-          0,
-          2 * Math.PI,
-        );
-      }
-      ctx.fill();
-  }
-
-  const drawLegend = (ctx: CanvasRenderingContext2D, x: number, y:number, color: string, text:string) => {
     ctx.fillStyle = color;
-    ctx.fillRect(x, y, 40, 10);
-    ctx.strokeStyle = "black";
-    ctx.lineWidth = 0.3;
-    ctx.strokeRect(x, y, 40, 10);
-    ctx.font = "500 11px 'Courier New'";
-    ctx.fillStyle = "black";
-    ctx.fillText(text, x+45, y+9);
-  }
+    ctx.beginPath();
+    if (area.id == 1 || area.id == 3) {
+      ctx.ellipse(
+        area.x + area.width / 2,
+        area.y + area.height / 2,
+        (area.width / 2) * 1.2,
+        (area.height / 2) * 0.7,
+        0,
+        0,
+        2 * Math.PI,
+      );
+    } else {
+      ctx.ellipse(
+        area.x + area.width / 2,
+        area.y + area.height / 2,
+        area.width / 2,
+        area.height / 2,
+        0,
+        0,
+        2 * Math.PI,
+      );
+    }
+    ctx.fill();
+  };
 
-  const draw = (areas: any, ctx:CanvasRenderingContext2D, color: string, status: string) => {
+  const draw = (areas: any, ctx: CanvasRenderingContext2D, color: string, status: string) => {
     areas.forEach((area: Area) => {
-      drawAndPaintFingers(area, ctx, color)
-      const centerX = area.x + area.width / 2
-      const centerY = area.y + area.height / 2
+      drawAndPaintFingers(area, ctx, color);
+      const centerX = area.x + area.width / 2;
+      const centerY = area.y + area.height / 2;
       if (withDetails) {
-        drawMaker(ctx, centerX, centerY)
+        drawMaker(ctx, centerX, centerY);
         switch (area.name) {
           case 'Pulgar Derecho':
-            drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 250, centerX - 380, area.name, status)
+            drawLineMarkerWithBox(
+              ctx,
+              centerX,
+              centerY,
+              centerX + 50,
+              250,
+              centerX - 380,
+              area.name,
+              status,
+              theme || 'light',
+            );
             break;
           case 'Índice Derecho':
-            drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 120, centerX - 430, area.name, status)
+            drawLineMarkerWithBox(
+              ctx,
+              centerX,
+              centerY,
+              centerX + 50,
+              120,
+              centerX - 430,
+              area.name,
+              status,
+              theme || 'light',
+            );
             break;
           case 'Pulgar Izquierdo':
-            drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 250, centerX + 80, area.name, status)
+            drawLineMarkerWithBox(
+              ctx,
+              centerX,
+              centerY,
+              centerX - 50,
+              250,
+              centerX + 80,
+              area.name,
+              status,
+              theme || 'light',
+            );
             break;
           case 'Índice Izquierdo':
-            drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 120, centerX - 120, area.name, status)
+            drawLineMarkerWithBox(
+              ctx,
+              centerX,
+              centerY,
+              centerX - 50,
+              120,
+              centerX - 120,
+              area.name,
+              status,
+              theme || 'light',
+            );
             break;
         }
       } else {
-        const hoverAreaObj = AREAS.find((area) => area.id === hoverArea)
+        const hoverAreaObj = AREAS.find((area) => area.id === hoverArea);
         switch (area.name) {
           case 'Pulgar Derecho':
             if (hoverArea !== null && hoverArea == 1) {
               if (hoverAreaObj) {
-                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 250, centerX - 380, area.name, status)
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2);
+                drawLineMarkerWithBox(
+                  ctx,
+                  centerX,
+                  centerY,
+                  centerX + 50,
+                  250,
+                  centerX - 380,
+                  area.name,
+                  status,
+                  theme || 'light',
+                );
               }
             }
             break;
           case 'Índice Derecho':
             if (hoverArea !== null && hoverArea == 2) {
               if (hoverAreaObj) {
-                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX + 50, 120, centerX - 430, area.name, status )
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2);
+                drawLineMarkerWithBox(
+                  ctx,
+                  centerX,
+                  centerY,
+                  centerX + 50,
+                  120,
+                  centerX - 430,
+                  area.name,
+                  status,
+                  theme || 'light',
+                );
               }
             }
             break;
           case 'Pulgar Izquierdo':
             if (hoverArea !== null && hoverArea == 3) {
               if (hoverAreaObj) {
-                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 250, centerX + 80, area.name, status)
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2);
+                drawLineMarkerWithBox(
+                  ctx,
+                  centerX,
+                  centerY,
+                  centerX - 50,
+                  250,
+                  centerX + 80,
+                  area.name,
+                  status,
+                  theme || 'light',
+                );
               }
             }
             break;
           case 'Índice Izquierdo':
             if (hoverArea !== null && hoverArea == 4) {
               if (hoverAreaObj) {
-                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2)
-                drawLineMarkerWithBox(ctx, centerX, centerY, centerX - 50, 120, centerX - 120, area.name, status)
+                drawMaker(ctx, area.x + area.width / 2, area.y + area.height / 2);
+                drawLineMarkerWithBox(
+                  ctx,
+                  centerX,
+                  centerY,
+                  centerX - 50,
+                  120,
+                  centerX - 120,
+                  area.name,
+                  status,
+                  theme || 'light',
+                );
               }
             }
             break;
@@ -251,7 +365,7 @@ export default function Hands(props: HandsProps) {
         // drawAndPaintFingers();
       }
     }
-  }
+  };
 
   useEffect(() => {
     const img = document.getElementById('hands') as HTMLImageElement | null;
@@ -271,7 +385,7 @@ export default function Hands(props: HandsProps) {
             apiClientBiometric
               .GET('api/biometrico/capturar/huella')
               .then((response: any) => {
-                console.log(response)
+                console.log(response);
                 setSelectedAreas((prev) => [...prev, area.id]);
               })
               .catch((error: any) => {
@@ -284,32 +398,32 @@ export default function Hands(props: HandsProps) {
     const drawAreas = () => {
       if (ctx) {
         ctx.clearRect(0, 0, canvas!.width, canvas!.height); // borrar dibujo
-        // ctx, "text", "x", "y"
-        drawTextOnCanvas(ctx, "MANO IZQUIERDA", 160, 440)
-        drawTextOnCanvas(ctx, "MANO DERECHA", 390, 440)
+        // ctx, "text", "x", "y", "theme"
+        drawTextOnCanvas(ctx, 'MANO IZQUIERDA', 160, 440, theme || 'light');
+        drawTextOnCanvas(ctx, 'MANO DERECHA', 390, 440, theme || 'light');
 
         // Dibujar leyenda
-        drawLegend(ctx, 20, 450, colors['REGISTERED'], 'REGISTRADO')
-        drawLegend(ctx, 20, 465, colors['UNREGISTERED'], 'NO REGISTRADO')
-        drawLegend(ctx, 20, 480, colors['PROCESS'], 'EN PROCESO')
+        drawLegend(ctx, 20, 450, colors['REGISTERED'], 'REGISTRADO', theme || 'light');
+        drawLegend(ctx, 20, 465, colors['UNREGISTERED'], 'NO REGISTRADO', theme || 'light');
+        drawLegend(ctx, 20, 480, colors['PROCESS'], 'EN PROCESO', theme || 'light');
 
-        const registeredFootprints:Area[] = AREAS.filter(item1 =>
-          fingerprints.some(item2 => item2.id === item1.id)
-        )
-        draw(registeredFootprints, ctx, colors['REGISTERED'], 'Registrado')
-        const unregisteredFootprints:Area[] = AREAS.filter(item1 =>
-          !fingerprints.some(item2 => item2.id === item1.id)
-        )
-        draw(unregisteredFootprints, ctx, colors['UNREGISTERED'], 'No Registrado')
-        let selectedFootprints:Area[] = []
-        if(selectedOption) {
-          if(selectedOption == 'Pulgares' || selectedOption == 'Indices') {
-            selectedFootprints = AREAS.filter(item => item.group == selectedOption)
+        const registeredFootprints: Area[] = AREAS.filter((item1) =>
+          fingerprints.some((item2) => item2.id === item1.id),
+        );
+        draw(registeredFootprints, ctx, colors['REGISTERED'], 'Registrado');
+        const unregisteredFootprints: Area[] = AREAS.filter(
+          (item1) => !fingerprints.some((item2) => item2.id === item1.id),
+        );
+        draw(unregisteredFootprints, ctx, colors['UNREGISTERED'], 'No Registrado');
+        let selectedFootprints: Area[] = [];
+        if (selectedOption) {
+          if (selectedOption == 'Pulgares' || selectedOption == 'Indices') {
+            selectedFootprints = AREAS.filter((item) => item.group == selectedOption);
           } else {
-            selectedFootprints = AREAS.filter(item => item.id.toString() == selectedOption)
+            selectedFootprints = AREAS.filter((item) => item.id.toString() == selectedOption);
           }
-          draw(selectedFootprints, ctx, NOPROCESS, '')
-          draw(selectedFootprints, ctx, colors['PROCESS'], 'En proceso')
+          draw(selectedFootprints, ctx, NOPROCESS, '');
+          draw(selectedFootprints, ctx, colors['PROCESS'], 'En proceso');
         }
       }
     };
@@ -353,12 +467,19 @@ export default function Hands(props: HandsProps) {
         canvas.removeEventListener('mousemove', handleMouseMove);
       }
     };
-  }, [selectedAreas, hoverArea, withDetails, selectedOption, fingerprints.length]);
+  }, [selectedAreas, hoverArea, withDetails, selectedOption, fingerprints.length, theme]);
 
   return (
     <div className="relative flex justify-center items-center mx-auto">
       <Image id="hands" src={hands} alt="hands" width={500} height={300} />
-      <canvas id="canvas" className="absolute" style={{ border: "1px solid black", borderRadius: "10px" }} />
+      <canvas
+        id="canvas"
+        className="absolute"
+        style={{
+          border: `1px solid ${theme === 'dark' ? 'lightgray' : 'black'}`,
+          borderRadius: '10px',
+        }}
+      />
     </div>
   );
 }
