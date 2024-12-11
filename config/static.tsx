@@ -32,7 +32,9 @@ export interface SidebarItem {
   customKey: string | number;
   path: string;
   selectedPath?: string;
-  handleSelection?:any
+  handleSelection?: any;
+  activeItem?: string | number;
+  setActiveItem?: any;
 }
 
 interface SidebarConfig {
@@ -76,7 +78,7 @@ export const sidebarConfig: SidebarConfig = {
           title: 'HUELLAS',
           key: 'finger',
           icon: <FontAwesomeIcon icon={faFingerprint} />,
-          path: '/fingerprints'
+          path: '/fingerprints',
         },
       ],
     },
@@ -86,7 +88,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Datos especificos de policía',
       customKey: 'menu-2',
       icon: <FontAwesomeIcon size="lg" icon={faUserNurse} />,
-      path: '/affiliate-data'
+      path: '/affiliate-data',
     },
     {
       topTitle: 'Listado de los beneficiarios',
@@ -94,7 +96,7 @@ export const sidebarConfig: SidebarConfig = {
       description: 'Listado de beneficiarios',
       icon: <FontAwesomeIcon size="lg" icon={faPeopleGroup} />,
       customKey: 'menu-3',
-      path: '/relations'
+      path: '/relations',
     },
     // {
     //   topTitle: 'Listado de aportes',
