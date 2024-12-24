@@ -24,15 +24,15 @@ export default function Sidebar() {
 
   const itemClasses = {
     base: '',
-    title: 'my-0 font-bold text-medium',
+    title: 'mt-0 mb-2 font-bold text-medium ',
     trigger: '',
     indicator: 'text-medium',
   };
 
   const itemClassesSection = {
-    base: 'data-[selected=true]:bg-default-300',
-    list: 'mb-0',
+    base: '',
     heading: 'text-default-700 pb-0 mb-0',
+    divider: 'h-[2px] bg-default-500 ml-3',
   };
 
   const handleAction = (path: string) => {
@@ -90,7 +90,7 @@ export default function Sidebar() {
             selectedKeys={expandedKey ? new Set([expandedKey]) : new Set()}
             onSelectionChange={(keys) => {
               const key = Array.from(keys)[0];
-              setExpandedKey(key.toString() || null);
+              key !== undefined ? setExpandedKey(key.toString() || null) : '';
             }}
           >
             {sidebarConfig.sidebarItems
@@ -117,7 +117,6 @@ export default function Sidebar() {
                               ${itemClasses.title}
                               ${itemClasses.trigger}
                               px-3 py-0 h-14 my-0 rounded-small
-                              transition duration-300 ease-in-out
                               ${
                                 activeItem === sidebarItem.customKey
                                   ? 'bg-default-300'
@@ -151,7 +150,7 @@ export default function Sidebar() {
                         className={`
                             ${itemClasses.base}
                             mb-3 mt-0 pt-0 pb-3 overflow-hidden
-                            rounded-lg transition duration-300 ease-in-out
+                            rounded-lg
                             ${
                               activeItem === sidebarItem.customKey
                                 ? 'bg-default-300'
@@ -164,6 +163,7 @@ export default function Sidebar() {
                             variant="flat"
                             aria-label="sub listbox"
                             defaultSelectedKeys="all"
+                            classNames={itemClassesSection}
                           >
                             <ListboxSection>
                               {sidebarItem.subMenu.map((menu) => (
@@ -200,10 +200,9 @@ export default function Sidebar() {
                             ${itemClasses.title}
                             ${itemClasses.trigger}
                             px-3 py-0 h-14 my-0 rounded-small
-                            transition duration-300 ease-in-out
                             ${
                               activeItem === sidebarItem.customKey
-                                ? 'bg-default-300'
+                                ? 'bg-default-200'
                                 : 'bg-default-100'
                             }
                           `}
@@ -231,9 +230,9 @@ export default function Sidebar() {
                       className={`
                         ${itemClasses.base}
                         mb-3 mt-0 pt-0 pb-3
-                        rounded-lg transition duration-300 ease-in-out
+                        rounded-lg
                         ${
-                          activeItem === sidebarItem.customKey ? 'bg-default-300' : 'bg-default-100'
+                          activeItem === sidebarItem.customKey ? 'bg-default-200' : 'bg-default-100'
                         }
                       `}
                     >
@@ -265,7 +264,6 @@ export default function Sidebar() {
   return (
     <>
       <BeneficiaryCard />
-
       {sidebarConfig.sidebarItems.slice(2).map((sidebarItem: SidebarItem, index: number) => {
         const { customKey, ...props } = sidebarItem;
         return (
