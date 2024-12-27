@@ -16,56 +16,56 @@ interface Fingerprint {
 }
 
 const fingerprintRegistrationOptions = [
-  { key: 'Pulgares', name: 'Registrar los pulgares'},
-  { key: 'Indices', name: 'Registrar los indices'}
+  { key: 'Pulgares', name: 'Registrar los pulgares' },
+  { key: 'Indices', name: 'Registrar los indices' }
 ]
 
-export default function FingerPrintPage () {
+export default function FingerPrintPage() {
   const { Alert } = useAlert()
-  const [ isSelected, setIsSelected ] = useState<boolean>(true)
-  const [ selectedTwoFinger, setSelectedTwoFinger ] = useState<string | undefined>(undefined)
-  const [ selectedOneFinger, setSelectedOneFinger ] = useState<string | undefined>(undefined)
-  const [ registeredFingerprints, setRegisteredFingerprints ] = useState([])
-  const [ fingerprintIds, setFingerprintIds] = useState([])
+  const [isSelected, setIsSelected] = useState<boolean>(true)
+  const [selectedTwoFinger, setSelectedTwoFinger] = useState<string | undefined>(undefined)
+  const [selectedOneFinger, setSelectedOneFinger] = useState<string | undefined>(undefined)
+  const [registeredFingerprints, setRegisteredFingerprints] = useState([])
+  const [fingerprintIds, setFingerprintIds] = useState([])
 
-  const [ isLoading, setIsLoading ] = useState<boolean>(false)
-  const [ progress, setProgress ] = useState(0)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [progress, setProgress] = useState(0)
 
-  const { id }  = useParams()
+  const { id } = useParams()
   const personId = parseInt(Array.isArray(id) ? id[0] : id, 10)
 
   const getFingerprints = async () => {
-    const response  = await getRegisteredFingerprints(personId)
+    const response = await getRegisteredFingerprints(personId)
     const error = response!.error
-    if(!error) {
+    if (!error) {
       const data = response!.data
       const fingerprints = data.fingerprints
       setRegisteredFingerprints(fingerprints)
     } else {
-      Alert({message: response!.message, variant: "error"})
+      Alert({ message: response!.message, variant: "error" })
     }
   }
 
   const getFingerprintIds = async () => {
     const response = await getAllFingerprintsIds()
     const error = response!.error
-    if(!error) {
+    if (!error) {
       const data = response!.data
       setFingerprintIds(data)
     } else {
-      Alert({message: response!.message, variant: "error"})
+      Alert({ message: response!.message, variant: "error" })
     }
   }
 
   const captureTwoFingerPrints = async () => {
     const response = await captureTwoFingerprints()
     const error = response!.error
-    if(!error) {
+    if (!error) {
       const data = response!.data
-      Alert({message: response!.message, variant: "success"})
+      Alert({ message: response!.message, variant: "success" })
       return data
     } else {
-      Alert({message: response!.message, variant: "error"})
+      Alert({ message: response!.message, variant: "error" })
       return null
     }
   }
@@ -73,50 +73,50 @@ export default function FingerPrintPage () {
     try {
       const response = await captureOneFingerprint()
       const error = response!.error
-      if(!error) {
+      if (!error) {
         const data = response!.data
-        Alert({message: response!.message, variant: "success"})
+        Alert({ message: response!.message, variant: "success" })
         return data
       } else {
-        Alert({message: response!.message, variant: "error"})
+        Alert({ message: response!.message, variant: "error" })
         return null
       }
-    } catch(e:any) {
-      Alert({message: "Error en la aplicación", variant: "default"})
+    } catch (e: any) {
+      Alert({ message: "Error en la aplicación", variant: "default" })
     }
   }
 
   const registerFingerPrints = async (fingerprints: any) => {
     const response = await registerFingerprints(personId, fingerprints)
     const error = response!.error
-    if(!error) {
-      Alert({message: response!.message, variant: "success"})
+    if (!error) {
+      Alert({ message: response!.message, variant: "success" })
     } else {
-      Alert({message: response!.message, variant: "error"})
+      Alert({ message: response!.message, variant: "error" })
     }
   }
 
   const createFingerprint = (fingerTypeName: string, wsq: string, quality: number): Fingerprint | undefined => {
-    const finger:any = fingerprintIds.find((finger:any) => finger.name.includes(fingerTypeName))
-    return finger ? { fingerprintTypeId: finger.id, wsq, quality }: undefined
+    const finger: any = fingerprintIds.find((finger: any) => finger.name.includes(fingerTypeName))
+    return finger ? { fingerprintTypeId: finger.id, wsq, quality } : undefined
   }
 
   const handleTwoFingersSelected = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedTwoFinger(e.target.value)
-    setProgress(0)
-    setIsLoading(true)
     try {
+      setSelectedTwoFinger(e.target.value)
+      setProgress(0)
+      setIsLoading(true)
       const interval = setInterval(() => {
-        setProgress((prev)=> (prev >= 85 ? prev : prev + 1))
+        setProgress((prev) => (prev >= 85 ? prev : prev + 1))
       }, 100)
       const response = await captureTwoFingerPrints()
-      if(response ) {
+      if (response) {
         const { izquierda, derecha } = response
         const isThumb = e.target.value === "Pulgares"
         const leftFingerName = isThumb ? 'Pulgar Izquierdo' : 'Índice Izquierdo'
         const rightFingerName = isThumb ? 'Pulgar Derecho' : 'Índice Derecho'
 
-        if(izquierda && derecha ) {
+        if (izquierda && derecha) {
           const fingerprints: Fingerprint[] = [
             createFingerprint(leftFingerName, izquierda.wsq, derecha.quality),
             createFingerprint(rightFingerName, izquierda.wsq, derecha.quality)
@@ -125,13 +125,12 @@ export default function FingerPrintPage () {
           clearInterval(interval)
           setProgress(100)
           await getFingerprints()
-          setSelectedTwoFinger(undefined)
         } else {
           console.log("vuelve a intentarlo")
         }
       }
-    } catch(e:any) {
-
+    } catch (e: any) {
+      console.log(e)
     } finally {
       setTimeout(() => {
         setSelectedTwoFinger(undefined)
@@ -141,18 +140,18 @@ export default function FingerPrintPage () {
     }
   }
 
-  const handleOneFingerSelect = async (e:any) => {
-    const fingerprintTypeId = parseInt(e.target.value, 10)
-    setSelectedOneFinger(e.target.value)
-    setProgress(0)
-    setIsLoading(true)
+  const handleOneFingerSelect = async (e: any) => {
     try {
+      const fingerprintTypeId = parseInt(e.target.value, 10)
+      setSelectedOneFinger(e.target.value)
+      setProgress(0)
+      setIsLoading(true)
       const interval = setInterval(() => {
         setProgress((prev) => (prev >= 85 ? prev : prev + 1))
       }, 100)
       const response = await captureOneFingerPrint()
-      if(response) {
-        const { wsq, quality} = response
+      if (response) {
+        const { wsq, quality } = response
         const body = [{ fingerprintTypeId, wsq, quality }]
         await registerFingerPrints(body)
         clearInterval(interval)
@@ -160,9 +159,9 @@ export default function FingerPrintPage () {
         await getFingerprints()
         setSelectedOneFinger(undefined)
       }
-    } catch (e:any) {
+    } catch (e: any) {
       console.log(e)
-    } finally  {
+    } finally {
       setTimeout(() => {
         setSelectedOneFinger(undefined)
         setIsLoading(false)
@@ -187,6 +186,7 @@ export default function FingerPrintPage () {
           Mostrar detalles
         </Switch>
         <Select
+          key={selectedTwoFinger || 'default'}
           size="sm"
           label="Registrar dos huellas"
           className="max-w-[15rem]"
@@ -201,6 +201,7 @@ export default function FingerPrintPage () {
           ))}
         </Select>
         <Select
+          key={selectedOneFinger || 'defult'}
           size="sm"
           label="Registrar una huella"
           className="max-w-[12rem]"
@@ -209,7 +210,7 @@ export default function FingerPrintPage () {
           onChange={handleOneFingerSelect}
         >
           {
-            fingerprintIds.map((finger:any) => (
+            fingerprintIds.map((finger: any) => (
               <SelectItem key={finger.id}>
                 {finger.name}
               </SelectItem>
@@ -219,8 +220,8 @@ export default function FingerPrintPage () {
       </div>
       <div className="flex justify-center items-center min-h-[500px]">
         <div className="flex justify-center w-full max-w-[500px]">
-          { isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center backdrop-blur z-10">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm z-10">
               <div className="text-3xl font-semibold text-default-900">Registrando huellas...</div>
             </div>
             // <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-10 z-10">

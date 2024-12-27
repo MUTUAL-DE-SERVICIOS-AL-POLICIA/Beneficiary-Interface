@@ -1,50 +1,50 @@
-"use client"
-import { Divider } from "@nextui-org/divider";
-import { useEffect, useState } from "react";
-import { EntryInfo } from "./(sections)/EntryInfo";
-import { StateInfo } from "./(sections)/StateInfo";
-import { ServiceInfo } from "./(sections)/ServiceInfo";
-import { DerelictInfo } from "./(sections)/DerelictInfo";
-import { getAffiliate, obtainAffiliateDocuments } from "@/app/beneficiary/service";
-import { useBeneficiary } from "@/context/BeneficiaryContext";
-import { AffiliateDocuments } from "./(sections)/Documents";
-import { useAlert } from "@/hooks/useAlerts";
+'use client';
+import { Divider } from '@nextui-org/divider';
+import { useEffect, useState } from 'react';
+import { EntryInfo } from './(sections)/EntryInfo';
+import { StateInfo } from './(sections)/StateInfo';
+import { ServiceInfo } from './(sections)/ServiceInfo';
+import { DerelictInfo } from './(sections)/DerelictInfo';
+import { getAffiliate, obtainAffiliateDocuments } from '@/app/beneficiary/service';
+import { useBeneficiary } from '@/context/BeneficiaryContext';
+import { AffiliateDocuments } from './(sections)/Documents';
+import { useAlert } from '@/hooks/useAlerts';
 
 export default function AffiliateDataPage() {
-  const [affiliate, setAffiliate] = useState<any>({})
-  const [documents, setDocuments] = useState<any>([])
-  const { beneficiaryData, error } = useBeneficiary()
+  const [affiliate, setAffiliate] = useState<any>({});
+  const [documents, setDocuments] = useState<any>([]);
+  const { beneficiaryData, error } = useBeneficiary();
 
-  const { Alert } = useAlert()
+  const { Alert } = useAlert();
 
   useEffect(() => {
     const fetchData = async () => {
-      if(!error) {
+      if (!error) {
         if (beneficiaryData.personAffiliate.length >= 1) {
-          const affiliateId = beneficiaryData.personAffiliate[0].typeId
-          const [ affiliateData, documentsData ] = await Promise.all([
+          const affiliateId = beneficiaryData.personAffiliate[0].typeId;
+          const [affiliateData, documentsData] = await Promise.all([
             getAffiliate(`${affiliateId}`),
-            obtainAffiliateDocuments(`${beneficiaryData.id}`)
-          ])
-          if(!affiliateData.error) {
-            const data = affiliateData.data
-            setAffiliate(data)
+            obtainAffiliateDocuments(`${beneficiaryData.id}`),
+          ]);
+          if (!affiliateData.error) {
+            const data = affiliateData.data;
+            setAffiliate(data);
           } else {
-            Alert({ message: affiliateData.message, variant: "error"})
+            Alert({ message: affiliateData.message, variant: 'error' });
           }
-          if(!documentsData.error) {
-            const data = documentsData.data
-            setDocuments(documentsData)
+          if (!documentsData.error) {
+            const data = documentsData.data;
+            setDocuments(documentsData);
           } else {
-            Alert({ message: affiliateData.message, variant: "error"})
+            Alert({ message: affiliateData.message, variant: 'error' });
           }
         }
       } else {
-        Alert({ message: beneficiaryData.message, variant: "error"})
+        Alert({ message: beneficiaryData.message, variant: 'error' });
       }
-    }
-    fetchData()
-  }, [beneficiaryData])
+    };
+    fetchData();
+  }, [beneficiaryData]);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
@@ -75,10 +75,10 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <div className="flex gap-1">
           <div className="flex flex-col w-full">
-            <AffiliateDocuments affiliate={affiliate} documents={documents}/>
+            <AffiliateDocuments affiliate={affiliate} documents={documents} />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
