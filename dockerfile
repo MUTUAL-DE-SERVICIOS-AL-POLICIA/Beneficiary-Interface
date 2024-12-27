@@ -1,20 +1,19 @@
-# Etapa de desarrollo
-FROM node:18-alpine AS dev
 
-# Establecer el directorio de trabajo
+FROM node:18-alpine AS base
+
+# Establece el directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copiar los archivos de configuración para la instalación de dependencias
+# Copia solo los archivos necesarios para instalar dependencias
 COPY package.json yarn.lock ./
 
-# Instalar las dependencias
-RUN yarn install --frozen-lockfile --network-timeout 600000
+# Instala las dependencias
+RUN yarn install --frozen-lockfile && yarn cache clean --network-timeout 600000
 
-# Copiar el resto del código del proyecto
+# Copia el resto del código del proyecto
 COPY . .
 
-# Exponer el puerto 4000
-EXPOSE 4001
-
-# Comando para iniciar Next.js en modo desarrollo en el puerto 4000
-CMD ["yarn", "dev", "-p", "4001"]
+# Exponer el puerto en el contenedor
+EXPOSE 4002
+# Comando por defecto para iniciar la aplicación
+CMD ["yarn", "dev", "--turbo", "-p", "4000"]
