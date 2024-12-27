@@ -24,7 +24,7 @@ export default function AffiliateDataPage() {
           const affiliateId = beneficiaryData.personAffiliate[0].typeId;
           const [affiliateData, documentsData] = await Promise.all([
             getAffiliate(`${affiliateId}`),
-            obtainAffiliateDocuments(`${beneficiaryData.id}`),
+            obtainAffiliateDocuments(`${affiliateId}`),
           ]);
           if (!affiliateData.error) {
             const data = affiliateData.data;
@@ -34,7 +34,7 @@ export default function AffiliateDataPage() {
           }
           if (!documentsData.error) {
             const data = documentsData.data;
-            setDocuments(documentsData);
+            setDocuments(data);
           } else {
             Alert({ message: affiliateData.message, variant: 'error' });
           }

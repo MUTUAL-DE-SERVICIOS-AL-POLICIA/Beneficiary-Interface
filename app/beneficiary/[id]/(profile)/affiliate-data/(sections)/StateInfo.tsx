@@ -7,7 +7,6 @@ interface AffiliateProps {
 }
 
 export const StateInfo: React.FC<AffiliateProps> = React.memo(({ affiliate }) => {
-  console.log('affiliate: ', affiliate);
   return (
     <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
       <legend className="text-sm uppercase px-2 font-semibold">Estado del policía</legend>

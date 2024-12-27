@@ -71,7 +71,10 @@ export default function Sidebar() {
                 })}
               </h4>
               <div className="flex gap-1">
-                <p className="font-semibold text-default-800 text-small"> NUP: </p>
+                <p className="font-semibold text-default-800 text-small">
+                  {' '}
+                  NUP: {beneficiaryData.personAffiliate.length}
+                </p>
                 <p className="text-default-600 text-small">{beneficiaryData.id}</p>
               </div>
               <div className="flex gap-1">
@@ -99,7 +102,7 @@ export default function Sidebar() {
                 if (sidebarItem.title == 'DATOS DE POLICIA') {
                   if (
                     !beneficiaryData?.personAffiliate ||
-                    beneficiaryData.personAffiliate.length === 0
+                    beneficiaryData.personAffiliate.length !== 0
                   ) {
                     return (
                       <AccordionItem
