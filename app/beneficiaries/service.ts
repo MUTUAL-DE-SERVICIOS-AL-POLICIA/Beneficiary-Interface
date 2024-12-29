@@ -12,27 +12,27 @@ export const getBeneficiaries = async (
       page,
       ...(filter ? { filter } : {}),
     });
-    const statusCode = beneficiaries.status
-    const responseData = await beneficiaries.json()
-    console.log(responseData)
-    if(statusCode >= 400) {
+    const statusCode = beneficiaries.status;
+    const responseData = await beneficiaries.json();
+    // console.log(responseData)
+    if (statusCode >= 400) {
       return {
         error: true,
-        message: responseData.message
-      }
+        message: responseData.message,
+      };
     }
-    if(statusCode == 200) {
+    if (statusCode == 200) {
       return {
         error: false,
-        message: "Get persons successful",
-        data: responseData
-      }
+        message: 'Get persons successful',
+        data: responseData,
+      };
     }
   } catch (e: any) {
-    console.error(e)
+    console.error(e);
     return {
       error: true,
-      message: "Error al obtener el listado de personas"
-    }
+      message: 'Error al obtener el listado de personas',
+    };
   }
 };

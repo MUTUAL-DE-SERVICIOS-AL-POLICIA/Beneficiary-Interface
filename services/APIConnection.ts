@@ -18,41 +18,51 @@ export abstract class APIConnection {
 
   protected addInterceptors(
     requestConfig: RequestInit,
-    contentType: string = 'application/json'
+    contentType: string | null = 'application/json',
   ): RequestInit {
-    const interceptors = {
-      headers: {
-        'Content-Type': contentType
-      },
-    };
-    return {
-      ...requestConfig,
-      headers: {
-        ...requestConfig.headers,
-        ...interceptors.headers,
-      },
-    };
+    // if (contentType !== null) {
+    //   if (!requestConfig.headers) {
+    //     requestConfig.headers = {};
+    //   }
+    //   if (requestConfig.headers instanceof Headers) {
+    //     requestConfig.headers.set('Content-Type', contentType);
+    //   } else {
+    //     (requestConfig.headers as Record<string, string>)['Content-Type'] = contentType;
+    //   }
+    // }
+    // return requestConfig;
+    const headers: any = requestConfig.headers || {};
+    if (!(headers instanceof Headers)) {
+      headers['credentials'] = 'include'; // Asegurarse de incluir siempre las credenciales
+      if (contentType) {
+        headers['Content-Type'] = contentType;
+      }
+    }
+
+    requestConfig.headers = headers;
+    return requestConfig;
   }
 
   protected async handleRequest(endpoint: string, requestConfig: RequestInit): Promise<any> {
     const cookie = await checkCookie();
     if (cookie != undefined) {
-      requestConfig.headers = {
-        ...requestConfig.headers,
-        "Set-Cookie": `msp=${cookie};`,
-      };
+      if (!requestConfig.headers) {
+        requestConfig.headers = {};
+      }
+      if (requestConfig.headers instanceof Headers) {
+        requestConfig.headers.append('Set-Cookie', `msp=${cookie};`);
+      } else {
+        (requestConfig.headers as Record<string, string>)['Set-Cookie'] = `msp=${cookie};`;
+      }
     }
-
     const url = this.buildUrl(endpoint);
-
     const response = await fetch(url, requestConfig);
     const contentType = response.headers.get('content-type') || '';
     if (!response.ok) {
       if (contentType.includes('application/json')) {
-        return response;
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
       }
-      const errorData = await response.json();
-      throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
     }
     return response;
   }

@@ -44,20 +44,45 @@ export const AffiliateDocuments = React.memo(
     };
 
     const uploadFile = async (file: any) => {
+      console.log(file.name);
+      const formData = new FormData();
+      formData.append('documentPdf', file);
       try {
         const response = await apiClient.POST(
           `/api/affiliates/${affiliate.id}/document/${currentDocumentId}/createOrUpdate`,
-          {
-            documentPdf: file,
-          },
+          formData,
+          true,
         );
         console.log(response);
-        toggleDialog();
-        alert('Todo fue correcto');
       } catch (e: any) {
+        console.log(e);
         console.error('Error al cargar el archivo');
+      } finally {
+        toggleDialog();
       }
     };
+
+    // const uploadFile = async (file: any) => {
+    //   const formData = new FormData();
+    //   formData.append('documentPdf', file);
+    //   try {
+    //     const response = await fetch(
+    //       `http://192.168.2.240:3000/api/affiliates/${affiliate.id}/document/${currentDocumentId}/createOrUpdate`,
+    //       {
+    //         method: 'POST',
+    //         body: formData,
+    //       },
+    //     );
+    //     if (!response.ok) {
+    //       throw new Error(`HTTP error! status: ${response.status}`);
+    //     }
+    //     const responseData = await response.json();
+    //     console.log('File uploaded successfully: ', responseData);
+    //     alert('File uploaded successfully');
+    //   } catch (e: any) {
+    //     alert('Error uploading file');
+    //   }
+    // };
 
     return (
       <div className="flex flex-col w-full">

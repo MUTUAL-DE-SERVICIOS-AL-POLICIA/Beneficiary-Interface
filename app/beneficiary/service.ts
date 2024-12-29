@@ -86,3 +86,32 @@ export const obtainAffiliateDocuments = async (affiliateId: string): Promise<any
     };
   }
 };
+
+export const getAllDocuments = async (): Promise<any> => {
+  try {
+    const allDocuments = await apiClient.GET('api/procedure-documents');
+    const statusCode = allDocuments.status;
+    const responseData = await allDocuments.json();
+    if (statusCode >= 400) {
+      return {
+        error: true,
+        message: responseData.message,
+      };
+    }
+    if (statusCode == 200) {
+      return {
+        error: false,
+        message: 'Documentos obtenidos exitosamente',
+        data: responseData,
+      };
+    }
+    const { data } = await allDocuments.json();
+    return data;
+  } catch (e: any) {
+    console.error(e);
+    return {
+      error: true,
+      message: 'Error al obtener los todos los documentos.',
+    };
+  }
+};
