@@ -3,7 +3,8 @@ import { apiClient, apiClientBiometric } from "@/services";
 
 export const checkBiometricStatus = async () => {
   try {
-    const response = await apiClientBiometric.GET('/api/biometrico/dispositivos')
+    const client = await apiClientBiometric();            
+    const response = await client.GET('/api/biometrico/dispositivos')
     const responseData = await response.json()
     if(Array.isArray(responseData)) {
       if(responseData.length > 0) {
@@ -79,7 +80,8 @@ export const captureTwoFingerprints = async () => {
   try {
     const result = await checkBiometricStatus()
     if(result) {
-      const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huellas`)
+      const client = await apiClientBiometric();            
+      const response = await client.GET(`/api/biometrico/capturar/huellas`)
       const statusCode = response.status
       const responseData = await response.json()
       if(statusCode >= 400) {
@@ -114,7 +116,8 @@ export const captureOneFingerprint = async () => {
   try {
     const result = await checkBiometricStatus()
     if(result) {
-      const response = await apiClientBiometric.GET(`/api/biometrico/capturar/huella`)
+      const client = await apiClientBiometric(); 
+      const response = await client.GET(`/api/biometrico/capturar/huella`)
       const statusCode = response.status
       const responseData = await response.json()
       if(statusCode >= 400) {
