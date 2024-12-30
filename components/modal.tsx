@@ -6,18 +6,31 @@ interface ModalProps {
   open: boolean;
   onOpenChange: () => void;
   uploadFile: (file: any) => void;
+  loading: boolean;
 }
 
 export default function ModalComponent(props: ModalProps) {
-  const { open, onOpenChange, uploadFile } = props;
+  const { open, onOpenChange, uploadFile, loading } = props;
   const [file, setFile] = useState<any>(undefined);
+  const [fileError, setFileError] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileObtained = event.target.files?.[0];
     if (fileObtained) {
       // uploadFile(file);
       setFile(fileObtained);
+      setFileError(false);
     }
+  };
+
+  const handleUpload = () => {
+    let hasError = false;
+    if (!file) {
+      setFileError(true);
+      hasError = true;
+    }
+    if (hasError) return;
+    uploadFile(file);
   };
   return (
     <>
@@ -32,15 +45,28 @@ export default function ModalComponent(props: ModalProps) {
             <>
               <ModalHeader className="flex flex-col gap-1">Subir archivo</ModalHeader>
               <ModalBody>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  style={{ display: 'block', marginBottom: '20px' }}
-                />
+                <div>
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    className={fileError ? 'border-red-500' : ''}
+                    style={{
+                      display: 'block',
+                      border: fileError ? '1px solid red' : '',
+                    }}
+                  />
+                  {fileError && (
+                    <span className="text-xs mt-0 pt-0" style={{ color: '#f21260' }}>
+                      Por favor seleccione un archivo{' '}
+                    </span>
+                  )}
+                </div>
               </ModalBody>
               <ModalFooter>
                 <Button onPress={onClose}>Cerrar</Button>
-                <Button onPress={() => uploadFile(file)}>Subir</Button>
+                <Button isLoading={loading} onPress={handleUpload}>
+                  Subir
+                </Button>
               </ModalFooter>
             </>
           )}

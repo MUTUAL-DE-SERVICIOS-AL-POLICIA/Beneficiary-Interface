@@ -21,6 +21,7 @@ export default function AffiliateDataPage() {
   const [documents, setDocuments] = useState<any>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [allDocuments, setAllDocuments] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { beneficiaryData, error } = useBeneficiary();
 
   const { Alert } = useAlert();
@@ -36,6 +37,7 @@ export default function AffiliateDataPage() {
     const formData = new FormData();
     formData.append('documentPdf', file);
     try {
+      setIsLoading(true);
       const response = await apiClient.POST(
         `/api/affiliates/${affiliate.id}/document/${selectedKey}/createOrUpdate`,
         formData,
@@ -45,10 +47,19 @@ export default function AffiliateDataPage() {
       const affiliateId = beneficiaryData.personAffiliate[0].typeId;
       const res = await obtainAffiliateDocuments(affiliateId);
       setDocuments(res.data);
+      Alert({
+        message: 'Documento registrado exitosamente',
+        variant: 'success',
+      });
     } catch (e: any) {
+      Alert({
+        message: 'Ocurrió un error al registrar el documento',
+        variant: 'error',
+      });
       console.log(e);
       console.error('Error al cargar el archivo');
     } finally {
+      setIsLoading(false);
       toggleDialog();
     }
   };
@@ -107,8 +118,11 @@ export default function AffiliateDataPage() {
       <div className="flex justify-between items-center mr-3">
         <h1 className="text-md uppercase font-semibold">Documentos presentados</h1>
         <Tooltip content="Registrar nuevo documento">
-          <Button isIconOnly onPress={handleDocumentRecord}>
-            <FontAwesomeIcon icon={faFolderPlus} size="xl" />
+          <Button
+            endContent={<FontAwesomeIcon icon={faFolderPlus} size="xl" />}
+            onPress={handleDocumentRecord}
+          >
+            CREAR
           </Button>
         </Tooltip>
       </div>
@@ -125,6 +139,7 @@ export default function AffiliateDataPage() {
         onOpenChange={toggleDialog}
         data={allDocuments}
         action={registerFile}
+        loading={isLoading}
       />
     </div>
   );
