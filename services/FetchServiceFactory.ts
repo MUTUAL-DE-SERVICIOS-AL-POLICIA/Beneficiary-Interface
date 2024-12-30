@@ -1,3 +1,4 @@
+import { checkIp } from '@/helpers/ip';
 import { APIConnection } from './APIConnection';
 import { APIConnectionFactory } from './APIConnectionFactory';
 import { FetchService } from './FetchService';
@@ -21,11 +22,16 @@ const baseUrl = `http://${host}:${port}/`;
 const factory = new FetchServiceFactory(baseUrl);
 export const apiClient = factory.createAPIConnection();
 
-const biometricHost = process.env.NEXT_PUBLIC_BIOMETRIC_HOST || 'localhost';
-const biometricPort = process.env.NEXT_PUBLIC_BIOMETRIC_PORT || 8899;
-const baseUrlBiometric = `http://${biometricHost}:${biometricPort}/`;
-const biometricFactory = new FetchServiceFactory(baseUrlBiometric);
-export const apiClientBiometric = biometricFactory.createAPIConnection();
+export const apiClientBiometric = async () => {  
+  const ip = await checkIp();
+  console.log(ip);
+  
+  const biometricHost = ip || 'localhost';
+  const biometricPort = process.env.NEXT_PUBLIC_BIOMETRIC_PORT || 8899;
+  const baseUrlBiometric = `http://${biometricHost}:${biometricPort}/`;
+  const biometricFactory = new FetchServiceFactory(baseUrlBiometric);
+  return biometricFactory.createAPIConnection();
+}
 
 
 const hostFrontend = process.env.NEXT_PUBLIC_SERVER_FRONTEND || 'localhost';

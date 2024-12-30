@@ -367,7 +367,7 @@ export default function Hands(props: HandsProps) {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     const img = document.getElementById('hands') as HTMLImageElement | null;
     const canvas = document.getElementById('canvas') as HTMLCanvasElement | null;
     const ctx = canvas!.getContext('2d') as CanvasRenderingContext2D | null;
@@ -379,10 +379,11 @@ export default function Hands(props: HandsProps) {
         const y = event.clientY - rect.top;
 
         ctx.fillStyle = colors['REGISTERED'];
-
-        AREAS.forEach((area: Area) => {
+        
+        AREAS.forEach(async (area: Area) => {
           if (checkActionArea(area, x, y)) {
-            apiClientBiometric
+            const client = await apiClientBiometric();
+            client
               .GET('api/biometrico/capturar/huella')
               .then((response: any) => {
                 console.log(response);
