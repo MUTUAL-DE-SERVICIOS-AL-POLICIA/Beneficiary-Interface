@@ -5,44 +5,52 @@ export class FetchService extends APIConnection {
     super(baseUrl);
   }
 
-  async GET(endpoint: string, params?: Record<string, string>, contentType: string = 'application/json', signal?: AbortSignal): Promise<any> {
+  async GET(
+    endpoint: string,
+    params?: Record<string, string>,
+    contentType: string = 'application/json',
+  ): Promise<any> {
     let url = endpoint;
     if (params) {
       const queryParams = new URLSearchParams(params).toString();
       url += `?${queryParams}`;
     }
-    const requestConfig = this.addInterceptors({
-      method: 'GET',
-      credentials: 'include',
-      signal,
-    }, contentType);
+    const requestConfig = this.addInterceptors(
+      {
+        method: 'GET',
+        credentials: 'include',
+      },
+      contentType,
+    );
     return this.handleRequest(url, requestConfig);
   }
 
-  async POST(endpoint: string, body: any, signal?: AbortSignal): Promise<any> {
-    const requestConfig = this.addInterceptors({
-      method: 'POST',
-      credentials: 'include',
-      body: JSON.stringify(body),
-      signal,
-    });
+  async POST(endpoint: string, body: any, isFormData: boolean = false): Promise<any> {
+    const headers = isFormData ? null : 'application/json';
+    const requestConfig = this.addInterceptors(
+      {
+        method: 'POST',
+        credentials: 'include',
+        body: isFormData ? body : JSON.stringify(body),
+      },
+      headers,
+    );
+    console.log('Esto son los headers: ', requestConfig.headers);
     return this.handleRequest(endpoint, requestConfig);
   }
 
-  async PUT(endpoint: string, body: any, signal?: AbortSignal): Promise<any> {
+  async PUT(endpoint: string, body: any): Promise<any> {
     const requestConfig = this.addInterceptors({
       method: 'PUT',
       credentials: 'include',
       body: JSON.stringify(body),
-      signal,
     });
     return this.handleRequest(endpoint, requestConfig);
   }
-  async DELETE(endpoint: string, signal?: AbortSignal): Promise<any> {
+  async DELETE(endpoint: string): Promise<any> {
     const requestConfig = this.addInterceptors({
       method: 'DELETE',
       credentials: 'include',
-      signal
     });
     return this.handleRequest(endpoint, requestConfig);
   }

@@ -5,17 +5,64 @@ import { EntryInfo } from './(sections)/EntryInfo';
 import { StateInfo } from './(sections)/StateInfo';
 import { ServiceInfo } from './(sections)/ServiceInfo';
 import { DerelictInfo } from './(sections)/DerelictInfo';
-import { getAffiliate, obtainAffiliateDocuments } from '@/app/beneficiary/service';
+import { getAffiliate, getAllDocuments, obtainAffiliateDocuments } from '@/app/beneficiary/service';
 import { useBeneficiary } from '@/context/BeneficiaryContext';
 import { AffiliateDocuments } from './(sections)/Documents';
 import { useAlert } from '@/hooks/useAlerts';
+import { Button } from '@nextui-org/button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolderPlus, faRegistered } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip } from '@nextui-org/tooltip';
+import ModalRegistrationComponent from '@/components/modal-registration';
+import { apiClient } from '@/services';
 
 export default function AffiliateDataPage() {
   const [affiliate, setAffiliate] = useState<any>({});
   const [documents, setDocuments] = useState<any>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [allDocuments, setAllDocuments] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { beneficiaryData, error } = useBeneficiary();
 
   const { Alert } = useAlert();
+  const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
+
+  const handleDocumentRecord = async () => {
+    const response = await getAllDocuments();
+    setAllDocuments(response.data);
+    toggleDialog();
+  };
+
+  const registerFile = async (file: any, selectedKey: any) => {
+    const formData = new FormData();
+    formData.append('documentPdf', file);
+    try {
+      setIsLoading(true);
+      const response = await apiClient.POST(
+        `/api/affiliates/${affiliate.id}/document/${selectedKey}/createOrUpdate`,
+        formData,
+        true,
+      );
+      console.log(response);
+      const affiliateId = beneficiaryData.personAffiliate[0].typeId;
+      const res = await obtainAffiliateDocuments(affiliateId);
+      setDocuments(res.data);
+      Alert({
+        message: 'Documento registrado exitosamente',
+        variant: 'success',
+      });
+    } catch (e: any) {
+      Alert({
+        message: 'Ocurrió un error al registrar el documento',
+        variant: 'error',
+      });
+      console.log(e);
+      console.error('Error al cargar el archivo');
+    } finally {
+      setIsLoading(false);
+      toggleDialog();
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +71,7 @@ export default function AffiliateDataPage() {
           const affiliateId = beneficiaryData.personAffiliate[0].typeId;
           const [affiliateData, documentsData] = await Promise.all([
             getAffiliate(`${affiliateId}`),
-            obtainAffiliateDocuments(`${beneficiaryData.id}`),
+            obtainAffiliateDocuments(`${affiliateId}`),
           ]);
           if (!affiliateData.error) {
             const data = affiliateData.data;
@@ -34,7 +81,7 @@ export default function AffiliateDataPage() {
           }
           if (!documentsData.error) {
             const data = documentsData.data;
-            setDocuments(documentsData);
+            setDocuments(data);
           } else {
             Alert({ message: affiliateData.message, variant: 'error' });
           }
@@ -68,8 +115,16 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <DerelictInfo affiliate={affiliate} />
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mr-3">
         <h1 className="text-md uppercase font-semibold">Documentos presentados</h1>
+        <Tooltip content="Registrar nuevo documento">
+          <Button
+            endContent={<FontAwesomeIcon icon={faFolderPlus} size="xl" />}
+            onPress={handleDocumentRecord}
+          >
+            CREAR
+          </Button>
+        </Tooltip>
       </div>
       <Divider className="bg-gray-400 mb-5 w-full" />
       <div className="px-3 py-1">
@@ -79,6 +134,13 @@ export default function AffiliateDataPage() {
           </div>
         </div>
       </div>
+      <ModalRegistrationComponent
+        open={isDialogOpen}
+        onOpenChange={toggleDialog}
+        data={allDocuments}
+        action={registerFile}
+        loading={isLoading}
+      />
     </div>
   );
 }
