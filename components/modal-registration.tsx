@@ -1,7 +1,7 @@
-import { Autocomplete, AutocompleteItem } from '@nextui-org/autocomplete';
-import { Button } from '@nextui-org/button';
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/modal';
-import { useState } from 'react';
+import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
+import { Button } from "@nextui-org/button";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { useState } from "react";
 
 interface ModalProps {
   open: boolean;
@@ -20,6 +20,7 @@ export default function ModalRegistrationComponent(props: ModalProps) {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileObtained = event.target.files?.[0];
+
     if (fileObtained) {
       setFile(fileObtained);
       setFileError(false);
@@ -40,6 +41,7 @@ export default function ModalRegistrationComponent(props: ModalProps) {
 
   const handleUpload = () => {
     let hasError = false;
+
     if (!selectedKey) {
       setShowError(true);
       hasError = true;
@@ -68,28 +70,28 @@ export default function ModalRegistrationComponent(props: ModalProps) {
                 <Autocomplete
                   isRequired
                   defaultItems={data}
+                  errorMessage={showError ? "Por favor seleccione un documento" : ""}
+                  isInvalid={showError}
                   label="Documentos"
                   placeholder="Busque un documento"
-                  onSelectionChange={onSelectionChange}
                   onBlur={handleBlur}
-                  errorMessage={showError ? 'Por favor seleccione un documento' : ''}
-                  isInvalid={showError}
+                  onSelectionChange={onSelectionChange}
                 >
                   {(data: any) => <AutocompleteItem key={data.id}>{data.name}</AutocompleteItem>}
                 </Autocomplete>
                 <div>
                   <input
+                    className={fileError ? "border-red-500" : ""}
+                    style={{
+                      display: "block",
+                      border: fileError ? "1px solid red" : "",
+                    }}
                     type="file"
                     onChange={handleFileChange}
-                    className={fileError ? 'border-red-500' : ''}
-                    style={{
-                      display: 'block',
-                      border: fileError ? '1px solid red' : '',
-                    }}
                   />
                   {fileError && (
-                    <span className="text-xs mt-0 pt-0" style={{ color: '#f21260' }}>
-                      Por favor seleccione un archivo{' '}
+                    <span className="text-xs mt-0 pt-0" style={{ color: "#f21260" }}>
+                      Por favor seleccione un archivo{" "}
                     </span>
                   )}
                 </div>

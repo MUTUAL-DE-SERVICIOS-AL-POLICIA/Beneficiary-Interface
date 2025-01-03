@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function NotFound() {
   return (
@@ -11,7 +11,7 @@ export default function NotFound() {
           <Link
             className="text-blue-600 hover:underline"
             href={{
-              pathname: '/',
+              pathname: "/",
             }}
           >
             Volver al inicio

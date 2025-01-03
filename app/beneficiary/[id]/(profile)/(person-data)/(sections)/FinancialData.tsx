@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { InputCustom } from "@/components/input";
 
 interface FinancialDataProps {
@@ -12,26 +12,24 @@ export const FinancialData: React.FC<FinancialDataProps> = ({ beneficiary }) => 
       <div className="flex flex-col w-full space-y-2">
         <InputCustom
           label="Número de cuenta"
-          value={beneficiary.accountNumber ?? "Sin dato"}
           type="text"
+          value={beneficiary.accountNumber ?? "Sin dato"}
         />
       </div>
       <div className="flex flex-col w-full space-y-2">
-        {
-          (beneficiary.financialEntity && beneficiary.financialEntity.status) && (
-            <InputCustom
-              label="Entidad financiera"
-              value={beneficiary.financialEntity.name ?? "Sin dato"}
-              type="text"
-            />
-          )
-        }
+        {beneficiary.financialEntity && beneficiary.financialEntity.status && (
+          <InputCustom
+            label="Entidad financiera"
+            type="text"
+            value={beneficiary.financialEntity.name ?? "Sin dato"}
+          />
+        )}
       </div>
       <div className="space-y-2">
         <InputCustom
           label="Estado Sigep"
-          value={beneficiary.sigepStatus ?? "Sin dato"}
           type="text"
+          value={beneficiary.sigepStatus ?? "Sin dato"}
         />
       </div>
     </div>

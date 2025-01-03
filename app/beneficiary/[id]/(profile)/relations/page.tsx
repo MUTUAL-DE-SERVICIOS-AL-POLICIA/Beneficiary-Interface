@@ -1,11 +1,5 @@
+"use client";
 
-"use client"
-
-
-export default function RelationsPage () {
-  return (
-    <div className="flex-col">
-      Relaciones
-    </div>
-  )
+export default function RelationsPage() {
+  return <div className="flex-col">Relaciones</div>;
 }

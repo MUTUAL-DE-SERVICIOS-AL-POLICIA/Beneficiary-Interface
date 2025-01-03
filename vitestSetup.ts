@@ -1,4 +1,4 @@
-import { beforeAll, vi } from 'vitest';
+import { beforeAll, vi } from "vitest";
 
 // beforeAll( () => {
 //    vi.mock("next/navigation", () => require("next-router-mock"))
@@ -6,7 +6,7 @@ import { beforeAll, vi } from 'vitest';
 
 beforeAll(() => {
   HTMLCanvasElement.prototype.getContext = () => null;
-  vi.mock('next/navigation', () => ({
+  vi.mock("next/navigation", () => ({
     _esModule: true,
     useRouter: () => ({
       push: vi.fn(),
@@ -21,7 +21,7 @@ beforeAll(() => {
       },
     }),
     usePathname: () => ({
-      pahtname: '',
+      pahtname: "",
     }),
   }));
 });

@@ -1,15 +1,11 @@
-'use server';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-
-const host = process.env.NEXT_PUBLIC_SERVER_FRONTEND;
-const port = process.env.LOGIN_FRONTEND_PORT;
+"use server";
+import { cookies } from "next/headers";
 
 export const checkCookie = async () => {
-  const cookie = await getCookie('msp');
+  const cookie = await getCookie("msp");
+
   if (cookie == undefined) {
-    console.log('Sin cookie');
-    // redirect(`http://${host}:${port}/`);
+    console.log("Sin cookie");
   }
   if (cookie) return cookie;
 };
