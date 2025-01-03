@@ -842,6 +842,20 @@
     "@react-aria/interactions" "3.21.3"
     "@react-aria/utils" "3.24.1"
 
+"@nextui-org/breadcrumbs@^2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@nextui-org/breadcrumbs/-/breadcrumbs-2.2.5.tgz#bd1122e2c1d97ad15518a1c10e3a1bafd5cbf878"
+  integrity sha512-hNhObcXlBu3itLdkZ70f/ZiKZt8VI+neolZFf9Ay7zs0p0fQKmNsDcd1Bj38DT652k+OYi/vALpR8f3Fa9WQsA==
+  dependencies:
+    "@nextui-org/react-utils" "2.1.2"
+    "@nextui-org/shared-icons" "2.1.1"
+    "@nextui-org/shared-utils" "2.1.2"
+    "@react-aria/breadcrumbs" "3.5.19"
+    "@react-aria/focus" "3.19.0"
+    "@react-aria/utils" "3.26.0"
+    "@react-types/breadcrumbs" "3.7.9"
+    "@react-types/shared" "3.26.0"
+
 "@nextui-org/button@2.0.37":
   version "2.0.37"
   resolved "https://registry.yarnpkg.com/@nextui-org/button/-/button-2.0.37.tgz#a85397a748adfbc9fc8e5365b2a608b6c00f7720"
@@ -1942,6 +1956,18 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31"
   integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
 
+"@react-aria/breadcrumbs@3.5.19":
+  version "3.5.19"
+  resolved "https://registry.yarnpkg.com/@react-aria/breadcrumbs/-/breadcrumbs-3.5.19.tgz#e0a67e0e7017089fa0ee5eadd51a6da505b94cd4"
+  integrity sha512-mVngOPFYVVhec89rf/CiYQGTfaLRfHFtX+JQwY7sNYNqSA+gO8p4lNARe3Be6bJPgH+LUQuruIY9/ZDL6LT3HA==
+  dependencies:
+    "@react-aria/i18n" "^3.12.4"
+    "@react-aria/link" "^3.7.7"
+    "@react-aria/utils" "^3.26.0"
+    "@react-types/breadcrumbs" "^3.7.9"
+    "@react-types/shared" "^3.26.0"
+    "@swc/helpers" "^0.5.0"
+
 "@react-aria/button@3.11.0":
   version "3.11.0"
   resolved "https://registry.yarnpkg.com/@react-aria/button/-/button-3.11.0.tgz#cb7790db23949ec9c1e698fa531ee5471cf2b515"
@@ -2225,6 +2251,18 @@
     "@react-aria/utils" "^3.24.1"
     "@react-types/link" "^3.5.5"
     "@react-types/shared" "^3.23.1"
+    "@swc/helpers" "^0.5.0"
+
+"@react-aria/link@^3.7.7":
+  version "3.7.7"
+  resolved "https://registry.yarnpkg.com/@react-aria/link/-/link-3.7.7.tgz#5879c75068b63d55353b3e96b4fda0fa8753d1ad"
+  integrity sha512-eVBRcHKhNSsATYWv5wRnZXRqPVcKAWWakyvfrYePIKpC3s4BaHZyTGYdefk8ZwZdEOuQZBqLMnjW80q1uhtkuA==
+  dependencies:
+    "@react-aria/focus" "^3.19.0"
+    "@react-aria/interactions" "^3.22.5"
+    "@react-aria/utils" "^3.26.0"
+    "@react-types/link" "^3.5.9"
+    "@react-types/shared" "^3.26.0"
     "@swc/helpers" "^0.5.0"
 
 "@react-aria/listbox@3.12.1":
@@ -2988,6 +3026,14 @@
   dependencies:
     "@react-types/shared" "^3.23.1"
 
+"@react-types/breadcrumbs@3.7.9", "@react-types/breadcrumbs@^3.7.9":
+  version "3.7.9"
+  resolved "https://registry.yarnpkg.com/@react-types/breadcrumbs/-/breadcrumbs-3.7.9.tgz#c75eae6158bd3631854bff7521c2373b42b0e37c"
+  integrity sha512-eARYJo8J+VfNV8vP4uw3L2Qliba9wLV2bx9YQCYf5Lc/OE5B/y4gaTLz+Y2P3Rtn6gBPLXY447zCs5i7gf+ICg==
+  dependencies:
+    "@react-types/link" "^3.5.9"
+    "@react-types/shared" "^3.26.0"
+
 "@react-types/button@3.10.1", "@react-types/button@^3.10.1":
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/@react-types/button/-/button-3.10.1.tgz#fc7ada2e83bc661b31c1473a82ec86dc11de057c"
@@ -3105,6 +3151,13 @@
   integrity sha512-2WyaVmm1qr9UrSG3Dq6iz+2ziuVp+DH8CsYZ9CA6aNNb6U18Hxju3LTPb4a5gM0eC7W0mQGNBmrgGlAdDZEJOw==
   dependencies:
     "@react-types/shared" "^3.24.1"
+
+"@react-types/link@^3.5.9":
+  version "3.5.9"
+  resolved "https://registry.yarnpkg.com/@react-types/link/-/link-3.5.9.tgz#bf61ff2780581de03920e6e43260844a81a38d2f"
+  integrity sha512-JcKDiDMqrq/5Vpn+BdWQEuXit4KN4HR/EgIi3yKnNbYkLzxBoeQZpQgvTaC7NEQeZnSqkyXQo3/vMUeX/ZNIKw==
+  dependencies:
+    "@react-types/shared" "^3.26.0"
 
 "@react-types/listbox@^3.4.9":
   version "3.5.1"
@@ -6543,6 +6596,11 @@ prettier-linter-helpers@^1.0.0:
   integrity sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==
   dependencies:
     fast-diff "^1.1.2"
+
+prettier@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.4.2.tgz#a5ce1fb522a588bf2b78ca44c6e6fe5aa5a2b13f"
+  integrity sha512-e9MewbtFo+Fevyuxn/4rrcDAaq0IYxPGLvObpQjiZBMAzB9IGmzlnG9RZy3FFas+eBMu2vA0CszMeduow5dIuQ==
 
 pretty-format@^27.0.2:
   version "27.5.1"

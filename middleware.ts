@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
+
 import { buildBackendUrl } from './helpers/utils';
 
 export const middleware = (request: NextRequest) => {
@@ -29,7 +30,9 @@ export const middleware = (request: NextRequest) => {
     if (request.nextUrl.pathname == '/') {
       if (token) {
         const url = request.nextUrl.clone();
+
         url.pathname = '/beneficiaries';
+
         return NextResponse.redirect(url);
       } else {
         return NextResponse.redirect(constructedURL);
@@ -54,12 +57,15 @@ export const middleware = (request: NextRequest) => {
         return NextResponse.next();
       } else {
         const url = request.nextUrl.clone();
+
         url.pathname = '/login';
+
         return NextResponse.redirect(constructedURL);
       }
     }
   } catch (e) {
     console.log('Error verficando token en middleware');
+
     return NextResponse.redirect(constructedURL);
   }
 };

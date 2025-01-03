@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -9,10 +9,10 @@ export default function NotFound() {
         <p className="mb-5">Lo sentimos, la página que está buscando no existe.</p>
         <p className="text-xl text-gray-500">
           <Link
+            className="text-blue-600 hover:underline"
             href={{
               pathname: '/',
             }}
-            className="text-blue-600 hover:underline"
           >
             Volver al inicio
           </Link>

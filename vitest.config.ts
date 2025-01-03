@@ -1,6 +1,7 @@
+import path from 'path';
+
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -17,6 +18,7 @@ export default defineConfig({
       if (log.includes('Warning:') && type === 'stderr') {
         return false;
       }
+
       return true;
     },
   },
