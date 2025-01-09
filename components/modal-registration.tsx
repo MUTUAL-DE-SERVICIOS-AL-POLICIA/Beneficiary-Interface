@@ -61,6 +61,7 @@ export default function ModalRegistrationComponent(props: ModalProps) {
         isKeyboardDismissDisabled={true}
         isOpen={open}
         onOpenChange={onOpenChange}
+        size="5xl"
       >
         <ModalContent>
           {(onClose) => (

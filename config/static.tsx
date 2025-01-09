@@ -83,14 +83,14 @@ export const sidebarConfig: SidebarConfig = {
       icon: <FontAwesomeIcon icon={faUserNurse} size="lg" />,
       path: "/affiliate-data",
     },
-    {
-      topTitle: "Listado de los beneficiarios",
-      title: "BENEFICIARIOS",
-      description: "Listado de beneficiarios",
-      icon: <FontAwesomeIcon icon={faPeopleGroup} size="lg" />,
-      customKey: "menu-3",
-      path: "/relations",
-    },
+    // {
+    //   topTitle: "Listado de los beneficiarios",
+    //   title: "BENEFICIARIOS",
+    //   description: "Listado de beneficiarios",
+    //   icon: <FontAwesomeIcon icon={faPeopleGroup} size="lg" />,
+    //   customKey: "menu-3",
+    //   path: "/relations",
+    // },
     // {
     //   topTitle: 'Listado de aportes',
     //   title: 'APORTES',

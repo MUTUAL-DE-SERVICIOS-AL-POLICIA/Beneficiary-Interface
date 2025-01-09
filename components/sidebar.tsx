@@ -73,7 +73,9 @@ export default function Sidebar() {
               {beneficiaryData.personAffiliate && beneficiaryData.personAffiliate.length > 0 && (
                 <div className="flex gap-1">
                   <p className="font-semibold text-default-800 text-small">NUP:</p>
-                  <p className="text-default-600 text-small">{beneficiaryData.id}</p>
+                  <p className="text-default-600 text-small">
+                    {beneficiaryData.personAffiliate[0].typeId}
+                  </p>
                 </div>
               )}
               <div className="flex gap-1">

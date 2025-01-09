@@ -184,7 +184,7 @@ export const TableComponent = ({
           <Input
             isClearable
             classNames={classNames}
-            placeholder="Buscar por ..."
+            placeholder="Buscar por nombres, apellidos o carnet de identidad"
             size="sm"
             startContent={<FontAwesomeIcon className="text-sm" icon={faSearch} size="sm" />}
             value={filterValue}

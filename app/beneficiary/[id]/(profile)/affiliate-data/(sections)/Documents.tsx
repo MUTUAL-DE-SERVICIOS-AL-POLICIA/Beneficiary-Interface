@@ -87,34 +87,24 @@ const AffiliateDocuments = React.memo(({ affiliate, documents }: AffiliateDocume
             onChange={setGroupSelected}
           >
             {documents.documentsAffiliate.length >= 0 &&
-              documents.documentsAffiliate.map((document: any) => (
-                <Checkbox
+              documents.documentsAffiliate.map((document: any, index: number) => (
+                <div
                   key={document.procedureDocumentId}
-                  classNames={{
-                    base: cn(
-                      "inline-flex max-w-full w-full bg-content1 m-0 border-gray-400",
-                      "hover:bg-content3 dark:hover:border-lime-400 bg-content2 items-center justify-start",
-                      "cursor-pointer rounded-lg gap-2 p-4 border",
-                      "data-[selected=true]:border",
-                    ),
-                    label: "w-full",
-                  }}
-                  color="default"
-                  radius="sm"
-                  size="lg"
-                  value={document.procedureDocumentId}
-                  defaultSelected
-                  // onValueChange={(isSelected) => {
-                  //   if (isSelected) {
-                  //     handleDownloadDocument(document.procedureDocumentId);
-                  //   }
-                  // }}
+                  className={cn(
+                    "flex max-w-full w-full bg-content1 m-0 border-gray-400 items-center",
+                    "hover:bg-content3 dark:hover:border-lime-400 bg-content2 justify-between",
+                    "cursor-pointer rounded-lg gap-2 p-4 border",
+                    groupSelected.includes(index + 1) && "border-selected",
+                  )}
                 >
                   <div className="w-full flex justify-between gap-3">
-                    <span className="text-sm uppercase">
-                      {document.name}
-                      <b>&nbsp;({document.shortened})</b>
-                    </span>
+                    <div className="flex flex-row items-start gap-3">
+                      <span className="text-md font-bold">{index + 1} &nbsp;</span>
+                      <span className="text-sm uppercase">
+                        {document.name}
+                        <b>&nbsp;({document.shortened})</b>
+                      </span>
+                    </div>
                     <div className="flex flex-row items-end gap-1">
                       <Tooltip content="Visualizar documento">
                         <Button
@@ -136,7 +126,7 @@ const AffiliateDocuments = React.memo(({ affiliate, documents }: AffiliateDocume
                       </Tooltip>
                     </div>
                   </div>
-                </Checkbox>
+                </div>
               ))}
           </CheckboxGroup>
         </div>
