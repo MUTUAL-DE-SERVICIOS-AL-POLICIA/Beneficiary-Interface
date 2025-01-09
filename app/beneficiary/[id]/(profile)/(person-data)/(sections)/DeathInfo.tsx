@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { InputCustom } from "@/components/input";
 
 interface DeathInfoProps {
@@ -12,15 +12,15 @@ export const DeathInfo: React.FC<DeathInfoProps> = ({ beneficiary }) => (
       <div className="flex flex-col w-1/2 space-y-2">
         <InputCustom
           label="Nro certificado"
-          value={beneficiary.deathCertificateNumber ?? 'Sin dato'}
           type="text"
+          value={beneficiary.deathCertificateNumber ?? "Sin dato"}
         />
       </div>
       <div className="flex flex-col w-1/2 space-y-2">
         <InputCustom
           label="Fecha fallecimiento"
-          value={beneficiary.dateDeath ?? 'Sin dato'}
           type="date"
+          value={beneficiary.dateDeath ?? "Sin dato"}
         />
       </div>
     </div>
@@ -28,8 +28,8 @@ export const DeathInfo: React.FC<DeathInfoProps> = ({ beneficiary }) => (
       <div className="flex flex-col w-full space-y-2 mt-6">
         <InputCustom
           label="Motivo fallecimiento"
-          value={beneficiary.reasonDeath ?? 'Sin dato'}
           type="text"
+          value={beneficiary.reasonDeath ?? "Sin dato"}
         />
       </div>
     </div>

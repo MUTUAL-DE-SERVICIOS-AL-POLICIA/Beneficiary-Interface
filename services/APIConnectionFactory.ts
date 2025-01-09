@@ -1,4 +1,4 @@
-import { APIConnection } from './APIConnection';
+import { APIConnection } from "./APIConnection";
 
 export abstract class APIConnectionFactory {
   public abstract createAPIConnection(): APIConnection;

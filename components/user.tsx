@@ -1,28 +1,23 @@
 "use client";
-import { apiServerFrontend } from "@/services";
 import { Avatar, AvatarIcon } from "@nextui-org/avatar";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 
-export default function UserComponent () {
+import { apiServerFrontend } from "@/services";
 
+export default function UserComponent() {
   const handleLogout = async () => {
-    const response = await apiServerFrontend.POST('/api/logout', {
-    })
-    console.log(response)
-    if(response.ok) {
+    const response = await apiServerFrontend.POST("/api/logout", {});
+
+    console.log(response);
+    if (response.ok) {
       window.location.reload();
     }
-  }
+  };
 
   return (
     <Dropdown placement="bottom-start">
       <DropdownTrigger>
-        <Avatar
-          isBordered
-          as="button"
-          className="transition-transform"
-          icon={<AvatarIcon />}
-        />
+        <Avatar isBordered as="button" className="transition-transform" icon={<AvatarIcon />} />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
         <DropdownItem key="logout" color="danger" onClick={handleLogout}>
@@ -30,5 +25,5 @@ export default function UserComponent () {
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
-  )
+  );
 }

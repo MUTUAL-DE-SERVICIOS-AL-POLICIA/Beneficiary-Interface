@@ -6,15 +6,15 @@ interface Props {
 }
 
 export default function fullName({ first_name, second_name, last_name, mothers_last_name }: Props) {
-  return `${first_name ?? ''}  ${second_name ?? ''} ${last_name ?? ''} ${mothers_last_name ?? ''}`;
+  return `${first_name ?? ""}  ${second_name ?? ""} ${last_name ?? ""} ${mothers_last_name ?? ""}`;
 }
 
 interface PropsBuildBackendUrl {
-  host: string
-  port: string
-  path?: string
+  host: string;
+  port: string;
+  path?: string;
 }
 
-export function buildBackendUrl({ host, port, path}: PropsBuildBackendUrl) {
-  return `http://${host}:${port}/${path}`
+export function buildBackendUrl({ host, port, path }: PropsBuildBackendUrl) {
+  return `http://${host}:${port}/${path}`;
 }

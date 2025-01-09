@@ -1,6 +1,6 @@
-import { Button } from '@nextui-org/button';
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@nextui-org/modal';
-import { useState } from 'react';
+import { Button } from "@nextui-org/button";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { useState } from "react";
 
 interface ModalProps {
   open: boolean;
@@ -16,6 +16,7 @@ export default function ModalComponent(props: ModalProps) {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileObtained = event.target.files?.[0];
+
     if (fileObtained) {
       // uploadFile(file);
       setFile(fileObtained);
@@ -25,6 +26,7 @@ export default function ModalComponent(props: ModalProps) {
 
   const handleUpload = () => {
     let hasError = false;
+
     if (!file) {
       setFileError(true);
       hasError = true;
@@ -32,6 +34,7 @@ export default function ModalComponent(props: ModalProps) {
     if (hasError) return;
     uploadFile(file);
   };
+
   return (
     <>
       <Modal
@@ -47,17 +50,17 @@ export default function ModalComponent(props: ModalProps) {
               <ModalBody>
                 <div>
                   <input
+                    className={fileError ? "border-red-500" : ""}
+                    style={{
+                      display: "block",
+                      border: fileError ? "1px solid red" : "",
+                    }}
                     type="file"
                     onChange={handleFileChange}
-                    className={fileError ? 'border-red-500' : ''}
-                    style={{
-                      display: 'block',
-                      border: fileError ? '1px solid red' : '',
-                    }}
                   />
                   {fileError && (
-                    <span className="text-xs mt-0 pt-0" style={{ color: '#f21260' }}>
-                      Por favor seleccione un archivo{' '}
+                    <span className="text-xs mt-0 pt-0" style={{ color: "#f21260" }}>
+                      Por favor seleccione un archivo{" "}
                     </span>
                   )}
                 </div>

@@ -1,11 +1,9 @@
-"use client"
+"use client";
 
-export default function PhotoPage () {
+export default function PhotoPage() {
   return (
     <>
-      <div className="flex-col">
-        Aca se mostrarán las fotos
-      </div>
+      <div className="flex-col">Aca se mostrarán las fotos</div>
     </>
-  )
+  );
 }

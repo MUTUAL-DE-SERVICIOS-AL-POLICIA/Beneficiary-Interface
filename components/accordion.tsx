@@ -1,25 +1,26 @@
-import { Accordion, AccordionItem } from '@nextui-org/accordion';
-import { Card, CardBody } from '@nextui-org/card';
-import { Listbox, ListboxItem, ListboxSection } from '@nextui-org/listbox';
-import { SidebarItem } from '@/config/static';
-import { useState } from 'react';
+import { Accordion, AccordionItem } from "@nextui-org/accordion";
+import { Card, CardBody } from "@nextui-org/card";
+import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
+import { useState } from "react";
+
+import { SidebarItem } from "@/config/static";
 
 export const AccordionComponent = (sidebarItem: SidebarItem) => {
-  const { selectedPath, handleSelection, activeItem, setActiveItem } = sidebarItem;
+  const { handleSelection, activeItem, setActiveItem } = sidebarItem;
 
   const [expandedKey, setExpandedKey] = useState<string | number | null>(null);
 
   const itemClasses = {
-    base: '',
-    title: 'my-0 font-bold text-medium',
-    trigger: '',
-    indicator: 'text-medium',
+    base: "",
+    title: "my-0 font-bold text-medium",
+    trigger: "",
+    indicator: "text-medium",
   };
 
   const classNames = {
-    title: 'text-small text-default-400',
-    description: 'font-semibold text-xs text-default-500',
-    selectedIcon: 'primary',
+    title: "text-small text-default-400",
+    description: "font-semibold text-xs text-default-500",
+    selectedIcon: "primary",
   };
 
   const toggleItem = (key: string | number) => {
@@ -31,40 +32,47 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
       <CardBody>
         <Accordion
           isCompact
-          showDivider={false}
           itemClasses={itemClasses}
           selectedKeys={expandedKey ? new Set([expandedKey]) : new Set()}
+          showDivider={false}
           onSelectionChange={(keys) => {
             const key = Array.from(keys)[0];
+
             setExpandedKey(key.toString() || null);
           }}
         >
           <AccordionItem
-            key={'AccordionItem' + sidebarItem.customKey}
+            key={"AccordionItem" + sidebarItem.customKey}
+            className={`
+              ${itemClasses.base}
+              mb-3 mt-0 pt-0 pb-3 overflow-hidden
+              rounded-lg transition duration-300 ease-in-out
+              ${activeItem === sidebarItem.customKey ? "bg-default-300" : "bg-default-100"}
+            `}
             textValue="procedures"
             title={
               <Listbox
-                variant="flat"
                 aria-label="listbox menu with section"
-                onAction={() => {
-                  handleSelection(sidebarItem.path);
-                  setActiveItem(sidebarItem.customKey);
-                  toggleItem(sidebarItem.customKey);
-                }}
                 className={`
                   ${itemClasses.title}
                   ${itemClasses.trigger}
                   px-3 py-0 h-14 my-0 rounded-small
                   transition duration-300 ease-in-out
-                  ${activeItem === sidebarItem.customKey ? 'bg-default-300' : 'bg-default-100'}
+                  ${activeItem === sidebarItem.customKey ? "bg-default-300" : "bg-default-100"}
                 `}
+                variant="flat"
+                onAction={() => {
+                  handleSelection(sidebarItem.path);
+                  setActiveItem(sidebarItem.customKey);
+                  toggleItem(sidebarItem.customKey);
+                }}
               >
                 <ListboxSection title={sidebarItem.topTitle}>
                   <ListboxItem
-                    key={'ListboxItem' + sidebarItem.customKey}
+                    key={"ListboxItem" + sidebarItem.customKey}
+                    className="m-0 p-0"
                     description={sidebarItem.description}
                     startContent={sidebarItem.icon}
-                    className="m-0 p-0"
                   >
                     {sidebarItem.title}
                   </ListboxItem>
@@ -76,23 +84,17 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
               setActiveItem(sidebarItem.customKey);
               toggleItem(sidebarItem.customKey);
             }}
-            className={`
-              ${itemClasses.base}
-              mb-3 mt-0 pt-0 pb-3 overflow-hidden
-              rounded-lg transition duration-300 ease-in-out
-              ${activeItem === sidebarItem.customKey ? 'bg-default-300' : 'bg-default-100'}
-            `}
           >
             {sidebarItem.subMenu && sidebarItem.subMenu.length && (
-              <Listbox variant="flat" aria-label="sub listbox">
+              <Listbox aria-label="sub listbox" variant="flat">
                 <ListboxSection>
                   {sidebarItem.subMenu.map((menu) => (
                     <ListboxItem
                       key={menu.key}
-                      title={menu.topTitle}
+                      classNames={classNames}
                       description={menu.title}
                       endContent={menu.icon}
-                      classNames={classNames}
+                      title={menu.topTitle}
                       onClick={() => handleSelection(menu.path)}
                     />
                   ))}

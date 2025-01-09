@@ -1,15 +1,10 @@
-import {
-  Navbar as NextUINavbar,
-  NavbarContent,
-  NavbarBrand,
-  NavbarItem,
-} from '@nextui-org/navbar';
-import NextLink from 'next/link';
+import { Navbar as NextUINavbar, NavbarContent, NavbarBrand, NavbarItem } from "@nextui-org/navbar";
+import NextLink from "next/link";
 
-import { ThemeSwitch } from '@/components/theme-switch';
-import { Logo } from '@/components/icons';
-import UserComponent from './user';
+import UserComponent from "./user";
 
+import { ThemeSwitch } from "@/components/theme-switch";
+import { Logo } from "@/components/icons";
 
 export const Navbar = () => {
   return (
@@ -27,7 +22,7 @@ export const Navbar = () => {
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
         </NavbarItem>
-        <UserComponent/>
+        <UserComponent />
       </NavbarContent>
     </NextUINavbar>
   );

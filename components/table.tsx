@@ -1,14 +1,12 @@
-'use client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-import { faEllipsisVertical, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { Pagination } from '@nextui-org/pagination';
-import { Input } from '@nextui-org/input';
-import { Button } from '@nextui-org/button';
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/dropdown';
+"use client";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { faEllipsisVertical, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Pagination } from "@nextui-org/pagination";
+import { Input } from "@nextui-org/input";
+import { Button } from "@nextui-org/button";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 import {
   Table,
   TableColumn,
@@ -17,10 +15,11 @@ import {
   TableRow,
   TableCell,
   SortDescriptor,
-} from '@nextui-org/table';
-import { useDebounce } from 'use-debounce';
-import { Card } from '@nextui-org/card';
-import { useAlert } from '@/hooks/useAlerts';
+} from "@nextui-org/table";
+import { useDebounce } from "use-debounce";
+import { Card } from "@nextui-org/card";
+
+import { useAlert } from "@/hooks/useAlerts";
 
 export interface Column {
   id: number;
@@ -36,7 +35,7 @@ interface PropsTable {
   startPage: number;
   startRowsPerPage: number;
   getData: (rowsPerPage: number, page?: number, searchValue?: string | undefined) => Promise<any>;
-  error: boolean
+  error: boolean;
 }
 
 export const TableComponent = ({
@@ -46,20 +45,22 @@ export const TableComponent = ({
   startPage,
   startRowsPerPage,
   getData,
-  error
+  error,
 }: PropsTable) => {
   const router = useRouter();
-  const { Alert } = useAlert()
+  const { Alert } = useAlert();
 
-  const [filterValue, setFilterValue] = useState<string>('');
+  const [filterValue, setFilterValue] = useState<string>("");
   const [page, setPage] = useState(startPage);
   const [rowsPerPage, setRowsPerPage] = useState(startRowsPerPage);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: 'first_name', //TODO
-    direction: 'ascending',
+    column: "first_name", //TODO
+    direction: "ascending",
   });
   const [filtered, setFiltered] = useState<Item[]>(data);
-  const [all, setAll] = useState<number>(total);
+  const [all, setAll] = useState<number>(Number.isFinite(total) ? total : 0);
+  console.log("total: ", total);
+  console.log("all: ", all);
 
   type Item = (typeof data)[0];
 
@@ -73,10 +74,10 @@ export const TableComponent = ({
   };
 
   useEffect(() => {
-    if(error) {
-      Alert({ message: 'Error al obtener los datos', variant: 'error'})
+    if (error) {
+      Alert({ message: "Error al obtener los datos", variant: "error" });
     }
-  }, [error])
+  }, [error]);
 
   useEffect(() => {
     const fetchFilteredItems = async () => {
@@ -84,12 +85,13 @@ export const TableComponent = ({
         const searchValue = debouncedFilterValue.toLowerCase();
         // const { persons, total } = await getData(rowsPerPage, page, searchValue);
         const response = await getData(rowsPerPage, page, searchValue);
-        const persons = !response.error ? response.data.persons : []
-        const total = !response.error ? response.data.total : 0
+        const persons = !response.error ? response.data.persons : [];
+        const total = !response.error ? response.data.total : 0;
+
         setFiltered(persons);
-        setAll(total);
+        setAll(Number.isFinite(total) ? total : 0);
       } else {
-        setAll(total);
+        setAll(Number.isFinite(total) ? total : 0);
       }
     };
 
@@ -97,19 +99,24 @@ export const TableComponent = ({
   }, [debouncedFilterValue, rowsPerPage]);
 
   const sortedItems = useMemo(() => {
-    return [...filtered].sort((a: Item, b: Item) => {
-      const first = a[sortDescriptor.column as keyof Item] as number;
-      const second = b[sortDescriptor.column as keyof Item] as number;
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
-      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
-    });
+    console.log("filtered: ", filtered);
+    if (filtered !== undefined) {
+      return [...filtered].sort((a: Item, b: Item) => {
+        const first = a[sortDescriptor.column as keyof Item] as number;
+        const second = b[sortDescriptor.column as keyof Item] as number;
+        const cmp = first < second ? -1 : first > second ? 1 : 0;
+
+        return sortDescriptor.direction === "descending" ? -cmp : cmp;
+      });
+    } else return [];
   }, [sortDescriptor, filtered]);
 
   const handlePageChange = async (newPage: number) => {
     const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
     const response = await getData(rowsPerPage, newPage, searchValue);
-    const persons = !response.error ? response.data.persons : []
-    console.log("handlePageChange: ", persons)
+    const persons = !response.error ? response.data.persons : [];
+
+    console.log("handlePageChange: ", persons);
     setFiltered(persons);
     setPage(newPage);
   };
@@ -117,19 +124,20 @@ export const TableComponent = ({
   /* PAGINATION COMPONENT */
   const bottomContent = useMemo(() => {
     const classNames = {
-      wrapper: 'gap-1',
-      cursor: 'bg-foreground text-background font-bold w-15 text-small px-1 py-0',
-      item: 'w-15 px-1 text-small',
+      wrapper: "gap-1",
+      cursor: "bg-foreground text-background font-bold w-15 text-small px-1 py-0",
+      item: "w-15 px-1 text-small",
     };
+
     return (
-      <div data-testid="pagination" className="py-2 px-2 flex justify-between items-center">
+      <div className="py-2 px-2 flex justify-between items-center" data-testid="pagination">
         <Pagination
           showControls
+          classNames={classNames}
           color="default"
-          variant="light"
           page={page}
           total={pages}
-          classNames={classNames}
+          variant="light"
           onChange={handlePageChange}
         />
       </div>
@@ -140,9 +148,11 @@ export const TableComponent = ({
   const onRowsPerPageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPage(1);
     const newRowsPerPage = Number(e.target.value);
+
     setRowsPerPage(Number(newRowsPerPage));
     const response = await getData(newRowsPerPage);
-    const persons = !response.error ? response.data.persons : []
+    const persons = !response.error ? response.data.persons : [];
+
     setFiltered(persons);
   }, []);
 
@@ -150,36 +160,37 @@ export const TableComponent = ({
     if (value) {
       setFilterValue(value);
     } else {
-      setFilterValue('');
+      setFilterValue("");
     }
     setPage(1);
   }, []);
 
   const onClear = useCallback(() => {
-    setFilterValue('');
+    setFilterValue("");
     setFiltered(data);
     setRowsPerPage(10);
   }, [data]);
 
   const topContent = useMemo(() => {
     const classNames = {
-      base: 'w-full sm:max-w-[44%]',
-      inputWrapper: 'border-1',
+      base: "w-full sm:max-w-[44%]",
+      inputWrapper: "border-1",
     };
     const isDisabled = all < rowsPerPage;
+
     return (
       <div className="flex flex-col gap-4">
         <div className="flex justify-between gap-3 item-end">
           <Input
             isClearable
-            size="sm"
-            variant="bordered"
-            placeholder="Buscar por ..."
-            value={filterValue}
             classNames={classNames}
+            placeholder="Buscar por nombres, apellidos o carnet de identidad"
+            size="sm"
+            startContent={<FontAwesomeIcon className="text-sm" icon={faSearch} size="sm" />}
+            value={filterValue}
+            variant="bordered"
             onClear={onClear}
             onValueChange={onSearchChange}
-            startContent={<FontAwesomeIcon className="text-sm" size="sm" icon={faSearch} />}
           />
         </div>
         <div className="flex justify-between items-center">
@@ -189,10 +200,10 @@ export const TableComponent = ({
           <label className="flex items-center text default-400 text-small">
             Filas por página:
             <select
-              onChange={onRowsPerPageChange}
-              value={rowsPerPage}
               className="text-default-700 text-small text-black dark:text-white"
               disabled={isDisabled}
+              value={rowsPerPage}
+              onChange={onRowsPerPageChange}
             >
               <option value={startRowsPerPage}>{startRowsPerPage}</option>
               <option value={startRowsPerPage + 5}>{startRowsPerPage + 5}</option>
@@ -206,14 +217,15 @@ export const TableComponent = ({
 
   const renderCell = useCallback((item: Item, columnKey: any) => {
     const cellValue = item[columnKey];
+
     switch (columnKey) {
-      case 'actions':
+      case "actions":
         return (
           <div className="relative flex justify-center gap-2">
             <Dropdown className="bg-background border-1 border-default-200">
               <DropdownTrigger>
-                <Button data-testid="show" isIconOnly radius="full" size="sm" variant="light">
-                  <FontAwesomeIcon size="sm" icon={faEllipsisVertical} />
+                <Button isIconOnly data-testid="show" radius="full" size="sm" variant="light">
+                  <FontAwesomeIcon icon={faEllipsisVertical} size="sm" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu data-testid="menu">
@@ -230,14 +242,14 @@ export const TableComponent = ({
 
   const classNames = useMemo(
     () => ({
-      wrapper: ['max-h-[382px]', 'max-w-3xl'],
-      th: ['bg-transparent', 'text-default-500', 'border-b', 'border-divider'],
+      wrapper: ["max-h-[382px]", "max-w-3xl"],
+      th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
       td: [
-        'group-data-[first=true]:first:before:rounded-none',
-        'group-data-[first=true]:last:before:rounded-none',
-        'group-data-[middle=true]:before:rounded-none',
-        'group-data-[last=true]:first:before:rounded-none',
-        'group-data-[last=true]:last:before:rounded-none',
+        "group-data-[first=true]:first:before:rounded-none",
+        "group-data-[first=true]:last:before:rounded-none",
+        "group-data-[middle=true]:before:rounded-none",
+        "group-data-[last=true]:first:before:rounded-none",
+        "group-data-[last=true]:last:before:rounded-none",
       ],
     }),
     [],
@@ -248,31 +260,31 @@ export const TableComponent = ({
       <Table
         isCompact
         removeWrapper
-        shadow="lg"
         aria-label="Table of content"
-        selectionMode="single"
-        classNames={classNames}
-        topContent={topContent}
-        topContentPlacement="outside"
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
+        classNames={classNames}
         data-testid="beneficiaries-table"
+        selectionMode="single"
+        shadow="lg"
         sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
         onSortChange={setSortDescriptor}
       >
         <TableHeader columns={headerColumns}>
           {(column: Column) => (
             <TableColumn
               key={column.key}
+              align={column.key == "identityCard" ? "end" : "start"}
               allowsSorting={column.sortable}
               className="text-default-900 font-semibold"
-              align={column.key == 'identityCard' ? 'end' : 'start'}
             >
               {column.name}
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={'Sin datos'} items={sortedItems}>
+        <TableBody emptyContent={"Sin datos"} items={sortedItems}>
           {(item: Column) => (
             <TableRow key={item.id}>
               {(columnKey) => (

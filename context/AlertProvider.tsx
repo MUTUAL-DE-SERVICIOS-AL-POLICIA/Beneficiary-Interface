@@ -1,15 +1,13 @@
-"use client"
+"use client";
 
-import { ReactNode } from "react"
-import { SnackbarProvider } from "notistack"
-
+import { ReactNode } from "react";
+import { SnackbarProvider } from "notistack";
 
 interface FullScreenProviderContextType {
-  children: ReactNode
+  children: ReactNode;
 }
 
-export default function AlertProvider({
-  children,
-}: FullScreenProviderContextType) {
-  return <SnackbarProvider maxSnack={1}>{children}</SnackbarProvider>
+export default function AlertProvider({ children }: FullScreenProviderContextType) {
+  // @ts-ignore
+  return <SnackbarProvider maxSnack={1}>{children}</SnackbarProvider>;
 }

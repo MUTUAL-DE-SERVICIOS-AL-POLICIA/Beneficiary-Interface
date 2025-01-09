@@ -1,8 +1,10 @@
-import { ReactNode } from 'react';
-import Sidebar from '@/components/sidebar';
-import React from 'react';
-import { getBeneficiary } from '../service';
-import { BeneficiaryProvider } from '@/context/BeneficiaryContext';
+import { ReactNode } from "react";
+import React from "react";
+
+import { getBeneficiary } from "../service";
+
+import Sidebar from "@/components/sidebar";
+import { BeneficiaryProvider } from "@/context/BeneficiaryContext";
 
 interface BeneficiaryLayoutProps {
   children: ReactNode;

@@ -9,10 +9,10 @@ export default function NotFound() {
         <p className="mb-5">Lo sentimos, la página que está buscando no existe.</p>
         <p className="text-xl text-gray-500">
           <Link
-            href={{
-              pathname: '/',
-            }}
             className="text-blue-600 hover:underline"
+            href={{
+              pathname: "/",
+            }}
           >
             Volver al inicio
           </Link>
