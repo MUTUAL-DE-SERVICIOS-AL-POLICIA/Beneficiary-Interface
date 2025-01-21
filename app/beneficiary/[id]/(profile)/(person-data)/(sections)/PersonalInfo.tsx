@@ -1,8 +1,9 @@
 "use client";
 import { Checkbox } from "@nextui-org/checkbox";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 import { InputCustom } from "@/components/input";
+import { Person } from "@/domain";
 
 const fields = [
   { label: "Primer nombre", key: "firstName", order: 1 },
@@ -20,19 +21,15 @@ const fields = [
 const serviceFields = [{ label: "Lugar Nacimiento", key: "cityBirth", order: 8 }];
 
 interface PersonalInfoProps {
-  beneficiary: any;
+  person: Person;
 }
 
-export const PersonalInfo: React.FC<PersonalInfoProps> = ({ beneficiary }) => {
-  useEffect(() => {
-    console.log(beneficiary);
-  }, []);
-
-  const renderField = useCallback((beneficiary: any, label: string, key: any) => {
+export const PersonalInfo: React.FC<PersonalInfoProps> = ({ person }) => {
+  const renderField = useCallback((person: any, label: string, key: any) => {
     if (key === "isDuedateUndefined") {
       return (
         <div key={key} className="flex space-y-2 text-center justify-center">
-          <Checkbox color="default" isSelected={beneficiary[key]} radius="sm">
+          <Checkbox color="default" isSelected={person[key]} radius="sm">
             Indefinido
           </Checkbox>
         </div>
@@ -41,17 +38,14 @@ export const PersonalInfo: React.FC<PersonalInfoProps> = ({ beneficiary }) => {
       return (
         <div key={key} className="space-y-2">
           {serviceFields.find((elemento) => elemento.key === key) ? (
-            beneficiary[key] && beneficiary[key].status ? (
-              <InputCustom
-                label={label}
-                value={(beneficiary[key] && beneficiary[key].name) ?? "Sin dato"}
-              />
+            person[key] && person[key].status ? (
+              <InputCustom label={label} value={(person[key] && person[key].name) ?? "Sin dato"} />
             ) : (
               // TODO: mostrar una alerta
               <></>
             )
           ) : (
-            <InputCustom label={label} value={beneficiary[key]} />
+            <InputCustom label={label} value={person[key]} />
           )}
         </div>
       );
@@ -66,7 +60,7 @@ export const PersonalInfo: React.FC<PersonalInfoProps> = ({ beneficiary }) => {
     <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
       <legend className="text-sm uppercase px-2 font-semibold">Información Personal</legend>
       <div className="grid grid-cols-4 gap-6">
-        {allFields.map(({ label, key }) => renderField(beneficiary, label, key))}
+        {allFields.map(({ label, key }) => renderField(person, label, key))}
       </div>
     </fieldset>
   );

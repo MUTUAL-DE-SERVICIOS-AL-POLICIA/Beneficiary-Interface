@@ -64,7 +64,7 @@ export const middleware = (request: NextRequest) => {
       }
     }
   } catch (e) {
-    console.log("Error verficando token en middleware");
+    console.error("Error verficando token en middleware");
 
     return NextResponse.redirect(constructedURL);
   }

@@ -38,9 +38,6 @@ export class FetchService extends APIConnection {
       },
       headers,
     );
-
-    console.log("Esto son los headers: ", requestConfig.headers);
-
     return this.handleRequest(endpoint, requestConfig);
   }
 

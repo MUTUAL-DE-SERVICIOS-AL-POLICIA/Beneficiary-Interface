@@ -5,7 +5,7 @@ export const checkCookie = async () => {
   const cookie = await getCookie("msp");
 
   if (cookie == undefined) {
-    console.log("Sin cookie");
+    console.error("Sin cookie");
   }
   if (cookie) return cookie;
 };

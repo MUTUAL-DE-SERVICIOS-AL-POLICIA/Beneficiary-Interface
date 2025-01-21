@@ -8,6 +8,5 @@ export const checkIp = async () => {
   if (ip?.startsWith("::ffff:")) {
     return ip.replace("::ffff:", "");
   }
-  console.log(ip);
   if (ip) return ip;
 };

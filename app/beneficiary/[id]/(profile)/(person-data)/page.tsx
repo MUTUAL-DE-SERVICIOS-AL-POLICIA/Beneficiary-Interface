@@ -7,13 +7,13 @@ import { DeathInfo } from "./(sections)/DeathInfo";
 import { FinancialData } from "./(sections)/FinancialData";
 import { AddressInfo } from "./(sections)/AddressInfo";
 
-import { useBeneficiary } from "@/context/BeneficiaryContext";
+import { usePerson } from "@/hooks/usePerson";
 import { useAlert } from "@/hooks/useAlerts";
 
 export default function PersonDataPage() {
-  const [isEditing, setIsEditing] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
 
-  const { beneficiaryData, error } = useBeneficiary();
+  const { personData, error } = usePerson();
   const { Alert } = useAlert();
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function PersonDataPage() {
       </div>
       <Divider className="bg-gray-400 mb-5 w-full" />
       <div className="px-3 py-1">
-        <PersonalInfo beneficiary={beneficiaryData} />
+        <PersonalInfo person={personData} />
       </div>
       <div className="px-3 py-1">
         <div className="flex gap-6">
@@ -44,12 +44,12 @@ export default function PersonDataPage() {
             <AddressInfo />
           </div>
           <div className="flex flex-col w-1/2">
-            <DeathInfo beneficiary={beneficiaryData} />
+            <DeathInfo person={personData} />
           </div>
         </div>
       </div>
       <div className="px-3 py-1">
-        <FinancialData beneficiary={beneficiaryData} />
+        <FinancialData person={personData} />
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export const checkBiometricStatus = async () => {
 
 export const getRegisteredFingerprints = async (personId: number) => {
   try {
-    const response = await apiClient.GET(`/api/persons/showPersonFingerprint/${personId}`);
+    const response = await apiClient.GET(`persons/showPersonFingerprint/${personId}`);
     const statusCode = response.status;
     const responseData = await response.json();
 
@@ -53,7 +53,7 @@ export const getRegisteredFingerprints = async (personId: number) => {
 
 export const getAllFingerprintsIds = async () => {
   try {
-    const response = await apiClient.GET(`/api/persons/showListFingerprint`);
+    const response = await apiClient.GET(`persons/showListFingerprint`);
     const statusCode = response.status;
     const responseData = await response.json();
 
@@ -160,7 +160,7 @@ export const captureOneFingerprint = async () => {
 
 export const registerFingerprints = async (personId: number, fingerprints: any) => {
   try {
-    const response = await apiClient.POST("/api/persons/createPersonFingerprint", {
+    const response = await apiClient.POST("persons/createPersonFingerprint", {
       personId,
       fingerprints,
     });

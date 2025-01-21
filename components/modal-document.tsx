@@ -6,17 +6,19 @@ import { useState } from "react";
 interface ModalProps {
   open: boolean;
   onOpenChange: () => void;
-  data: Array<any>;
+  data?: Array<any>;
   action: (file: any, selectedKey: any) => void;
   loading: boolean;
+  isUpdated: boolean;
 }
 
-export default function ModalRegistrationComponent(props: ModalProps) {
-  const { open, onOpenChange, data, action, loading } = props;
+export function ModalDocument(props: ModalProps) {
+  const { open, onOpenChange, data, action, loading, isUpdated } = props;
   const [file, setFile] = useState<any>(undefined);
+  const [fileError, setFileError] = useState(false);
+
   const [selectedKey, setSelectedKey] = useState(null);
   const [showError, setShowError] = useState(false);
-  const [fileError, setFileError] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileObtained = event.target.files?.[0];
@@ -42,7 +44,7 @@ export default function ModalRegistrationComponent(props: ModalProps) {
   const handleUpload = () => {
     let hasError = false;
 
-    if (!selectedKey) {
+    if (!isUpdated && !selectedKey) {
       setShowError(true);
       hasError = true;
     }
@@ -61,25 +63,29 @@ export default function ModalRegistrationComponent(props: ModalProps) {
         isKeyboardDismissDisabled={true}
         isOpen={open}
         onOpenChange={onOpenChange}
-        size="5xl"
+        size="5xl" // primer diferencia
       >
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col">REGISTRAR NUEVO DOCUMENTO</ModalHeader>
+              <ModalHeader className="flex flex-col">
+                {isUpdated ? "ACTUALIZAR" : "REGISTRAR NUEVO"} DOCUMENTO
+              </ModalHeader>
               <ModalBody>
-                <Autocomplete
-                  isRequired
-                  defaultItems={data}
-                  errorMessage={showError ? "Por favor seleccione un documento" : ""}
-                  isInvalid={showError}
-                  label="Documentos"
-                  placeholder="Busque un documento"
-                  onBlur={handleBlur}
-                  onSelectionChange={onSelectionChange}
-                >
-                  {(data: any) => <AutocompleteItem key={data.id}>{data.name}</AutocompleteItem>}
-                </Autocomplete>
+                {!isUpdated && (
+                  <Autocomplete
+                    isRequired
+                    defaultItems={data}
+                    errorMessage={showError ? "Por favor seleccione un documento" : ""}
+                    isInvalid={showError}
+                    label="Documentos"
+                    placeholder="Busque un documento"
+                    onBlur={handleBlur}
+                    onSelectionChange={onSelectionChange}
+                  >
+                    {(data: any) => <AutocompleteItem key={data.id}>{data.name}</AutocompleteItem>}
+                  </Autocomplete>
+                )}
                 <div>
                   <input
                     className={fileError ? "border-red-500" : ""}

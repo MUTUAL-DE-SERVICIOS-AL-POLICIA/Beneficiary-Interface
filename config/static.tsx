@@ -1,6 +1,12 @@
 import {
   faFingerprint,
+  faHeartPulse,
+  faListCheck,
+  faMoneyBill,
   faPeopleGroup,
+  faPiggyBank,
+  faPuzzlePiece,
+  faRibbon,
   faUserNurse,
   faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
@@ -25,7 +31,7 @@ export interface SidebarItem {
   customKey: string | number;
   path: string;
   selectedPath?: string;
-  handleSelection?: any;
+  handleAction?: (path: string) => void;
   activeItem?: string | number;
   setActiveItem?: any;
 }
@@ -83,14 +89,14 @@ export const sidebarConfig: SidebarConfig = {
       icon: <FontAwesomeIcon icon={faUserNurse} size="lg" />,
       path: "/affiliate-data",
     },
-    // {
-    //   topTitle: "Listado de los beneficiarios",
-    //   title: "BENEFICIARIOS",
-    //   description: "Listado de beneficiarios",
-    //   icon: <FontAwesomeIcon icon={faPeopleGroup} size="lg" />,
-    //   customKey: "menu-3",
-    //   path: "/relations",
-    // },
+    {
+      topTitle: "Listado de los beneficiarios",
+      title: "BENEFICIARIOS",
+      description: "Listado de beneficiarios",
+      icon: <FontAwesomeIcon icon={faPeopleGroup} size="lg" />,
+      customKey: "menu-3",
+      path: "/relations",
+    },
     // {
     //   topTitle: 'Listado de aportes',
     //   title: 'APORTES',
@@ -99,50 +105,50 @@ export const sidebarConfig: SidebarConfig = {
     //   customKey: 'menu-4',
     //   path: ''
     // },
-    // {
-    //   topTitle: 'Trámites realizados',
-    //   title: 'TRÁMITES REALIZADOS',
-    //   description: 'Trámites realizados',
-    //   icon: <FontAwesomeIcon size="lg" icon={faListCheck} />,
-    //   customKey: 'menu-5',
-    //   path: '',
-    //   subMenu: [
-    //     {
-    //       topTitle: 'Trámites de',
-    //       title: 'FONDO DE RETIRO',
-    //       key: 'FR',
-    //       icon: <FontAwesomeIcon size="lg" icon={faPiggyBank} />,
-    //       path: ''
-    //     },
-    //     {
-    //       topTitle: 'Trámites de',
-    //       title: 'COMPLEMENTO ECONÓMICO',
-    //       key: 'CE',
-    //       icon: <FontAwesomeIcon size="lg" icon={faPuzzlePiece} />,
-    //       path: ''
-    //     },
-    //     {
-    //       topTitle: 'Trámites de',
-    //       title: 'AUXILIO MORTUORIO',
-    //       key: 'AM',
-    //       icon: <FontAwesomeIcon size="lg" icon={faHeartPulse} />,
-    //       path: ''
-    //     },
-    //     {
-    //       topTitle: 'Trámites de',
-    //       title: 'CUOTA MORTUORIA',
-    //       key: 'CM',
-    //       icon: <FontAwesomeIcon size="lg" icon={faRibbon} />,
-    //       path: ''
-    //     },
-    //     {
-    //       topTitle: 'Trámites de',
-    //       title: 'PRÉSTAMOS',
-    //       key: 'PR',
-    //       icon: <FontAwesomeIcon size="lg" icon={faMoneyBill} />,
-    //       path: ''
-    //     },
-    //   ],
-    // },
+    {
+      topTitle: "Trámites realizados",
+      title: "TRÁMITES REALIZADOS",
+      description: "Trámites realizados",
+      icon: <FontAwesomeIcon size="lg" icon={faListCheck} />,
+      customKey: "menu-5",
+      path: "",
+      subMenu: [
+        {
+          topTitle: "Trámites de",
+          title: "FONDO DE RETIRO",
+          key: "FR",
+          icon: <FontAwesomeIcon size="lg" icon={faPiggyBank} />,
+          path: "",
+        },
+        {
+          topTitle: "Trámites de",
+          title: "COMPLEMENTO ECONÓMICO",
+          key: "CE",
+          icon: <FontAwesomeIcon size="lg" icon={faPuzzlePiece} />,
+          path: "",
+        },
+        {
+          topTitle: "Trámites de",
+          title: "AUXILIO MORTUORIO",
+          key: "AM",
+          icon: <FontAwesomeIcon size="lg" icon={faHeartPulse} />,
+          path: "",
+        },
+        {
+          topTitle: "Trámites de",
+          title: "CUOTA MORTUORIA",
+          key: "CM",
+          icon: <FontAwesomeIcon size="lg" icon={faRibbon} />,
+          path: "",
+        },
+        {
+          topTitle: "Trámites de",
+          title: "PRÉSTAMOS",
+          key: "PR",
+          icon: <FontAwesomeIcon size="lg" icon={faMoneyBill} />,
+          path: "",
+        },
+      ],
+    },
   ],
 };
