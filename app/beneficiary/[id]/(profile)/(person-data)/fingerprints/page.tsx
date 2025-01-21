@@ -10,9 +10,9 @@ import {
   getAllFingerprintsIds,
   getRegisteredFingerprints,
   registerFingerprints,
-} from "../servicePersonData";
+} from "@/api/biometric";
 
-import Hands from "@/components/hands";
+import { Hands } from "@/components/hands";
 import { useAlert } from "@/hooks/useAlerts";
 
 interface Fingerprint {
@@ -151,12 +151,10 @@ export default function FingerPrintPage() {
           clearInterval(interval);
           setProgress(100);
           await getFingerprints();
-        } else {
-          console.log("vuelve a intentarlo");
         }
       }
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
     } finally {
       setTimeout(() => {
         setSelectedTwoFinger(undefined);
@@ -189,7 +187,7 @@ export default function FingerPrintPage() {
         setSelectedOneFinger(undefined);
       }
     } catch (e: any) {
-      console.log(e);
+      console.error(e);
     } finally {
       setTimeout(() => {
         setSelectedOneFinger(undefined);

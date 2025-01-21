@@ -7,89 +7,90 @@ import { faEdit, faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Tooltip } from "@nextui-org/tooltip";
 import { Button } from "@nextui-org/button";
+// import printJS from "print-js";
 
-import ModalComponent from "@/components/modal";
+import { ModalDocument } from "@/components/modal-document";
 import { apiClient } from "@/services";
+import { useAlert } from "@/hooks/useAlerts";
+import { createUpdateDocument } from "@/api/document/api";
 
 interface AffiliateDocumentsProps {
-  affiliate: any;
+  affiliateId: any;
   documents: any;
+  status: boolean;
 }
 
-const AffiliateDocuments = React.memo(({ affiliate, documents }: AffiliateDocumentsProps) => {
+const AffiliateDocuments = React.memo(({ affiliateId, documents, status }: AffiliateDocumentsProps) => {
   const [groupSelected, setGroupSelected] = useState<any>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentDocumentId, setCurrentDocumentId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
-  const hasNoDocuments = useMemo(() => documents && documents.status, [documents]);
+  const hasNoDocuments = useMemo(() => status, [documents]);
+
+  const { Alert } = useAlert();
 
   const handleDocumentDownload = useCallback(
-    async (documentId: any) => {
-      if (typeof window !== "undefined" && affiliate) {
-        const printJS = (await import("print-js")).default;
-        const response = await apiClient.GET(
-          `/api/affiliates/${affiliate.id}/documents/${documentId}`,
-        );
-        const pdfBlob = await response.blob();
-        const pdfURL = URL.createObjectURL(pdfBlob);
-
-        printJS({ printable: pdfURL, type: "pdf", showModal: true });
-        URL.revokeObjectURL(pdfURL);
-      } else {
-        alert("sin id");
+    async (documentId: number) => {
+      if (typeof window !== "undefined" && affiliateId) {
+        // esta ruta no se puede llamar con el servidor
+        const response = await apiClient.GET(`affiliates/${affiliateId}/documents/${documentId}`);
+        const { status } = response;
+        if (status == 200) {
+          const documentPDF = await response.blob();
+          const pdfURL = URL.createObjectURL(documentPDF);
+          const printJS = (await import("print-js")).default;
+          printJS({ printable: pdfURL, type: "pdf", showModal: true });
+          URL.revokeObjectURL(pdfURL);
+        } else {
+          Alert({ message: "Ocurrio un error al obtener el documento", variant: "error" });
+        }
       }
     },
-    [affiliate],
+    [affiliateId],
   );
+
   const handleDocumentUpdate = async (documentId: any) => {
     setCurrentDocumentId(documentId);
     toggleDialog();
   };
 
   const uploadFile = async (file: any) => {
-    console.log(file.name);
     const formData = new FormData();
-
     formData.append("documentPdf", file);
-    try {
-      setIsLoading(true);
-      const response = await apiClient.POST(
-        `/api/affiliates/${affiliate.id}/document/${currentDocumentId}/createOrUpdate`,
-        formData,
-        true,
-      );
-
-      console.log(response);
-    } catch (e: any) {
-      console.log(e);
-      console.error("Error al cargar el archivo");
-    } finally {
-      setIsLoading(false);
-      toggleDialog();
+    setIsLoading(true);
+    const { error, message } = await createUpdateDocument(affiliateId, currentDocumentId, formData);
+    if (!error) {
+      Alert({ message, variant: "success" });
+    } else {
+      Alert({ message, variant: "error" });
     }
+    setIsLoading(false);
+    toggleDialog();
+  };
+
+  const WithoutDocuments = () => {
+    return (
+      <div className="flex items-center justify-center text-center h-full w-full">
+        <fieldset className="border border-gray-400 rounded-md py-10 w-full">
+          <legend> </legend>
+          <span className="">Sin documentos</span>
+        </fieldset>
+      </div>
+    );
   };
 
   return (
     <div className="flex flex-col w-full">
       {!hasNoDocuments ? (
-        <div className="flex items-center justify-center text-center h-full w-full">
-          <fieldset className="border border-gray-400 rounded-md py-10 w-full">
-            <legend> </legend>
-            <span className="">Sin documentos</span>
-          </fieldset>
-        </div>
+        <WithoutDocuments />
       ) : (
         <div className="max-h-[400px] overflow-y-auto w-full">
-          <CheckboxGroup
-            classNames={{ base: "w-full" }}
-            value={groupSelected}
-            onChange={setGroupSelected}
-          >
-            {documents.documentsAffiliate.length >= 0 &&
-              documents.documentsAffiliate.map((document: any, index: number) => (
+          <CheckboxGroup classNames={{ base: "w-full" }} value={groupSelected} onChange={setGroupSelected}>
+            {documents.length >= 0 &&
+              documents.map(({ procedureDocumentId, name, shortened }, index: number) => (
                 <div
-                  key={document.procedureDocumentId}
+                  key={procedureDocumentId}
                   className={cn(
                     "flex max-w-full w-full bg-content1 m-0 border-gray-400 items-center",
                     "hover:bg-content3 dark:hover:border-lime-400 bg-content2 justify-between",
@@ -101,8 +102,8 @@ const AffiliateDocuments = React.memo(({ affiliate, documents }: AffiliateDocume
                     <div className="flex flex-row items-start gap-3">
                       <span className="text-md font-bold">{index + 1} &nbsp;</span>
                       <span className="text-sm uppercase">
-                        {document.name}
-                        <b>&nbsp;({document.shortened})</b>
+                        {name}
+                        <b>&nbsp;({shortened})</b>
                       </span>
                     </div>
                     <div className="flex flex-row items-end gap-1">
@@ -110,7 +111,7 @@ const AffiliateDocuments = React.memo(({ affiliate, documents }: AffiliateDocume
                         <Button
                           isIconOnly
                           className="p-1"
-                          onPress={() => handleDocumentDownload(document.procedureDocumentId)}
+                          onPress={() => handleDocumentDownload(procedureDocumentId)}
                         >
                           <FontAwesomeIcon icon={faEye} />
                         </Button>
@@ -119,7 +120,7 @@ const AffiliateDocuments = React.memo(({ affiliate, documents }: AffiliateDocume
                         <Button
                           isIconOnly
                           className="p-1"
-                          onPress={() => handleDocumentUpdate(document.procedureDocumentId)}
+                          onPress={() => handleDocumentUpdate(procedureDocumentId)}
                         >
                           <FontAwesomeIcon icon={faEdit} />
                         </Button>
@@ -131,11 +132,12 @@ const AffiliateDocuments = React.memo(({ affiliate, documents }: AffiliateDocume
           </CheckboxGroup>
         </div>
       )}
-      <ModalComponent
+      <ModalDocument
         loading={isLoading}
         open={isDialogOpen}
-        uploadFile={uploadFile}
+        action={uploadFile}
         onOpenChange={toggleDialog}
+        isUpdated={true}
       />
     </div>
   );

@@ -7,7 +7,6 @@ export abstract class APIConnection {
   }
 
   protected buildUrl(endpoint: string): string {
-    // console.log(`${this.baseUrl.replace(/\/+$/, '')}/${endpoint.replace(/^\/+/, '')}`);
     return `${this.baseUrl.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
   }
 
@@ -20,21 +19,10 @@ export abstract class APIConnection {
     requestConfig: RequestInit,
     contentType: string | null = "application/json",
   ): RequestInit {
-    // if (contentType !== null) {
-    //   if (!requestConfig.headers) {
-    //     requestConfig.headers = {};
-    //   }
-    //   if (requestConfig.headers instanceof Headers) {
-    //     requestConfig.headers.set('Content-Type', contentType);
-    //   } else {
-    //     (requestConfig.headers as Record<string, string>)['Content-Type'] = contentType;
-    //   }
-    // }
-    // return requestConfig;
     const headers: any = requestConfig.headers || {};
 
     if (!(headers instanceof Headers)) {
-      headers["credentials"] = "include"; // Asegurarse de incluir siempre las credenciales
+      headers["credentials"] = "include";
       if (contentType) {
         headers["Content-Type"] = contentType;
       }

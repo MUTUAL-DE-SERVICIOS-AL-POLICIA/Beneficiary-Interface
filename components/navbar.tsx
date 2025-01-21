@@ -1,7 +1,7 @@
 import { Navbar as NextUINavbar, NavbarContent, NavbarBrand, NavbarItem } from "@nextui-org/navbar";
 import NextLink from "next/link";
 
-import UserComponent from "./user";
+import { UserComponent } from "./user";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import { Logo } from "@/components/icons";

@@ -7,7 +7,7 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/static";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
-import BreadcrumbsComponent from "@/components/breadcrumbs";
+import { BreadcrumbsComponent } from "@/components/breadcrumbs";
 
 export const metadata: Metadata = {
   title: {

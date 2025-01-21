@@ -59,8 +59,6 @@ export const TableComponent = ({
   });
   const [filtered, setFiltered] = useState<Item[]>(data);
   const [all, setAll] = useState<number>(Number.isFinite(total) ? total : 0);
-  console.log("total: ", total);
-  console.log("all: ", all);
 
   type Item = (typeof data)[0];
 
@@ -83,11 +81,7 @@ export const TableComponent = ({
     const fetchFilteredItems = async () => {
       if (hasSearchFilter) {
         const searchValue = debouncedFilterValue.toLowerCase();
-        // const { persons, total } = await getData(rowsPerPage, page, searchValue);
-        const response = await getData(rowsPerPage, page, searchValue);
-        const persons = !response.error ? response.data.persons : [];
-        const total = !response.error ? response.data.total : 0;
-
+        const { persons, total } = await getData(rowsPerPage, page, searchValue);
         setFiltered(persons);
         setAll(Number.isFinite(total) ? total : 0);
       } else {
@@ -99,7 +93,6 @@ export const TableComponent = ({
   }, [debouncedFilterValue, rowsPerPage]);
 
   const sortedItems = useMemo(() => {
-    console.log("filtered: ", filtered);
     if (filtered !== undefined) {
       return [...filtered].sort((a: Item, b: Item) => {
         const first = a[sortDescriptor.column as keyof Item] as number;
@@ -113,10 +106,7 @@ export const TableComponent = ({
 
   const handlePageChange = async (newPage: number) => {
     const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
-    const response = await getData(rowsPerPage, newPage, searchValue);
-    const persons = !response.error ? response.data.persons : [];
-
-    console.log("handlePageChange: ", persons);
+    const { persons } = await getData(rowsPerPage, newPage, searchValue);
     setFiltered(persons);
     setPage(newPage);
   };
@@ -148,11 +138,8 @@ export const TableComponent = ({
   const onRowsPerPageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPage(1);
     const newRowsPerPage = Number(e.target.value);
-
     setRowsPerPage(Number(newRowsPerPage));
-    const response = await getData(newRowsPerPage);
-    const persons = !response.error ? response.data.persons : [];
-
+    const { persons } = await getData(newRowsPerPage);
     setFiltered(persons);
   }, []);
 

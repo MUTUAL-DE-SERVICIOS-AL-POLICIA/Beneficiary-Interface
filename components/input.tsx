@@ -17,7 +17,7 @@ interface InputCustomProps {
   labelPlacement?: InputProps["labelPlacement"];
   variant?: InputProps["variant"];
   radius?: InputProps["radius"];
-  value: string;
+  value: any;
   type?: InputProps["type"];
 }
 

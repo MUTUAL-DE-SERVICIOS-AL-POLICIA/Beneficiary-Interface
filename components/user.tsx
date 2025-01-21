@@ -4,11 +4,10 @@ import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-o
 
 import { apiServerFrontend } from "@/services";
 
-export default function UserComponent() {
+export function UserComponent() {
   const handleLogout = async () => {
-    const response = await apiServerFrontend.POST("/api/logout", {});
+    const response = await apiServerFrontend.POST("logout", {});
 
-    console.log(response);
     if (response.ok) {
       window.location.reload();
     }

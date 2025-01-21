@@ -1,26 +1,38 @@
 "use client";
-
+// dependencias de diseno
 import { Accordion, AccordionItem } from "@nextui-org/accordion";
-import { Avatar } from "@nextui-org/avatar";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Divider } from "@nextui-org/divider";
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
+import { Avatar } from "@nextui-org/avatar";
+import { Divider } from "@nextui-org/divider";
+// dependencias de la tecnologia
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 
-import fullName from "@/helpers/utils";
 import { sidebarConfig, SidebarItem } from "@/config/static";
 import { AccordionComponent } from "@/components/accordion";
-import { useBeneficiary } from "@/context/BeneficiaryContext";
+import { ListboxComponent } from "@/components/list";
+import { usePerson } from "@/hooks/usePerson";
 
-export default function Sidebar() {
-  const { beneficiaryData } = useBeneficiary();
-
+export function Sidebar() {
   const router = useRouter();
+  const { personData } = usePerson();
 
   const [selectedPath, setSelectedPath] = useState("");
   const [activeItem, setActiveItem] = useState<string | number>("");
   const [expandedKey, setExpandedKey] = useState<string | number | null>(null);
+
+  const { sidebarItems } = sidebarConfig;
+
+  const handleAction = (path: string) => {
+    setSelectedPath(path);
+    const { id: personId } = personData;
+    router.push(`/beneficiary/${personId}/${path}`);
+  };
+
+  const toggleItem = (key: string | number) => {
+    setExpandedKey((prevKey) => (prevKey === key ? null : key));
+  };
 
   const itemClasses = {
     base: "",
@@ -29,236 +41,150 @@ export default function Sidebar() {
     indicator: "text-medium",
   };
 
-  const itemClassesSection = {
-    base: "",
-    heading: "text-default-700 pb-0 mb-0",
-    divider: "h-[2px] bg-default-500 ml-3",
+  const NUP = (prop: any) => {
+    const { personAffiliate } = prop;
+    if (personAffiliate.length !== 0) {
+      const { typeId: nup } = personAffiliate[0];
+      return (
+        <div className="flex gap-1">
+          <p className="font-semibold text-default-800 text-small">NUP:</p>
+          <p className="text-default-600 text-small">{nup}</p>
+        </div>
+      );
+    } else return <></>;
   };
 
-  const handleAction = (path: string) => {
-    setSelectedPath(path);
-    router.push(`/beneficiary/${beneficiaryData.id}/${path}`);
-  };
-
-  const toggleItem = (key: string | number) => {
-    setExpandedKey((prevKey) => (prevKey === key ? null : key));
+  const QuickInformation = (props: any) => {
+    const { fullName, identityCard, personAffiliateData } = props;
+    return (
+      <div className="flex my-4">
+        <div className="flex flex-col gap-1 items-center">
+          <Avatar
+            isBordered
+            showFallback
+            className="my-2"
+            radius="md"
+            size="lg"
+            src="https://nextui.org/avatars/avatars1.png"
+          />
+          <h4 className="text-medium font-semibold leading-none text-default-800 text-pretty text-center">
+            {fullName}
+          </h4>
+          <NUP personAffiliate={personAffiliateData} />
+          <div className="flex gap-1">
+            <p className="font-semibold text-default-800 text-small"> C.I. </p>
+            <p className="text-default-600 text-small">{identityCard}</p>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const BeneficiaryCard = () => {
-    const { beneficiaryData } = useBeneficiary();
+    const { personData, personAffiliateData } = usePerson();
+    const { fullName, identityCard } = personData;
 
-    if (!beneficiaryData) return null;
+    const classNames = {
+      title: "text-small text-default-700",
+      description: "font-semibold text-xs text-default-500",
+      selectedIcon: "primary",
+    };
+
+    const handleSelectionChange = (keys: Set<any>) => {
+      const key = Array.from(keys)[0];
+      if (key !== undefined) {
+        setExpandedKey(key.toString() || null);
+      }
+    };
+
+    const createExpandedKeySet = (expandedKey: string | number): Set<string | number> => {
+      return expandedKey ? new Set([expandedKey]) : new Set();
+    };
+
+    const getAccordionItemClasses = (customKey: string | number): string =>
+      `${itemClasses.base}
+      mb-3 mt-0 pt-0 pb-3
+      overflow-hidden rounded-lg
+      ${activeItem === customKey ? "bg-default-300" : "bg-default-100"}
+    `;
+
+    const handleActionListbox = (path, customKey) => {
+      handleAction(path);
+      setActiveItem(customKey);
+      toggleItem(customKey);
+    };
+
+    const renderSubMenu = (subMenu: any[]): JSX.Element => (
+      <Listbox aria-label="sub listbox" defaultSelectedKeys="all" variant="flat">
+        <ListboxSection>
+          {subMenu.map(({ key, icon, path, title, description }) => (
+            <ListboxItem
+              key={key}
+              endContent={icon}
+              classNames={classNames}
+              description={description}
+              onClick={() => handleAction(path)}
+            >
+              {title}
+            </ListboxItem>
+          ))}
+        </ListboxSection>
+      </Listbox>
+    );
+
+    const renderAccordionItem = (item: SidebarItem): JSX.Element | null => {
+      const { title, customKey, path, subMenu, description, icon, topTitle } = item;
+
+      if (title === "DATOS DE POLICIA" && (!personAffiliateData || personAffiliateData.length === 0)) {
+        return null;
+      }
+
+      return (
+        <AccordionItem
+          key={customKey}
+          className={getAccordionItemClasses(customKey)}
+          data-testid="expanded"
+          textValue="menu1"
+          title={
+            <ListboxComponent
+              icon={icon}
+              title={title}
+              topTitle={topTitle}
+              showDivider={true}
+              customKey={customKey}
+              activeItem={activeItem}
+              description={description}
+              onAction={() => handleActionListbox(path, customKey)}
+            />
+          }
+          onPress={() => handleActionListbox(path, customKey)}
+        >
+          {subMenu && subMenu.length > 0 && renderSubMenu(subMenu)}
+        </AccordionItem>
+      );
+    };
 
     return (
       <Card className="max-w-[340px] border-small rounded-small border-default-200 dark:border-default-100 mb-3">
         <CardHeader className="justify-center">
-          <div className="flex my-4">
-            <div className="flex flex-col gap-1 items-center">
-              <Avatar
-                isBordered
-                showFallback
-                className="my-2"
-                radius="md"
-                size="lg"
-                src="https://nextui.org/avatars/avatars1.png"
-              />
-              <h4 className="text-medium font-semibold leading-none text-default-800 text-pretty text-center">
-                {fullName({
-                  first_name: beneficiaryData.firstName,
-                  second_name: beneficiaryData.secondName,
-                  last_name: beneficiaryData.lastName,
-                  mothers_last_name: beneficiaryData.mothersLastName,
-                })}
-              </h4>
-              {beneficiaryData.personAffiliate && beneficiaryData.personAffiliate.length > 0 && (
-                <div className="flex gap-1">
-                  <p className="font-semibold text-default-800 text-small">NUP:</p>
-                  <p className="text-default-600 text-small">
-                    {beneficiaryData.personAffiliate[0].typeId}
-                  </p>
-                </div>
-              )}
-              <div className="flex gap-1">
-                <p className="font-semibold text-default-800 text-small"> C.I. </p>
-                <p className="text-default-600 text-small">{beneficiaryData.identityCard}</p>
-              </div>
-            </div>
-          </div>
+          <QuickInformation
+            fullName={fullName}
+            identityCard={identityCard}
+            personAffiliateData={personAffiliateData}
+          />
         </CardHeader>
         <Divider />
         <CardBody>
           <Accordion
             isCompact
-            itemClasses={itemClasses}
-            selectedKeys={expandedKey ? new Set([expandedKey]) : new Set()}
             showDivider={false}
-            onSelectionChange={(keys) => {
-              const key = Array.from(keys)[0];
-
-              key !== undefined ? setExpandedKey(key.toString() || null) : "";
-            }}
+            itemClasses={itemClasses}
+            onSelectionChange={handleSelectionChange}
+            selectedKeys={createExpandedKeySet(expandedKey)}
           >
-            {sidebarConfig.sidebarItems
+            {sidebarItems
               .slice(0, 2)
-              .map((sidebarItem: SidebarItem, index: number) => {
-                if (sidebarItem.title == "DATOS DE POLICIA") {
-                  if (
-                    !beneficiaryData?.personAffiliate ||
-                    beneficiaryData.personAffiliate.length !== 0
-                  ) {
-                    return (
-                      <AccordionItem
-                        key={sidebarItem.customKey}
-                        className={`
-                            ${itemClasses.base}
-                            mb-3 mt-0 pt-0 pb-3 overflow-hidden
-                            rounded-lg
-                            ${
-                              activeItem === sidebarItem.customKey
-                                ? "bg-default-300"
-                                : "bg-default-100"
-                            }
-                          `}
-                        data-testid="expanded"
-                        textValue="menu1"
-                        title={
-                          <Listbox
-                            aria-label="Listbox menu data general"
-                            className={`
-                              ${itemClasses.title}
-                              ${itemClasses.trigger}
-                              px-3 py-0 h-14 my-0 rounded-small
-                              ${
-                                activeItem === sidebarItem.customKey
-                                  ? "bg-default-300"
-                                  : "bg-default-100"
-                              }
-                            `}
-                            variant="flat"
-                            onAction={() => {
-                              handleAction(sidebarItem.path);
-                              setActiveItem(sidebarItem.customKey);
-                              toggleItem(sidebarItem.customKey);
-                            }}
-                          >
-                            <ListboxSection
-                              showDivider
-                              classNames={itemClassesSection}
-                              title={sidebarItem.topTitle}
-                            >
-                              <ListboxItem
-                                key={"item" + sidebarItem.customKey + index.toString()}
-                                className={`m-0 p-0`}
-                                description={sidebarItem.description}
-                                startContent={sidebarItem.icon}
-                              >
-                                {sidebarItem.title}
-                              </ListboxItem>
-                            </ListboxSection>
-                          </Listbox>
-                        }
-                        onPress={() => {
-                          handleAction(sidebarItem.path);
-                          setActiveItem(sidebarItem.customKey);
-                          toggleItem(sidebarItem.customKey);
-                        }}
-                      >
-                        {sidebarItem.subMenu && sidebarItem.subMenu.length && (
-                          <Listbox
-                            aria-label="sub listbox"
-                            classNames={itemClassesSection}
-                            defaultSelectedKeys="all"
-                            variant="flat"
-                          >
-                            <ListboxSection>
-                              {sidebarItem.subMenu.map((menu) => (
-                                <ListboxItem
-                                  key={menu.key}
-                                  endContent={menu.icon}
-                                  onClick={() => handleAction(menu.path)}
-                                >
-                                  {menu.title}
-                                </ListboxItem>
-                              ))}
-                            </ListboxSection>
-                          </Listbox>
-                        )}
-                      </AccordionItem>
-                    );
-                  } else return null;
-                } else
-                  return (
-                    <AccordionItem
-                      key={sidebarItem.customKey}
-                      className={`
-                        ${itemClasses.base}
-                        mb-3 mt-0 pt-0 pb-3
-                        rounded-lg
-                        ${
-                          activeItem === sidebarItem.customKey ? "bg-default-200" : "bg-default-100"
-                        }
-                      `}
-                      data-testid="expanded"
-                      textValue="menu1"
-                      title={
-                        <Listbox
-                          aria-label="Listbox menu data general"
-                          className={`
-                            ${itemClasses.title}
-                            ${itemClasses.trigger}
-                            px-3 py-0 h-14 my-0 rounded-small
-                            ${
-                              activeItem === sidebarItem.customKey
-                                ? "bg-default-200"
-                                : "bg-default-100"
-                            }
-                          `}
-                          variant="flat"
-                          onAction={() => {
-                            handleAction(sidebarItem.path);
-                            setActiveItem(sidebarItem.customKey);
-                            toggleItem(sidebarItem.customKey);
-                          }}
-                        >
-                          <ListboxSection
-                            showDivider
-                            classNames={itemClassesSection}
-                            title={sidebarItem.topTitle}
-                          >
-                            <ListboxItem
-                              key={"item" + sidebarItem.customKey + index.toString()}
-                              className="m-0 p-0"
-                              description={sidebarItem.description}
-                              startContent={sidebarItem.icon}
-                            >
-                              {sidebarItem.title}
-                            </ListboxItem>
-                          </ListboxSection>
-                        </Listbox>
-                      }
-                      onPress={() => {
-                        handleAction(sidebarItem.path);
-                        setActiveItem(sidebarItem.customKey);
-                      }}
-                    >
-                      {sidebarItem.subMenu && sidebarItem.subMenu.length && (
-                        <Listbox aria-label="sub listbox" defaultSelectedKeys="all" variant="flat">
-                          <ListboxSection>
-                            {sidebarItem.subMenu.map((menu) => (
-                              <ListboxItem
-                                key={menu.key}
-                                endContent={menu.icon}
-                                onClick={() => handleAction(menu.path)}
-                              >
-                                {menu.title}
-                              </ListboxItem>
-                            ))}
-                          </ListboxSection>
-                        </Listbox>
-                      )}
-                    </AccordionItem>
-                  );
-              })
+              .map((item) => renderAccordionItem(item))
               .filter((item): item is JSX.Element => item !== null)}
           </Accordion>
         </CardBody>
@@ -269,15 +195,14 @@ export default function Sidebar() {
   return (
     <>
       <BeneficiaryCard />
-      {sidebarConfig.sidebarItems.slice(2).map((sidebarItem: SidebarItem, index: number) => {
+      {sidebarItems.slice(2).map((sidebarItem: SidebarItem, index: number) => {
         const { customKey, ...props } = sidebarItem;
-
         return (
           <AccordionComponent
             key={index}
             activeItem={activeItem}
             customKey={customKey}
-            handleSelection={handleAction}
+            handleAction={handleAction}
             selectedPath={selectedPath}
             setActiveItem={setActiveItem}
             {...props}

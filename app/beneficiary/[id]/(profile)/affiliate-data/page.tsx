@@ -1,10 +1,9 @@
 "use client";
 import { Divider } from "@nextui-org/divider";
-import { useEffect, useState } from "react";
+import { Tooltip } from "@nextui-org/tooltip";
 import { Button } from "@nextui-org/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
-import { Tooltip } from "@nextui-org/tooltip";
 
 import EntryInfo from "./(sections)/EntryInfo";
 import StateInfo from "./(sections)/StateInfo";
@@ -12,96 +11,70 @@ import ServiceInfo from "./(sections)/ServiceInfo";
 import DerelictInfo from "./(sections)/DerelictInfo";
 import AffiliateDocuments from "./(sections)/Documents";
 
-import { getAffiliate, getAllDocuments, obtainAffiliateDocuments } from "@/app/beneficiary/service";
-import { useBeneficiary } from "@/context/BeneficiaryContext";
+import { useEffect, useState } from "react";
+import { getAffiliateDocuments } from "@/api/affiliate/api";
+import { createUpdateDocument, getAllDocuments } from "@/api/document/api";
 import { useAlert } from "@/hooks/useAlerts";
-import ModalRegistrationComponent from "@/components/modal-registration";
-import { apiClient } from "@/services";
+import { useAffiliate } from "@/hooks/useAffiliate";
+import { ModalDocument } from "@/components/modal-document";
 
 export default function AffiliateDataPage() {
-  const [affiliate, setAffiliate] = useState<any>({});
   const [documents, setDocuments] = useState<any>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [allDocuments, setAllDocuments] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { beneficiaryData, error } = useBeneficiary();
+  const [status, setStatus] = useState(false);
 
   const { Alert } = useAlert();
+  const { affiliateData } = useAffiliate();
+  const { id: affiliateId } = affiliateData;
+
   const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
 
   const handleDocumentRecord = async () => {
-    const response = await getAllDocuments();
-
-    setAllDocuments(response.data);
+    const { error, message, documents } = await getAllDocuments();
+    setAllDocuments(documents);
     toggleDialog();
+    if (error) {
+      Alert({ message: message, variant: "error" });
+    }
   };
 
   const registerFile = async (file: any, selectedKey: any) => {
     const formData = new FormData();
-
     formData.append("documentPdf", file);
-    try {
-      setIsLoading(true);
-      const response = await apiClient.POST(
-        `/api/affiliates/${affiliate.id}/document/${selectedKey}/createOrUpdate`,
-        formData,
-        true,
-      );
-
-      console.log(response);
-      const affiliateId = beneficiaryData.personAffiliate[0].typeId;
-      const res = await obtainAffiliateDocuments(affiliateId);
-
-      setDocuments(res.data);
+    setIsLoading(true);
+    const { error, message } = await createUpdateDocument(affiliateId, selectedKey, formData);
+    if (!error) {
+      const { affiliateDocuments } = await getAffiliateDocuments(affiliateId);
+      setDocuments(affiliateDocuments);
       Alert({
-        message: "Documento registrado exitosamente",
+        message: message,
         variant: "success",
       });
-    } catch (e: any) {
+    } else {
       Alert({
-        message: "Ocurrió un error al registrar el documento",
+        message: message,
         variant: "error",
       });
-      console.log(e);
-      console.error("Error al cargar el archivo");
-    } finally {
-      setIsLoading(false);
-      toggleDialog();
     }
+    setIsLoading(false);
+    toggleDialog();
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDocuments = async () => {
+      const { error, message, statusDocuments, affiliateDocuments } =
+        await getAffiliateDocuments(affiliateId);
       if (!error) {
-        if (beneficiaryData.personAffiliate.length >= 1) {
-          const affiliateId = beneficiaryData.personAffiliate[0].typeId;
-          const [affiliateData, documentsData] = await Promise.all([
-            getAffiliate(`${affiliateId}`),
-            obtainAffiliateDocuments(`${affiliateId}`),
-          ]);
-
-          if (!affiliateData.error) {
-            const data = affiliateData.data;
-
-            setAffiliate(data);
-          } else {
-            Alert({ message: affiliateData.message, variant: "error" });
-          }
-          if (!documentsData.error) {
-            const data = documentsData.data;
-
-            setDocuments(data);
-          } else {
-            Alert({ message: affiliateData.message, variant: "error" });
-          }
-        }
+        setDocuments(affiliateDocuments);
+        setStatus(statusDocuments);
       } else {
-        Alert({ message: beneficiaryData.message, variant: "error" });
+        Alert({ message, variant: "error" });
       }
     };
-
-    fetchData();
-  }, [beneficiaryData]);
+    fetchDocuments();
+  }, []);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-3">
@@ -112,18 +85,18 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <div className="flex gap-6">
           <div className="flex flex-col w-1/2">
-            <EntryInfo affiliate={affiliate} />
+            <EntryInfo />
           </div>
           <div className="flex flex-col w-1/2">
-            <StateInfo affiliate={affiliate} />
+            <StateInfo />
           </div>
         </div>
       </div>
       <div className="px-3 py-1">
-        <ServiceInfo affiliate={affiliate} />
+        <ServiceInfo />
       </div>
       <div className="px-3 py-1">
-        <DerelictInfo affiliate={affiliate} />
+        <DerelictInfo />
       </div>
       <div className="flex justify-between items-center mr-3">
         <h1 className="text-md uppercase font-semibold">Documentos presentados</h1>
@@ -140,16 +113,17 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <div className="flex gap-1">
           <div className="flex flex-col w-full">
-            <AffiliateDocuments affiliate={affiliate} documents={documents} />
+            <AffiliateDocuments affiliateId={affiliateId} status={status} documents={documents} />
           </div>
         </div>
       </div>
-      <ModalRegistrationComponent
+      <ModalDocument
         action={registerFile}
         data={allDocuments}
         loading={isLoading}
         open={isDialogOpen}
         onOpenChange={toggleDialog}
+        isUpdated={false}
       />
     </div>
   );

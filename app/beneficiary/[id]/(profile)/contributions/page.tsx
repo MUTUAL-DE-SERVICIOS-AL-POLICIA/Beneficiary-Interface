@@ -1,8 +1,3 @@
 export default function ContributionPage() {
-  return (
-    <h1>
-      Página de datos personales qwruqwoieruoiwqeruoiqwuerqwuerwqeruqwer weriuqweprouwqoeruweurwew
-      que iwoqeu piuuo
-    </h1>
-  );
+  return <h1>Aca vendran las contribuciones</h1>;
 }

@@ -50,8 +50,7 @@ const checkActionArea = (area: Area, x: number, y: number) => {
   const dy = y - (area.y + area.height / 2);
 
   return (
-    (dx * dx) / ((area.width / 2) * (area.width / 2)) +
-      (dy * dy) / ((area.height / 2) * (area.height / 2)) <=
+    (dx * dx) / ((area.width / 2) * (area.width / 2)) + (dy * dy) / ((area.height / 2) * (area.height / 2)) <=
     1
   );
 };
@@ -187,7 +186,7 @@ const drawLegend = (
   ctx.fillText(text, x + 45, y + 9);
 };
 
-export default function Hands(props: HandsProps) {
+export function Hands(props: HandsProps) {
   const { withDetails, selectedOption, fingerprints } = props;
   const { theme } = useTheme();
 
@@ -390,9 +389,8 @@ export default function Hands(props: HandsProps) {
             const client = await apiClientBiometric();
 
             client
-              .GET("api/biometrico/capturar/huella")
+              .GET("biometrico/capturar/huella")
               .then((response: any) => {
-                console.log(response);
                 setSelectedAreas((prev) => [...prev, area.id]);
               })
               .catch((error: any) => {

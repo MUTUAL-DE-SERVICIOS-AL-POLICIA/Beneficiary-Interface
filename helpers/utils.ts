@@ -1,12 +1,12 @@
 interface Props {
-  first_name: string;
-  second_name: string;
-  last_name: string;
-  mothers_last_name: string;
+  firstName: string;
+  secondName: string;
+  lastName: string;
+  mothersLastName: string;
 }
 
-export default function fullName({ first_name, second_name, last_name, mothers_last_name }: Props) {
-  return `${first_name ?? ""}  ${second_name ?? ""} ${last_name ?? ""} ${mothers_last_name ?? ""}`;
+export default function fullName({ firstName, secondName, lastName, mothersLastName }: Props) {
+  return `${firstName ?? ""}  ${secondName ?? ""} ${lastName ?? ""} ${mothersLastName ?? ""}`;
 }
 
 interface PropsBuildBackendUrl {
@@ -17,4 +17,16 @@ interface PropsBuildBackendUrl {
 
 export function buildBackendUrl({ host, port, path }: PropsBuildBackendUrl) {
   return `http://${host}:${port}/${path}`;
+}
+
+export function createEmptyObject<T>(): T {
+  const result: Partial<T> = {};
+
+  for (const key in result) {
+    if (Object.prototype.hasOwnProperty.call(result, key)) {
+      result[key] = null;
+    }
+  }
+
+  return result as T;
 }
