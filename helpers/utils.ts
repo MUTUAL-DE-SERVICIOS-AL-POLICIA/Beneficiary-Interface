@@ -24,7 +24,7 @@ export function createEmptyObject<T>(): T {
 
   for (const key in result) {
     if (Object.prototype.hasOwnProperty.call(result, key)) {
-      result[key] = null;
+      result[key] = undefined;
     }
   }
 

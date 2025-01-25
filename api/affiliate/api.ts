@@ -34,6 +34,15 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
         category: createEmptyObject<Category>(),
       };
     }
+    return {
+      error: true,
+      message: "Ocurrio un error",
+      affiliateData: createEmptyObject<Affiliate>(),
+      affiliateState: createEmptyObject<AffiliateState>(),
+      degree: createEmptyObject<Degree>(),
+      unit: createEmptyObject<Unit>(),
+      category: createEmptyObject<Category>(),
+    };
   } catch (e: any) {
     console.error(e);
     return {
@@ -71,6 +80,12 @@ export const getAffiliateDocuments = async (affiliateId: number): Promise<Respon
         affiliateDocuments: [],
       };
     }
+    return {
+      error: true,
+      message: "Ocurrio un error",
+      statusDocuments: false,
+      affiliateDocuments: [],
+    };
   } catch (e: any) {
     console.error(e);
     return {

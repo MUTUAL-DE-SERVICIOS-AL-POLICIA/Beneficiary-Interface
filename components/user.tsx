@@ -1,16 +1,17 @@
 "use client";
-import { Avatar, AvatarIcon } from "@nextui-org/avatar";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
 
-import { apiServerFrontend } from "@/services";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarIcon } from "@heroui/avatar";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+
+import { logout } from "@/api/logout/api";
 
 export function UserComponent() {
-  const handleLogout = async () => {
-    const response = await apiServerFrontend.POST("logout", {});
+  const router = useRouter();
 
-    if (response.ok) {
-      window.location.reload();
-    }
+  const handleLogout = async () => {
+    await logout();
+    router.push("/");
   };
 
   return (

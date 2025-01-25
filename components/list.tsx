@@ -1,4 +1,4 @@
-import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
+import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { ReactNode } from "react";
 
 interface ListboxProps {

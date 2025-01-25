@@ -4,9 +4,9 @@ import { cookies } from "next/headers";
 
 import { buildBackendUrl } from "./helpers/utils";
 
-export const middleware = (request: NextRequest) => {
+export const middleware = async (request: NextRequest) => {
   const response = NextResponse.next();
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const cookie = cookieStore.get("msp");
   const token = cookie?.value;
 
@@ -31,28 +31,28 @@ export const middleware = (request: NextRequest) => {
       if (token) {
         const url = request.nextUrl.clone();
 
-        url.pathname = "/beneficiaries";
+        url.pathname = "/persons";
 
         return NextResponse.redirect(url);
       } else {
         return NextResponse.redirect(constructedURL);
       }
     }
-    if (request.nextUrl.pathname == "/beneficiaries") {
+    if (request.nextUrl.pathname == "/persons") {
       if (token) {
         return NextResponse.next();
       } else {
         return NextResponse.redirect(constructedURL);
       }
     }
-    if (request.nextUrl.pathname == "/beneficiary") {
+    if (request.nextUrl.pathname == "/person") {
       if (token) {
         return NextResponse.next();
       } else {
         return NextResponse.redirect(constructedURL);
       }
     }
-    if (request.nextUrl.pathname.startsWith("/beneficiary")) {
+    if (request.nextUrl.pathname.startsWith("/person")) {
       if (token) {
         return NextResponse.next();
       } else {
@@ -64,7 +64,7 @@ export const middleware = (request: NextRequest) => {
       }
     }
   } catch (e) {
-    console.error("Error verficando token en middleware");
+    console.error("Error verficando token en middleware", e);
 
     return NextResponse.redirect(constructedURL);
   }

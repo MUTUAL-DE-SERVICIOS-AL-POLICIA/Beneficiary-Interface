@@ -2,7 +2,7 @@
 import { headers } from "next/headers";
 
 export const checkIp = async () => {
-  const headersList = headers();
+  const headersList = await headers();
   const ip = headersList.get("x-forwarded-for");
 
   if (ip?.startsWith("::ffff:")) {

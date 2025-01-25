@@ -1,5 +1,5 @@
 "use client";
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/breadcrumbs";
+import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
 import Link from "next/link";
 
 export function BreadcrumbsComponent() {
@@ -8,7 +8,7 @@ export function BreadcrumbsComponent() {
       <Breadcrumbs radius="sm" variant="light">
         <BreadcrumbItem>inicio</BreadcrumbItem>
         <BreadcrumbItem>
-          <Link href="/beneficiaries">Beneficiarios</Link>
+          <Link href="/persons">personas</Link>
         </BreadcrumbItem>
       </Breadcrumbs>
     </div>

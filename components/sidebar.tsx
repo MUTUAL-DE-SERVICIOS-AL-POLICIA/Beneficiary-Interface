@@ -1,10 +1,10 @@
 "use client";
 // dependencias de diseno
-import { Accordion, AccordionItem } from "@nextui-org/accordion";
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
-import { Avatar } from "@nextui-org/avatar";
-import { Divider } from "@nextui-org/divider";
+import { Accordion, AccordionItem } from "@heroui/accordion";
+import { Card, CardBody, CardHeader } from "@heroui/card";
+import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
+import { Avatar } from "@heroui/avatar";
+import { Divider } from "@heroui/divider";
 // dependencias de la tecnologia
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -13,6 +13,7 @@ import { sidebarConfig, SidebarItem } from "@/config/static";
 import { AccordionComponent } from "@/components/accordion";
 import { ListboxComponent } from "@/components/list";
 import { usePerson } from "@/hooks/usePerson";
+import fullName from "../helpers/utils";
 
 export function Sidebar() {
   const router = useRouter();
@@ -20,23 +21,23 @@ export function Sidebar() {
 
   const [selectedPath, setSelectedPath] = useState("");
   const [activeItem, setActiveItem] = useState<string | number>("");
-  const [expandedKey, setExpandedKey] = useState<string | number | null>(null);
+  const [expandedKey, setExpandedKey] = useState<string | number>("");
 
   const { sidebarItems } = sidebarConfig;
 
   const handleAction = (path: string) => {
     setSelectedPath(path);
     const { id: personId } = personData;
-    router.push(`/beneficiary/${personId}/${path}`);
+    router.push(`/person/${personId}/${path}`);
   };
 
   const toggleItem = (key: string | number) => {
-    setExpandedKey((prevKey) => (prevKey === key ? null : key));
+    setExpandedKey((prevKey) => (prevKey === key ? "" : key));
   };
 
   const itemClasses = {
     base: "",
-    title: "mt-0 mb-2 font-bold text-medium ",
+    title: "mt-0 mb-0 font-bold text-medium ",
     trigger: "",
     indicator: "text-medium",
   };
@@ -80,7 +81,7 @@ export function Sidebar() {
     );
   };
 
-  const BeneficiaryCard = () => {
+  const PersonCard = () => {
     const { personData, personAffiliateData } = usePerson();
     const { fullName, identityCard } = personData;
 
@@ -90,10 +91,10 @@ export function Sidebar() {
       selectedIcon: "primary",
     };
 
-    const handleSelectionChange = (keys: Set<any>) => {
+    const handleSelectionChange = (keys: any) => {
       const key = Array.from(keys)[0];
-      if (key !== undefined) {
-        setExpandedKey(key.toString() || null);
+      if (key !== undefined && key !== null) {
+        setExpandedKey(key.toString() || "");
       }
     };
 
@@ -103,12 +104,12 @@ export function Sidebar() {
 
     const getAccordionItemClasses = (customKey: string | number): string =>
       `${itemClasses.base}
-      mb-3 mt-0 pt-0 pb-3
+      mb-1 mt-0 pt-0 pb-5
       overflow-hidden rounded-lg
       ${activeItem === customKey ? "bg-default-300" : "bg-default-100"}
     `;
 
-    const handleActionListbox = (path, customKey) => {
+    const handleActionListbox = (path: string, customKey: string | number) => {
       handleAction(path);
       setActiveItem(customKey);
       toggleItem(customKey);
@@ -123,7 +124,7 @@ export function Sidebar() {
               endContent={icon}
               classNames={classNames}
               description={description}
-              onClick={() => handleAction(path)}
+              onPress={() => handleAction(path)}
             >
               {title}
             </ListboxItem>
@@ -132,7 +133,7 @@ export function Sidebar() {
       </Listbox>
     );
 
-    const renderAccordionItem = (item: SidebarItem): JSX.Element | null => {
+    const renderAccordionItem = (item: Omit<SidebarItem, "handleAction">): JSX.Element | null => {
       const { title, customKey, path, subMenu, description, icon, topTitle } = item;
 
       if (title === "DATOS DE POLICIA" && (!personAffiliateData || personAffiliateData.length === 0)) {
@@ -194,8 +195,8 @@ export function Sidebar() {
 
   return (
     <>
-      <BeneficiaryCard />
-      {sidebarItems.slice(2).map((sidebarItem: SidebarItem, index: number) => {
+      <PersonCard />
+      {sidebarItems.slice(2).map((sidebarItem: Omit<SidebarItem, "handleAction">, index: number) => {
         const { customKey, ...props } = sidebarItem;
         return (
           <AccordionComponent

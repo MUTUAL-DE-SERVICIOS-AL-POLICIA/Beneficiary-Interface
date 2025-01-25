@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/static";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import { BreadcrumbsComponent } from "@/components/breadcrumbs";
+import AlertProvider from "../context/AlertProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -33,15 +34,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head />
       <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex flex-col h-screen overflow-y-scroll">
-            <Navbar />
-            <main className="container mx-auto max-w-7xl flex-grow">
-              <div className="container">
-                <BreadcrumbsComponent />
-              </div>
-              {children}
-            </main>
-          </div>
+          <AlertProvider>
+            <div className="relative flex flex-col h-screen overflow-y-scroll">
+              <Navbar />
+              <main className="container mx-auto max-w-7xl flex-grow">
+                <div className="container">
+                  <BreadcrumbsComponent />
+                </div>
+                {children}
+              </main>
+            </div>
+          </AlertProvider>
         </Providers>
       </body>
     </html>

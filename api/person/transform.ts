@@ -1,4 +1,5 @@
 import { PersonDto, PersonAffiliateDto, KinshipDto, PersonsDto } from "./dto";
+
 import { Person, PersonAffiliate, Kinship } from "@/domain";
 
 export const transformToPerson = (
@@ -99,8 +100,8 @@ export const transformToPersons = (
     "id" | "firstName" | "secondName" | "lastName" | "mothersLastName" | "identityCard" | "gender"
   >[];
 } => {
-  const personsData = personsDto.map((beneficiaryDto) => {
-    const { id, firstName, secondName, lastName, mothersLastName, identityCard, gender } = beneficiaryDto;
+  const personsData = personsDto.map((personDto) => {
+    const { id, firstName, secondName, lastName, mothersLastName, identityCard, gender } = personDto;
 
     return {
       id,

@@ -31,13 +31,13 @@ export interface SidebarItem {
   customKey: string | number;
   path: string;
   selectedPath?: string;
-  handleAction?: (path: string) => void;
+  handleAction: (path: string) => void;
   activeItem?: string | number;
   setActiveItem?: any;
 }
 
 interface SidebarConfig {
-  sidebarItems: SidebarItem[];
+  sidebarItems: Omit<SidebarItem, "handleAction">[];
 }
 
 export type SiteConfig = typeof siteConfig;
@@ -47,7 +47,8 @@ export const siteConfig = {
   description: "Página de beneficiarios",
 };
 
-export const beneficiaryTableHeaders: Column[] = [
+// aqui era Column
+export const personTableHeaders: Column[] = [
   { id: 1, name: "PRIMER NOMBRE", key: "firstName", sortable: true },
   { id: 2, name: "SEGUNDO NOMBRE", key: "secondName", sortable: true },
   { id: 3, name: "APELLIDO PATERNO", key: "lastName", sortable: true },

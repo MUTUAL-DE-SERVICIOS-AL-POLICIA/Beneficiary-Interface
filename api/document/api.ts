@@ -23,6 +23,11 @@ export const getAllDocuments = async (): Promise<ResponseData> => {
         documents: [],
       };
     }
+    return {
+      error: true,
+      message: "Ocurrio un error",
+      documents: [],
+    };
   } catch (e: any) {
     console.error(e);
 
@@ -58,6 +63,10 @@ export const createUpdateDocument = async (
         message: "Documento creado o actualizado correctamente",
       };
     }
+    return {
+      error: true,
+      message: "Ocurrio un error",
+    };
   } catch (e: any) {
     console.error(e);
     return {

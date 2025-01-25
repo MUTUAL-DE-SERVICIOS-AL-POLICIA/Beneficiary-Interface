@@ -1,3 +1,4 @@
+"use client";
 import { PersonContext } from "@/context/PersonContext";
 import { useContext } from "react";
 
