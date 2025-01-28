@@ -7,6 +7,7 @@ export const checkBiometricStatus = async () => {
     const response = await client.GET("/biometrico/dispositivos");
     const { status } = response;
     const responseData = await response.json();
+
     if (status == 200) {
       if (Array.isArray(responseData)) {
         if (responseData.length !== 0) {
@@ -18,6 +19,7 @@ export const checkBiometricStatus = async () => {
         }
       }
     }
+
     return {
       error: true,
       message: "Servicio de biometrico no disponible",
@@ -25,6 +27,7 @@ export const checkBiometricStatus = async () => {
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "No se puede comprobar la disponibilidad del servicio de biometrico",
@@ -38,8 +41,10 @@ export const getRegisteredFingerprints = async (personId: number) => {
     const response = await apiClient.GET(`persons/showPersonFingerprint/${personId}`);
     const { status } = response;
     const responseData = await response.json();
+
     if (status == 200) {
       const { fingerprints } = responseData;
+
       return {
         error: false,
         message: "Obtención de huellas registradas exitosamente",
@@ -48,12 +53,14 @@ export const getRegisteredFingerprints = async (personId: number) => {
     }
     if (status >= 400) {
       const { message } = responseData;
+
       return {
         error: true,
         message: message,
         fingerprintsRegistered: [],
       };
     }
+
     return {
       error: true,
       message: "Ocurrio un error",
@@ -61,6 +68,7 @@ export const getRegisteredFingerprints = async (personId: number) => {
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al obtener las huellas registradas",
@@ -74,6 +82,7 @@ export const getAllFingerprintsIds = async () => {
     const response = await apiClient.GET(`persons/showListFingerprint`);
     const { status } = response;
     const responseData = await response.json();
+
     if (status == 200) {
       return {
         error: false,
@@ -83,12 +92,14 @@ export const getAllFingerprintsIds = async () => {
     }
     if (status >= 400) {
       const { message } = responseData;
+
       return {
         error: true,
         message,
         fingerprints: [],
       };
     }
+
     return {
       error: true,
       message: "Ocurrio un error",
@@ -96,6 +107,7 @@ export const getAllFingerprintsIds = async () => {
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al obtener el id de las huellas",
@@ -107,13 +119,16 @@ export const getAllFingerprintsIds = async () => {
 export const captureTwoFingerprints = async () => {
   try {
     const { error, message } = await checkBiometricStatus();
+
     if (!error) {
       const client = await apiClientBiometric();
       const response = await client.GET(`biometrico/capturar/huellas`);
       const { status } = response;
       const responseData = await response.json();
+
       if (status == 200) {
         const { message, data } = responseData;
+
         return {
           error: false,
           message,
@@ -122,6 +137,7 @@ export const captureTwoFingerprints = async () => {
       }
       if (status >= 400) {
         const { message } = responseData;
+
         return {
           error: true,
           message,
@@ -133,12 +149,14 @@ export const captureTwoFingerprints = async () => {
         message,
       };
     }
+
     return {
       error: true,
       message: "Ocurrio un error",
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al capturar las huellas",
@@ -149,13 +167,16 @@ export const captureTwoFingerprints = async () => {
 export const captureOneFingerprint = async () => {
   try {
     const { error, message } = await checkBiometricStatus();
+
     if (!error) {
       const client = await apiClientBiometric();
       const response = await client.GET(`biometrico/capturar/huella`);
       const { status } = response;
       const responseData = await response.json();
+
       if (status == 200) {
         const { message, data } = responseData;
+
         return {
           error: false,
           message,
@@ -164,6 +185,7 @@ export const captureOneFingerprint = async () => {
       }
       if (status >= 400) {
         const { message } = responseData;
+
         return {
           error: true,
           message,
@@ -175,12 +197,14 @@ export const captureOneFingerprint = async () => {
         message,
       };
     }
+
     return {
       error: true,
       message: "Ocurrio un error",
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al capturar una huella",
@@ -196,8 +220,10 @@ export const registerFingerprints = async (personId: number, fingerprints: any) 
     });
     const { status } = response;
     const responseData = await response.json();
+
     if (status == 201) {
       const { message } = responseData;
+
       return {
         error: false,
         message,
@@ -209,12 +235,14 @@ export const registerFingerprints = async (personId: number, fingerprints: any) 
         message: "Error al registrar las huellas",
       };
     }
+
     return {
       error: true,
       message: "Ocurrio un error",
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al registrar las huellas",

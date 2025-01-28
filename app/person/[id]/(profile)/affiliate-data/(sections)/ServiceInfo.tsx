@@ -10,6 +10,7 @@ const ServiceInfo = React.memo(() => {
   const { name: nameDegree } = degree;
   const { name: nameUnit } = unit;
   const { name: nameCatgory } = category;
+
   return (
     <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
       <legend className="text-sm uppercase px-2 font-semibold">Información de Servicio</legend>

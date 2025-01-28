@@ -30,6 +30,7 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
 
   const handleSelectionChange = (keys: any) => {
     const key = Array.from(keys)[0];
+
     if (key !== undefined && key !== null) {
       setExpandedKey(key.toString() || "");
     }
@@ -58,9 +59,9 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
         {subMenu.map(({ key, icon, path, title, description }) => (
           <ListboxItem
             key={key}
-            endContent={icon}
             classNames={classNames}
             description={description}
+            endContent={icon}
             onPress={() => handleAction(path)}
           >
             {title}
@@ -72,6 +73,7 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
 
   const renderAccordionItem = (item: SidebarItem): any => {
     const { title, customKey, path, subMenu, description, icon, topTitle } = item;
+
     return (
       <AccordionItem
         key={customKey}
@@ -79,13 +81,13 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
         textValue="menu-procedures"
         title={
           <ListboxComponent
+            activeItem={activeItem ?? ""}
+            customKey={customKey}
+            description={description}
             icon={icon}
+            showDivider={true}
             title={title}
             topTitle={topTitle}
-            showDivider={true}
-            customKey={customKey}
-            activeItem={activeItem ?? ""}
-            description={description}
             onAction={() => handleActionListbox(path, customKey)}
           />
         }
@@ -101,10 +103,10 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
       <CardBody>
         <Accordion
           isCompact
-          showDivider={false}
           itemClasses={itemClasses}
-          onSelectionChange={handleSelectionChange}
           selectedKeys={createExpandedKeySet(expandedKey)}
+          showDivider={false}
+          onSelectionChange={handleSelectionChange}
         >
           {renderAccordionItem(sidebarItem)}
         </Accordion>

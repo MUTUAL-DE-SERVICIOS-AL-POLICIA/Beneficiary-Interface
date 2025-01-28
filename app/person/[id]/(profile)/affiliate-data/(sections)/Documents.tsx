@@ -1,5 +1,5 @@
 "use client";
-import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
+import { CheckboxGroup } from "@heroui/checkbox";
 import { useCallback, useMemo, useState } from "react";
 import { cn } from "@heroui/theme";
 import React from "react";
@@ -36,10 +36,12 @@ const AffiliateDocuments = React.memo(({ affiliateId, documents, status }: Affil
         // esta ruta no se puede llamar con el servidor
         const response = await apiClient.GET(`affiliates/${affiliateId}/documents/${documentId}`);
         const { status } = response;
+
         if (status == 200) {
           const documentPDF = await response.blob();
           const pdfURL = URL.createObjectURL(documentPDF);
           const printJS = (await import("print-js")).default;
+
           printJS({ printable: pdfURL, type: "pdf", showModal: true });
           URL.revokeObjectURL(pdfURL);
         } else {
@@ -57,10 +59,12 @@ const AffiliateDocuments = React.memo(({ affiliateId, documents, status }: Affil
 
   const uploadFile = async (file: any) => {
     const formData = new FormData();
+
     formData.append("documentPdf", file);
     setIsLoading(true);
     if (currentDocumentId !== null) {
       const { error, message } = await createUpdateDocument(affiliateId, currentDocumentId, formData);
+
       if (!error) {
         Alert({ message, variant: "success" });
       } else {
@@ -135,11 +139,11 @@ const AffiliateDocuments = React.memo(({ affiliateId, documents, status }: Affil
         </div>
       )}
       <ModalDocument
+        action={uploadFile}
+        isUpdated={true}
         loading={isLoading}
         open={isDialogOpen}
-        action={uploadFile}
         onOpenChange={toggleDialog}
-        isUpdated={true}
       />
     </div>
   );

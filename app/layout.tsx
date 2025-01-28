@@ -2,13 +2,14 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 
+import AlertProvider from "../context/AlertProvider";
+
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/static";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
 import { BreadcrumbsComponent } from "@/components/breadcrumbs";
-import AlertProvider from "../context/AlertProvider";
 
 export const metadata: Metadata = {
   title: {

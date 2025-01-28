@@ -391,6 +391,7 @@ export function Hands(props: HandsProps) {
             client
               .GET("biometrico/capturar/huella")
               .then((response: any) => {
+                console.log(response);
                 setSelectedAreas((prev) => [...prev, area.id]);
               })
               .catch((error: any) => {

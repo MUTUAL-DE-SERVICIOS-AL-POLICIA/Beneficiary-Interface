@@ -7,6 +7,7 @@ import { useAffiliate } from "@/hooks/useAffiliate";
 const DerelictInfo = React.memo(() => {
   const { affiliateData } = useAffiliate();
   const { dateDerelict, reasonDerelict } = affiliateData;
+
   return (
     <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
       <legend className="text-sm uppercase px-2">

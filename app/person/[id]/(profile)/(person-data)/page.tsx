@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Divider } from "@heroui/divider";
 
 import { PersonalInfo } from "./(sections)/PersonalInfo";

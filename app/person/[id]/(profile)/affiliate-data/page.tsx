@@ -4,6 +4,7 @@ import { Tooltip } from "@heroui/tooltip";
 import { Button } from "@heroui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderPlus } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
 
 import EntryInfo from "./(sections)/EntryInfo";
 import StateInfo from "./(sections)/StateInfo";
@@ -11,7 +12,6 @@ import ServiceInfo from "./(sections)/ServiceInfo";
 import DerelictInfo from "./(sections)/DerelictInfo";
 import AffiliateDocuments from "./(sections)/Documents";
 
-import { useEffect, useState } from "react";
 import { getAffiliateDocuments } from "@/api/affiliate/api";
 import { createUpdateDocument, getAllDocuments } from "@/api/document/api";
 import { useAlert } from "@/hooks/useAlerts";
@@ -33,6 +33,7 @@ export default function AffiliateDataPage() {
 
   const handleDocumentRecord = async () => {
     const { error, message, documents } = await getAllDocuments();
+
     setAllDocuments(documents);
     toggleDialog();
     if (error) {
@@ -42,12 +43,15 @@ export default function AffiliateDataPage() {
 
   const registerFile = async (file: any, selectedKey: any) => {
     const formData = new FormData();
+
     formData.append("documentPdf", file);
     setIsLoading(true);
     if (affiliateId !== null) {
       const { error, message } = await createUpdateDocument(affiliateId, selectedKey, formData);
+
       if (!error && affiliateId !== null) {
         const { affiliateDocuments } = await getAffiliateDocuments(affiliateId);
+
         setDocuments(affiliateDocuments);
         Alert({
           message: message,
@@ -69,6 +73,7 @@ export default function AffiliateDataPage() {
       if (affiliateId !== null) {
         const { error, message, statusDocuments, affiliateDocuments } =
           await getAffiliateDocuments(affiliateId);
+
         if (!error) {
           setDocuments(affiliateDocuments);
           setStatus(statusDocuments);
@@ -77,6 +82,7 @@ export default function AffiliateDataPage() {
         }
       }
     };
+
     fetchDocuments();
   }, []);
 
@@ -117,17 +123,17 @@ export default function AffiliateDataPage() {
       <div className="px-3 py-1">
         <div className="flex gap-1">
           <div className="flex flex-col w-full">
-            <AffiliateDocuments affiliateId={affiliateId} status={status} documents={documents} />
+            <AffiliateDocuments affiliateId={affiliateId} documents={documents} status={status} />
           </div>
         </div>
       </div>
       <ModalDocument
         action={registerFile}
         data={allDocuments}
+        isUpdated={false}
         loading={isLoading}
         open={isDialogOpen}
         onOpenChange={toggleDialog}
-        isUpdated={false}
       />
     </div>
   );

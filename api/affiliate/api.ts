@@ -1,7 +1,8 @@
 "use server";
+import { transformToAffiliate } from "./transform";
+
 import { apiClient } from "@/services";
 import { ResponseData } from "@/types";
-import { transformToAffiliate } from "./transform";
 import { createEmptyObject } from "@/helpers/utils";
 import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/domain";
 
@@ -10,8 +11,10 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
     const response = await apiClient.GET(`affiliates/${affiliateId}`);
     const { status }: { status: number } = response;
     const responseData = await response.json();
+
     if (status == 200) {
       const { affiliateData, affiliateState, degree, unit, category } = transformToAffiliate(responseData);
+
       return {
         error: false,
         message: "Datos del afiliado obtenido exitosamente",
@@ -24,6 +27,7 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
     }
     if (status >= 400) {
       const { message } = responseData;
+
       return {
         error: true,
         message: message,
@@ -34,6 +38,7 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
         category: createEmptyObject<Category>(),
       };
     }
+
     return {
       error: true,
       message: "Ocurrio un error",
@@ -45,6 +50,7 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al obtener datos del afiliado",
@@ -62,8 +68,10 @@ export const getAffiliateDocuments = async (affiliateId: number): Promise<Respon
     const response = await apiClient.GET(`affiliates/${affiliateId}/documents`);
     const { status } = response;
     const responseData = await response.json();
+
     if (status == 200) {
       const { status: statusDocuments, documentsAffiliate } = responseData;
+
       return {
         error: false,
         message: "Documentos del afiliado obtenido exitosamente",
@@ -73,6 +81,7 @@ export const getAffiliateDocuments = async (affiliateId: number): Promise<Respon
     }
     if (status >= 400) {
       const { message } = responseData;
+
       return {
         error: true,
         message: message,
@@ -80,6 +89,7 @@ export const getAffiliateDocuments = async (affiliateId: number): Promise<Respon
         affiliateDocuments: [],
       };
     }
+
     return {
       error: true,
       message: "Ocurrio un error",
@@ -88,6 +98,7 @@ export const getAffiliateDocuments = async (affiliateId: number): Promise<Respon
     };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al obtener los documentos del afiliado",

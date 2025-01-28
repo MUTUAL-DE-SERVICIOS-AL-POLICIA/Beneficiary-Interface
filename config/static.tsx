@@ -1,15 +1,4 @@
-import {
-  faFingerprint,
-  faHeartPulse,
-  faListCheck,
-  faMoneyBill,
-  faPeopleGroup,
-  faPiggyBank,
-  faPuzzlePiece,
-  faRibbon,
-  faUserNurse,
-  faUserTie,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFingerprint, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Column } from "@/components/table";

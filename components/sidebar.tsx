@@ -13,7 +13,6 @@ import { sidebarConfig, SidebarItem } from "@/config/static";
 import { AccordionComponent } from "@/components/accordion";
 import { ListboxComponent } from "@/components/list";
 import { usePerson } from "@/hooks/usePerson";
-import fullName from "../helpers/utils";
 
 export function Sidebar() {
   const router = useRouter();
@@ -28,6 +27,7 @@ export function Sidebar() {
   const handleAction = (path: string) => {
     setSelectedPath(path);
     const { id: personId } = personData;
+
     router.push(`/person/${personId}/${path}`);
   };
 
@@ -44,8 +44,10 @@ export function Sidebar() {
 
   const NUP = (prop: any) => {
     const { personAffiliate } = prop;
+
     if (personAffiliate.length !== 0) {
       const { typeId: nup } = personAffiliate[0];
+
       return (
         <div className="flex gap-1">
           <p className="font-semibold text-default-800 text-small">NUP:</p>
@@ -57,6 +59,7 @@ export function Sidebar() {
 
   const QuickInformation = (props: any) => {
     const { fullName, identityCard, personAffiliateData } = props;
+
     return (
       <div className="flex my-4">
         <div className="flex flex-col gap-1 items-center">
@@ -93,6 +96,7 @@ export function Sidebar() {
 
     const handleSelectionChange = (keys: any) => {
       const key = Array.from(keys)[0];
+
       if (key !== undefined && key !== null) {
         setExpandedKey(key.toString() || "");
       }
@@ -121,9 +125,9 @@ export function Sidebar() {
           {subMenu.map(({ key, icon, path, title, description }) => (
             <ListboxItem
               key={key}
-              endContent={icon}
               classNames={classNames}
               description={description}
+              endContent={icon}
               onPress={() => handleAction(path)}
             >
               {title}
@@ -148,13 +152,13 @@ export function Sidebar() {
           textValue="menu1"
           title={
             <ListboxComponent
+              activeItem={activeItem}
+              customKey={customKey}
+              description={description}
               icon={icon}
+              showDivider={true}
               title={title}
               topTitle={topTitle}
-              showDivider={true}
-              customKey={customKey}
-              activeItem={activeItem}
-              description={description}
               onAction={() => handleActionListbox(path, customKey)}
             />
           }
@@ -178,10 +182,10 @@ export function Sidebar() {
         <CardBody>
           <Accordion
             isCompact
-            showDivider={false}
             itemClasses={itemClasses}
-            onSelectionChange={handleSelectionChange}
             selectedKeys={createExpandedKeySet(expandedKey)}
+            showDivider={false}
+            onSelectionChange={handleSelectionChange}
           >
             {sidebarItems
               .slice(0, 2)
@@ -198,6 +202,7 @@ export function Sidebar() {
       <PersonCard />
       {sidebarItems.slice(2).map((sidebarItem: Omit<SidebarItem, "handleAction">, index: number) => {
         const { customKey, ...props } = sidebarItem;
+
         return (
           <AccordionComponent
             key={index}

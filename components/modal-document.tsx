@@ -62,8 +62,8 @@ export function ModalDocument(props: ModalProps) {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={open}
-        onOpenChange={onOpenChange}
         size="5xl" // primer diferencia
+        onOpenChange={onOpenChange}
       >
         <ModalContent>
           {(onClose) => (

@@ -11,7 +11,6 @@ import {
   getRegisteredFingerprints,
   registerFingerprints,
 } from "@/api/biometric/biometric";
-
 import { Hands } from "@/components/hands";
 import { useAlert } from "@/hooks/useAlerts";
 
@@ -40,6 +39,7 @@ export default function FingerPrintPage() {
 
   const getFingerprints = async () => {
     const { error, message, fingerprintsRegistered } = await getRegisteredFingerprints(personId);
+
     if (!error) {
       setRegisteredFingerprints(fingerprintsRegistered);
     } else {
@@ -49,6 +49,7 @@ export default function FingerPrintPage() {
 
   const getFingerprintIds = async () => {
     const { error, message, fingerprints } = await getAllFingerprintsIds();
+
     if (!error) {
       setFingerprintIds(fingerprints);
     } else {
@@ -58,11 +59,14 @@ export default function FingerPrintPage() {
 
   const captureTwoFingerPrints = async () => {
     const { error, message, data } = await captureTwoFingerprints();
+
     if (!error) {
       Alert({ message, variant: "success" });
+
       return data;
     } else {
       Alert({ message, variant: "error" });
+
       return null;
     }
   };
@@ -73,18 +77,22 @@ export default function FingerPrintPage() {
 
       if (!error) {
         Alert({ message, variant: "success" });
+
         return data;
       } else {
         Alert({ message, variant: "error" });
+
         return null;
       }
     } catch (e: any) {
+      console.error(e);
       Alert({ message: "Error en la aplicación", variant: "default" });
     }
   };
 
   const registerFingerPrints = async (fingerprints: any) => {
     const { error, message } = await registerFingerprints(personId, fingerprints);
+
     if (!error) {
       Alert({ message, variant: "success" });
     } else {
@@ -98,6 +106,7 @@ export default function FingerPrintPage() {
     quality: number,
   ): Fingerprint | undefined => {
     const finger: any = fingerprintIds.find((finger: any) => finger.name.includes(fingerTypeName));
+
     return finger ? { fingerprintTypeId: finger.id, wsq, quality } : undefined;
   };
 
@@ -106,6 +115,7 @@ export default function FingerPrintPage() {
       setSelectedTwoFinger(e.target.value);
       setIsLoading(true);
       const data = await captureTwoFingerPrints();
+
       if (data) {
         const { izquierda, derecha } = data;
         const isThumb = e.target.value === "Pulgares";

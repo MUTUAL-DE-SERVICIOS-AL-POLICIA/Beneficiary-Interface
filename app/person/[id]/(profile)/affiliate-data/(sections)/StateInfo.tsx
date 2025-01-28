@@ -8,6 +8,7 @@ const StateInfo = React.memo(() => {
   const { affiliateData, affiliateState } = useAffiliate();
   const { type } = affiliateData;
   const { name } = affiliateState;
+
   return (
     <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
       <legend className="text-sm uppercase px-2 font-semibold">Estado del policía</legend>
