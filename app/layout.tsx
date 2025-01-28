@@ -2,6 +2,8 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 
+import AlertProvider from "../context/AlertProvider";
+
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/static";
@@ -33,15 +35,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head />
       <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex flex-col h-screen overflow-y-scroll">
-            <Navbar />
-            <main className="container mx-auto max-w-7xl flex-grow">
-              <div className="container">
-                <BreadcrumbsComponent />
-              </div>
-              {children}
-            </main>
-          </div>
+          <AlertProvider>
+            <div className="relative flex flex-col h-screen overflow-y-scroll">
+              <Navbar />
+              <main className="container mx-auto max-w-7xl flex-grow">
+                <div className="container">
+                  <BreadcrumbsComponent />
+                </div>
+                {children}
+              </main>
+            </div>
+          </AlertProvider>
         </Providers>
       </body>
     </html>

@@ -1,6 +1,6 @@
-import { Autocomplete, AutocompleteItem } from "@nextui-org/autocomplete";
-import { Button } from "@nextui-org/button";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/modal";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { Button } from "@heroui/button";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { useState } from "react";
 
 interface ModalProps {
@@ -62,8 +62,8 @@ export function ModalDocument(props: ModalProps) {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={open}
-        onOpenChange={onOpenChange}
         size="5xl" // primer diferencia
+        onOpenChange={onOpenChange}
       >
         <ModalContent>
           {(onClose) => (

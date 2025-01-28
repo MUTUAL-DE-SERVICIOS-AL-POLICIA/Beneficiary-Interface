@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext } from "react";
 
-import AlertProvider from "./AlertProvider";
 import { Person, PersonAffiliate } from "@/domain";
 
 interface PersonContextProps {
@@ -19,16 +18,14 @@ export const PersonProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ person, personAffiliate, error, children }) => {
   return (
-    <AlertProvider>
-      <PersonContext.Provider
-        value={{
-          personData: person,
-          personAffiliateData: personAffiliate,
-          error: error,
-        }}
-      >
-        {children}
-      </PersonContext.Provider>
-    </AlertProvider>
+    <PersonContext.Provider
+      value={{
+        personData: person,
+        personAffiliateData: personAffiliate,
+        error: error,
+      }}
+    >
+      {children}
+    </PersonContext.Provider>
   );
 };

@@ -1,5 +1,6 @@
-import { Affiliate, AffiliateState, Degree, Unit, Category } from "@/domain";
 import { AffiliateDto } from "./dto";
+
+import { Affiliate, AffiliateState, Degree, Unit, Category } from "@/domain";
 
 export const transformToAffiliate = (
   affiliateDto: AffiliateDto,

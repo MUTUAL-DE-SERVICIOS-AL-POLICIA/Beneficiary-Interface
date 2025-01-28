@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { faEllipsisVertical, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Pagination } from "@nextui-org/pagination";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/dropdown";
+import { Pagination } from "@heroui/pagination";
+import { Input } from "@heroui/input";
+import { Button } from "@heroui/button";
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
 import {
   Table,
   TableColumn,
@@ -15,9 +15,9 @@ import {
   TableRow,
   TableCell,
   SortDescriptor,
-} from "@nextui-org/table";
+} from "@heroui/table";
 import { useDebounce } from "use-debounce";
-import { Card } from "@nextui-org/card";
+import { Card } from "@heroui/card";
 
 import { useAlert } from "@/hooks/useAlerts";
 
@@ -68,7 +68,7 @@ export const TableComponent = ({
   const [debouncedFilterValue] = useDebounce(filterValue, 200);
 
   const handleViewPerson = (id: number) => {
-    router.push(`/beneficiary/${id}`);
+    router.push(`/person/${id}`);
   };
 
   useEffect(() => {
@@ -82,6 +82,7 @@ export const TableComponent = ({
       if (hasSearchFilter) {
         const searchValue = debouncedFilterValue.toLowerCase();
         const { persons, total } = await getData(rowsPerPage, page, searchValue);
+
         setFiltered(persons);
         setAll(Number.isFinite(total) ? total : 0);
       } else {
@@ -107,6 +108,7 @@ export const TableComponent = ({
   const handlePageChange = async (newPage: number) => {
     const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
     const { persons } = await getData(rowsPerPage, newPage, searchValue);
+
     setFiltered(persons);
     setPage(newPage);
   };
@@ -138,8 +140,10 @@ export const TableComponent = ({
   const onRowsPerPageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPage(1);
     const newRowsPerPage = Number(e.target.value);
+
     setRowsPerPage(Number(newRowsPerPage));
     const { persons } = await getData(newRowsPerPage);
+
     setFiltered(persons);
   }, []);
 
@@ -216,8 +220,10 @@ export const TableComponent = ({
                 </Button>
               </DropdownTrigger>
               <DropdownMenu data-testid="menu">
-                <DropdownItem onClick={() => handleViewPerson(item.id)}>Ver persona</DropdownItem>
-                <DropdownItem>Editar</DropdownItem>
+                <DropdownItem key={"1"} onPress={() => handleViewPerson(item.id)}>
+                  Ver persona
+                </DropdownItem>
+                <DropdownItem key={"2"}>Editar</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -251,7 +257,7 @@ export const TableComponent = ({
         bottomContent={bottomContent}
         bottomContentPlacement="outside"
         classNames={classNames}
-        data-testid="beneficiaries-table"
+        data-testid="persons-table"
         selectionMode="single"
         shadow="lg"
         sortDescriptor={sortDescriptor}

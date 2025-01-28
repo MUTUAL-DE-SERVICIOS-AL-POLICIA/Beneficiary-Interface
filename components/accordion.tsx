@@ -1,15 +1,15 @@
-import { Accordion, AccordionItem } from "@nextui-org/accordion";
-import { Card, CardBody } from "@nextui-org/card";
-import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
+import { Accordion, AccordionItem } from "@heroui/accordion";
+import { Card, CardBody } from "@heroui/card";
+import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { useState } from "react";
 
 import { SidebarItem } from "@/config/static";
-import { ListboxComponent } from "./list";
+import { ListboxComponent } from "@/components/list";
 
 export const AccordionComponent = (sidebarItem: SidebarItem) => {
   const { handleAction, activeItem, setActiveItem } = sidebarItem;
 
-  const [expandedKey, setExpandedKey] = useState<string | number | null>(null);
+  const [expandedKey, setExpandedKey] = useState<string | number>("");
 
   const itemClasses = {
     base: "",
@@ -25,13 +25,14 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
   };
 
   const toggleItem = (key: string | number) => {
-    setExpandedKey((prevKey) => (prevKey === key ? null : key));
+    setExpandedKey((prevKey) => (prevKey === key ? "" : key));
   };
 
-  const handleSelectionChange = (keys: Set<any>) => {
+  const handleSelectionChange = (keys: any) => {
     const key = Array.from(keys)[0];
-    if (key !== undefined) {
-      setExpandedKey(key.toString() || null);
+
+    if (key !== undefined && key !== null) {
+      setExpandedKey(key.toString() || "");
     }
   };
 
@@ -46,7 +47,7 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
       ${activeItem === customKey ? "bg-default-300" : "bg-default-100"}
     `;
 
-  const handleActionListbox = (path, customKey) => {
+  const handleActionListbox = (path: string, customKey: string | number) => {
     handleAction(path);
     setActiveItem(customKey);
     toggleItem(customKey);
@@ -58,10 +59,10 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
         {subMenu.map(({ key, icon, path, title, description }) => (
           <ListboxItem
             key={key}
-            endContent={icon}
             classNames={classNames}
             description={description}
-            onClick={() => handleAction(path)}
+            endContent={icon}
+            onPress={() => handleAction(path)}
           >
             {title}
           </ListboxItem>
@@ -72,6 +73,7 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
 
   const renderAccordionItem = (item: SidebarItem): any => {
     const { title, customKey, path, subMenu, description, icon, topTitle } = item;
+
     return (
       <AccordionItem
         key={customKey}
@@ -79,13 +81,13 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
         textValue="menu-procedures"
         title={
           <ListboxComponent
+            activeItem={activeItem ?? ""}
+            customKey={customKey}
+            description={description}
             icon={icon}
+            showDivider={true}
             title={title}
             topTitle={topTitle}
-            showDivider={true}
-            customKey={customKey}
-            activeItem={activeItem}
-            description={description}
             onAction={() => handleActionListbox(path, customKey)}
           />
         }
@@ -101,10 +103,10 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
       <CardBody>
         <Accordion
           isCompact
-          showDivider={false}
           itemClasses={itemClasses}
-          onSelectionChange={handleSelectionChange}
           selectedKeys={createExpandedKeySet(expandedKey)}
+          showDivider={false}
+          onSelectionChange={handleSelectionChange}
         >
           {renderAccordionItem(sidebarItem)}
         </Accordion>

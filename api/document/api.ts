@@ -7,6 +7,7 @@ export const getAllDocuments = async (): Promise<ResponseData> => {
     const response = await apiClient.GET("procedure-documents");
     const { status } = response;
     const responseData = await response.json();
+
     // No necesita Dto ni transformar datos
     if (status == 200) {
       return {
@@ -17,12 +18,19 @@ export const getAllDocuments = async (): Promise<ResponseData> => {
     }
     if (status >= 400) {
       const { message } = responseData;
+
       return {
         error: true,
         message: message,
         documents: [],
       };
     }
+
+    return {
+      error: true,
+      message: "Ocurrio un error",
+      documents: [],
+    };
   } catch (e: any) {
     console.error(e);
 
@@ -46,6 +54,7 @@ export const createUpdateDocument = async (
       true,
     );
     const { status } = response;
+
     if (status >= 400) {
       return {
         error: true,
@@ -58,8 +67,14 @@ export const createUpdateDocument = async (
         message: "Documento creado o actualizado correctamente",
       };
     }
+
+    return {
+      error: true,
+      message: "Ocurrio un error",
+    };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al crear o actualizar el documento",

@@ -1,9 +1,11 @@
 "use server";
-import { apiClient } from "@/services";
 import { transformToPersons, transformToPerson } from "./transform";
 import { PersonsDto } from "./dto";
+
+import { apiClient } from "@/services";
 import { TablePersons, Person, PersonAffiliate } from "@/domain";
 import { ResponseData } from "@/types";
+import { createEmptyObject } from "@/helpers/utils";
 
 export const getPersons = async (
   limit: number = 10,
@@ -18,9 +20,11 @@ export const getPersons = async (
     });
     const { status }: { status: number } = response;
     const responseData = await response.json();
+
     if (status == 200) {
       const { persons, total }: { persons: PersonsDto[]; total: number } = responseData;
       const { personsData }: { personsData: TablePersons[] } = transformToPersons(persons);
+
       return {
         error: false,
         message: "Beneficiarios obtenidos exitosamente",
@@ -30,6 +34,7 @@ export const getPersons = async (
     }
     if (status >= 400) {
       const { message }: { message: string } = responseData;
+
       return {
         error: true,
         message: message,
@@ -37,8 +42,16 @@ export const getPersons = async (
         total: 0,
       };
     }
+
+    return {
+      error: true,
+      message: "Ocurrio un error",
+      persons: [],
+      total: 0,
+    };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al obtener el listado de personas",
@@ -53,6 +66,7 @@ export const getPerson = async (personId: string): Promise<ResponseData> => {
     const response = await apiClient.GET(`persons/findPersonAffiliatesWithDetails/${personId}`);
     const { status }: { status: number } = response;
     const responseData = await response.json();
+
     if (status == 200) {
       const {
         isAffiliate,
@@ -60,6 +74,7 @@ export const getPerson = async (personId: string): Promise<ResponseData> => {
         personAffiliate,
       }: { isAffiliate: boolean; personData: Person; personAffiliate: PersonAffiliate[] } =
         transformToPerson(responseData);
+
       return {
         error: false,
         message: "Datos de la persona obtenido exitosamente",
@@ -70,22 +85,32 @@ export const getPerson = async (personId: string): Promise<ResponseData> => {
     }
     if (status >= 400) {
       const { message } = responseData;
+
       return {
         error: true,
         message: message,
         isAffiliate: false,
-        person: {},
-        personAffiliate: {},
+        person: createEmptyObject<Person>(),
+        personAffiliate: createEmptyObject<PersonAffiliate>(),
       };
     }
+
+    return {
+      error: true,
+      message: "Ocurrio un error",
+      isAffiliate: false,
+      person: createEmptyObject<Person>(),
+      personAffiliate: createEmptyObject<PersonAffiliate>(),
+    };
   } catch (e: any) {
     console.error(e);
+
     return {
       error: true,
       message: "Error al obtener datos de la persona",
       isAffiliate: false,
-      person: {},
-      personAffiliate: {},
+      person: createEmptyObject<Person>(),
+      personAffiliate: createEmptyObject<PersonAffiliate>(),
     };
   }
 };

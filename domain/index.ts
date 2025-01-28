@@ -14,7 +14,7 @@ export interface Person {
   surnameHusband: string | null;
   identityCard: string;
   dueDate: Date | null;
-  isDuedateUndefined: boolean;
+  isDuedateUndefined: boolean | null;
   gender: string;
   civilStatus: string;
   birthDate: Date | string;

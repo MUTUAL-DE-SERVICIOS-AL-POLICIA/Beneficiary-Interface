@@ -1,4 +1,4 @@
-import { Navbar as NextUINavbar, NavbarContent, NavbarBrand, NavbarItem } from "@nextui-org/navbar";
+import { Navbar as NextUINavbar, NavbarContent, NavbarBrand, NavbarItem } from "@heroui/navbar";
 import NextLink from "next/link";
 
 import { UserComponent } from "./user";

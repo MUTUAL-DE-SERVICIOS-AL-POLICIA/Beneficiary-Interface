@@ -1,4 +1,4 @@
-import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
+import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { ReactNode } from "react";
 
 interface ListboxProps {
@@ -39,12 +39,12 @@ export const ListboxComponent = (props: ListboxProps) => {
 
   return (
     <Listbox
-      variant="flat"
       aria-label="list box"
       className={getListboxClasses(customKey)}
+      variant="flat"
       onAction={onAction}
     >
-      <ListboxSection showDivider={showDivider} classNames={cssListboxSection} title={topTitle}>
+      <ListboxSection classNames={cssListboxSection} showDivider={showDivider} title={topTitle}>
         <ListboxItem
           key={customKey}
           className={cssListboxItem}

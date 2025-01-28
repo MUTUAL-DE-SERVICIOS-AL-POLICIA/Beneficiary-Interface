@@ -38,6 +38,7 @@ export class FetchService extends APIConnection {
       },
       headers,
     );
+
     return this.handleRequest(endpoint, requestConfig);
   }
 

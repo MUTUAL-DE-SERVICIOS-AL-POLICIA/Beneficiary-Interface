@@ -1,3 +1,4 @@
+"use client";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { SnackbarOrigin, useSnackbar, VariantType } from "notistack";

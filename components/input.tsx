@@ -1,14 +1,10 @@
-import { Input } from "@nextui-org/input";
+import { Input } from "@heroui/input";
 import { ComponentProps } from "react";
 
 type InputProps = ComponentProps<typeof Input>;
 
 const classNames = {
-  inputWrapper: [
-    "border",
-    "dark:hover:border-lime-400",
-    "dark:group-data-[focus=true]:border-lime-400",
-  ],
+  inputWrapper: ["border", "dark:hover:border-lime-400", "dark:group-data-[focus=true]:border-lime-400"],
 };
 
 interface InputCustomProps {
