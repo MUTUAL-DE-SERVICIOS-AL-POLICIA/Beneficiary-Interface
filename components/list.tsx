@@ -16,16 +16,16 @@ export const ListboxComponent = (props: ListboxProps) => {
   const { customKey, topTitle, description, icon, title, onAction, showDivider, activeItem } = props;
 
   const cssListboxSection = {
-    base: "",
-    heading: "text-default-700 pb-0 mb-0",
-    divider: "h-[2px] bg-default-500 ml-3",
+    base: "m-0 p-0 h-15",
+    heading: "text-default-700",
+    divider: "h-[2px] bg-default-500 ml-3", // estilos de la barra de división
   };
 
   const cssListboxItem = "m-0 p-0";
 
   const cssGeneral = {
     base: "",
-    title: "mt-0 mb-2 font-bold text-medium ",
+    title: "mt-0 mb-0 font-bold text-medium ",
     trigger: "",
     indicator: "text-medium",
   };
@@ -33,7 +33,7 @@ export const ListboxComponent = (props: ListboxProps) => {
   const getListboxClasses = (customKey: string | number): string =>
     `${cssGeneral.title}
       ${cssGeneral.trigger}
-      px-3 py-0 h-14 my-0 rounded-small
+      px-3 py-0 rounded-small
       ${activeItem === customKey ? "bg-default-300" : "bg-default-100"}
     `;
 
