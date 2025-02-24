@@ -34,7 +34,13 @@ interface PropsTable {
   headerColumns: Column[];
   startPage: number;
   startRowsPerPage: number;
-  getData: (rowsPerPage: number, page?: number, searchValue?: string | undefined) => Promise<any>;
+  getData: (
+    rowsPerPage: number,
+    page?: number,
+    searchValue?: string | undefined,
+    orderBy?: string | undefined,
+    order?: string | undefined,
+  ) => Promise<any>;
   error: boolean;
 }
 
@@ -54,7 +60,7 @@ export const TableComponent = ({
   const [page, setPage] = useState(startPage);
   const [rowsPerPage, setRowsPerPage] = useState(startRowsPerPage);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: "first_name", //TODO
+    column: "id",
     direction: "ascending",
   });
   const [filtered, setFiltered] = useState<Item[]>(data);
@@ -79,35 +85,30 @@ export const TableComponent = ({
 
   useEffect(() => {
     const fetchFilteredItems = async () => {
-      if (hasSearchFilter) {
-        const searchValue = debouncedFilterValue.toLowerCase();
-        const { persons, total } = await getData(rowsPerPage, page, searchValue);
+      const { persons, total } = await getData(
+        rowsPerPage,
+        page,
+        hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined,
+        sortDescriptor.column.toString(),
+        sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
+      );
 
-        setFiltered(persons);
-        setAll(Number.isFinite(total) ? total : 0);
-      } else {
-        setAll(Number.isFinite(total) ? total : 0);
-      }
+      setFiltered(persons);
+      setAll(Number.isFinite(total) ? total : 0);
     };
 
     fetchFilteredItems();
-  }, [debouncedFilterValue, rowsPerPage]);
-
-  const sortedItems = useMemo(() => {
-    if (filtered !== undefined) {
-      return [...filtered].sort((a: Item, b: Item) => {
-        const first = a[sortDescriptor.column as keyof Item] as number;
-        const second = b[sortDescriptor.column as keyof Item] as number;
-        const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-        return sortDescriptor.direction === "descending" ? -cmp : cmp;
-      });
-    } else return [];
-  }, [sortDescriptor, filtered]);
+  }, [debouncedFilterValue, rowsPerPage, sortDescriptor]);
 
   const handlePageChange = async (newPage: number) => {
     const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
-    const { persons } = await getData(rowsPerPage, newPage, searchValue);
+    const { persons } = await getData(
+      rowsPerPage,
+      newPage,
+      searchValue,
+      sortDescriptor.column.toString(),
+      sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
+    );
 
     setFiltered(persons);
     setPage(newPage);
@@ -134,7 +135,7 @@ export const TableComponent = ({
         />
       </div>
     );
-  }, [page, pages, filterValue, rowsPerPage]);
+  }, [page, pages, filterValue, rowsPerPage, sortDescriptor]);
 
   /* SEARCH COMPONENT */
   const onRowsPerPageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -277,7 +278,7 @@ export const TableComponent = ({
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"Sin datos"} items={sortedItems}>
+        <TableBody emptyContent={"Sin datos"} items={[...filtered]}>
           {(item: Column) => (
             <TableRow key={item.id}>
               {(columnKey) => (

@@ -11,12 +11,16 @@ export const getPersons = async (
   limit: number = 10,
   page: number = 1,
   filter?: string,
+  orderBy?: string,
+  order?: string
 ): Promise<ResponseData> => {
   try {
     const response = await apiClient.GET("/persons", {
       limit,
       page,
       ...(filter ? { filter } : {}),
+      ...(orderBy ? { orderBy } : {}),
+      ...(order ? { order } : {}),
     });
     const { status }: { status: number } = response;
     const responseData = await response.json();
