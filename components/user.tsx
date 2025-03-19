@@ -20,8 +20,8 @@ export function UserComponent() {
         <Avatar isBordered as="button" className="transition-transform" icon={<AvatarIcon />} />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
-        <DropdownItem key="logout" color="danger" onClick={handleLogout}>
-          Salir sesión
+        <DropdownItem key="logout" color="danger" onPress={handleLogout}>
+          Cerrar sesión
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

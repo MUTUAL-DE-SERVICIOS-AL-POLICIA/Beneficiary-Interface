@@ -53,7 +53,7 @@ export const AccordionComponent = (sidebarItem: SidebarItem) => {
     toggleItem(customKey);
   };
 
-  const renderSubMenu = (subMenu: any[]): JSX.Element => (
+  const renderSubMenu = (subMenu: any[]) => (
     <Listbox aria-label="sub listbox" defaultSelectedKeys="all" variant="flat">
       <ListboxSection>
         {subMenu.map(({ key, icon, path, title, description }) => (

@@ -5,7 +5,7 @@ import { Column } from "@/components/table";
 
 interface SubMenuItem {
   key: string | number;
-  icon?: JSX.Element;
+  icon?: React.JSX.Element;
   title: string;
   topTitle?: string;
   path: string;
@@ -44,7 +44,7 @@ export const personTableHeaders: Column[] = [
   { id: 4, name: "APELLIDO MATERNO", key: "mothersLastName", sortable: true },
   { id: 5, name: "CARNET IDENTIDAD", key: "identityCard", sortable: true },
   { id: 6, name: "GENERO", key: "gender" },
-  { id: 7, name: "ACCION", key: "actions" },
+  { id: 7, name: "ACCIÓN", key: "actions" },
 ];
 
 export const sidebarConfig: SidebarConfig = {
@@ -72,9 +72,9 @@ export const sidebarConfig: SidebarConfig = {
       ],
     },
     {
-      topTitle: "Datos especificos como policía",
-      title: "DATOS DE POLICIA",
-      description: "Datos especificos de policía",
+      topTitle: "Datos específicos como policía",
+      title: "DATOS DE POLICÍA",
+      description: "Datos específicos de policía",
       customKey: "menu-2",
       icon: <FontAwesomeIcon icon={faUserNurse} size="lg" />,
       path: "/affiliate-data",
