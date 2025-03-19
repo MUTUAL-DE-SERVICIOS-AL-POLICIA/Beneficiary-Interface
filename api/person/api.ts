@@ -12,7 +12,7 @@ export const getPersons = async (
   page: number = 1,
   filter?: string,
   orderBy?: string,
-  order?: string
+  order?: string,
 ): Promise<ResponseData> => {
   try {
     const response = await apiClient.GET("/persons", {
