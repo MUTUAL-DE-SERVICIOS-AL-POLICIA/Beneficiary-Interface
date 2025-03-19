@@ -119,7 +119,7 @@ export function Sidebar() {
       toggleItem(customKey);
     };
 
-    const renderSubMenu = (subMenu: any[]): JSX.Element => (
+    const renderSubMenu = (subMenu: any[]) => (
       <Listbox aria-label="sub listbox" defaultSelectedKeys="all" variant="flat">
         <ListboxSection>
           {subMenu.map(({ key, icon, path, title, description }) => (
@@ -137,7 +137,7 @@ export function Sidebar() {
       </Listbox>
     );
 
-    const renderAccordionItem = (item: Omit<SidebarItem, "handleAction">): JSX.Element | null => {
+    const renderAccordionItem = (item: Omit<SidebarItem, "handleAction">) => {
       const { title, customKey, path, subMenu, description, icon, topTitle } = item;
 
       if (title === "DATOS DE POLICIA" && (!personAffiliateData || personAffiliateData.length === 0)) {
@@ -190,7 +190,7 @@ export function Sidebar() {
             {sidebarItems
               .slice(0, 2)
               .map((item) => renderAccordionItem(item))
-              .filter((item): item is JSX.Element => item !== null)}
+              .filter((item) => item !== null)}
           </Accordion>
         </CardBody>
       </Card>
