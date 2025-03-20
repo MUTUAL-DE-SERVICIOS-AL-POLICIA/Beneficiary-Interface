@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import hands from "../../public/hands1.png";
+
 import { apiClientBiometric } from "@/services";
 
 interface Area {
