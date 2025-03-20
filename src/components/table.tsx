@@ -1,6 +1,4 @@
 "use client";
-import { faEllipsisVertical, faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@heroui/button";
 import { Card } from "@heroui/card";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
@@ -18,6 +16,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
+
+import { SearchIcon, VerticalDotsIcon } from "./icons";
 
 import { useAlert } from "@/hooks/useAlerts";
 
@@ -85,36 +85,43 @@ export const TableComponent = ({
 
   useEffect(() => {
     const fetchFilteredItems = async () => {
-      const { persons, total } = await getData(
-        rowsPerPage,
-        page,
-        hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined,
-        sortDescriptor.column.toString(),
-        sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
-      );
+      try {
+        const { persons, total } = await getData(
+          rowsPerPage,
+          page,
+          hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined,
+          sortDescriptor.column.toString(),
+          sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
+        );
 
-      setFiltered(persons);
-      setAll(Number.isFinite(total) ? total : 0);
+        setFiltered(persons);
+        setAll(Number.isFinite(total) ? total : 0);
+      } catch {
+        Alert({ message: "Error al cargar los datos", variant: "error" });
+      }
     };
 
     fetchFilteredItems();
   }, [debouncedFilterValue, rowsPerPage, sortDescriptor]);
 
   const handlePageChange = async (newPage: number) => {
-    const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
-    const { persons } = await getData(
-      rowsPerPage,
-      newPage,
-      searchValue,
-      sortDescriptor.column.toString(),
-      sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
-    );
+    try {
+      const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
+      const { persons } = await getData(
+        rowsPerPage,
+        newPage,
+        searchValue,
+        sortDescriptor.column.toString(),
+        sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
+      );
 
-    setFiltered(persons);
-    setPage(newPage);
+      setFiltered(persons);
+      setPage(newPage);
+    } catch {
+      Alert({ message: "Error al cambiar de página", variant: "error" });
+    }
   };
 
-  /* PAGINATION COMPONENT */
   const bottomContent = useMemo(() => {
     const classNames = {
       wrapper: "gap-1",
@@ -137,7 +144,6 @@ export const TableComponent = ({
     );
   }, [page, pages, filterValue, rowsPerPage, sortDescriptor]);
 
-  /* SEARCH COMPONENT */
   const onRowsPerPageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPage(1);
     const newRowsPerPage = Number(e.target.value);
@@ -178,7 +184,7 @@ export const TableComponent = ({
             classNames={classNames}
             placeholder="Buscar por nombres, apellidos o carnet de identidad"
             size="sm"
-            startContent={<FontAwesomeIcon className="text-sm" icon={faSearch} size="sm" />}
+            startContent={<SearchIcon />}
             value={filterValue}
             variant="bordered"
             onClear={onClear}
@@ -216,8 +222,8 @@ export const TableComponent = ({
           <div className="relative flex justify-center gap-2">
             <Dropdown className="bg-background border-1 border-default-200">
               <DropdownTrigger>
-                <Button isIconOnly data-testid="show" radius="full" size="sm" variant="light">
-                  <FontAwesomeIcon icon={faEllipsisVertical} size="sm" />
+                <Button isIconOnly size="sm" variant="light">
+                  <VerticalDotsIcon className="text-default-300" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu data-testid="menu">
