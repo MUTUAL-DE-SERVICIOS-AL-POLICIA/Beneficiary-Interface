@@ -1,53 +1,36 @@
-# Next.js & HeroUI Template
+# Despliegue con docker
 
-This is a template for creating applications using Next.js 14 (app directory) and HeroUI (v2).
+### PASO 1
+clonar el repositorio e ingresar a la misma
 
-[Try it on CodeSandbox](https://githubbox.com/heroui-inc/heroui/next-app-template)
+### PASO 2
+construir la imagen con:
+```
+docker build --no-cache -t beneficiary-frontend .
+```
+### PASO 3
+```
+docker run -d -p 3001:3001 beneficiary-frontend
+```
+# Despliegue sin docker
 
-## Technologies Used
+### PASO 1
+clonar el repositorio e ingresar a la misma
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [HeroUI v2](https://heroui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
-
-## How to Use
-
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/heroui-inc/next-app-template
+### PASO 2
+instalar las dependencias con:
+```
+pnpm install
+```
+### PASO 3
+ejecutar en ambiente de desarrollo
+```
+pnpm dev
 ```
 
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
-```bash
-npm install
+### PASO 0
+ejecutar en ambiente de producción
 ```
-
-### Run the development server
-
-```bash
-npm run dev
+pnpm build
+pnpm start
 ```
-
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
-
-```bash
-public-hoist-pattern[]=*@heroui/*
-```
-
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
-
-## License
-
-Licensed under the [MIT license](https://github.com/heroui-inc/next-app-template/blob/main/LICENSE).
