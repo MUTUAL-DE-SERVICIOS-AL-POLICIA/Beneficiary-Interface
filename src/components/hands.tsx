@@ -4,8 +4,6 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import hands from "../../public/hands1.png";
-
 import { apiClientBiometric } from "@/services";
 
 interface Area {
@@ -483,7 +481,7 @@ export function Hands(props: HandsProps) {
 
   return (
     <div className="relative flex justify-center items-center mx-auto">
-      <Image alt="hands" height={300} id="hands" src={hands} width={500} />
+      <Image alt="hands" height={300} id="hands" src="/hands1.png" width={500} />
       <canvas
         className="absolute"
         id="canvas"
