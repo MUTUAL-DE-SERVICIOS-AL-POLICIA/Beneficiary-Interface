@@ -38,6 +38,7 @@
     "@heroui/table": "2.2.15",
     "@heroui/theme": "^2.4.12",
     "@heroui/tooltip": "^2.2.13",
+    "@heroui/user": "^2.2.12",
     "@react-aria/ssr": "3.9.7",
     "@react-aria/visually-hidden": "3.8.21",
     "clsx": "2.1.1",
@@ -76,5 +77,6 @@
     "prettier": "3.5.3",
     "tailwind-variants": "1.0.0",
     "typescript": "^5.8.2"
-  }
+  },
+  "packageManager": "pnpm@10.7.1+sha512.2d92c86b7928dc8284f53494fb4201f983da65f0fb4f0d40baafa5cf628fa31dae3e5968f12466f17df7e97310e30f343a648baea1b9b350685dafafffdf5808"
 }
