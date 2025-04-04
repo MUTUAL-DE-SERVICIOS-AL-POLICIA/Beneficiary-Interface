@@ -41,9 +41,9 @@ export abstract class APIConnection {
         requestConfig.headers = {};
       }
       if (requestConfig.headers instanceof Headers) {
-        requestConfig.headers.append("Set-Cookie", `msp=${cookie};`);
+        requestConfig.headers.append("Authorization", `Bearer ${cookie}`);
       } else {
-        (requestConfig.headers as Record<string, string>)["Set-Cookie"] = `msp=${cookie};`;
+        (requestConfig.headers as Record<string, string>)["Authorization"] = `Bearer ${cookie}`;
       }
     }
     const url = this.buildUrl(endpoint);
