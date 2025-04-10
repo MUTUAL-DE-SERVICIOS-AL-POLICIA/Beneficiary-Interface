@@ -18,7 +18,7 @@ export class FetchServiceFactory extends APIConnectionFactory {
 }
 
 const host = process.env.NEXT_PUBLIC_BACKEND_HOST || "localhost";
-const port = process.env.NEXT_PUBLIC_BACKEND_PORT || 3080;
+const port = process.env.NEXT_PUBLIC_BACKEND_PORT || 3000;
 const baseUrl = `http://${host}:${port}/api/`;
 const factory = new FetchServiceFactory(baseUrl);
 
@@ -34,9 +34,7 @@ export const apiClientBiometric = async () => {
   return biometricFactory.createAPIConnection();
 };
 
-const hostFrontend = process.env.NEXT_PUBLIC_SERVER_FRONTEND || "localhost";
-const portFrontend = process.env.NEXT_PUBLIC_SERVER_PORT_FRONTEND || 3000;
-const baseURlFrontend = `http://${hostFrontend}:${portFrontend}/api/`;
-const factoryFrontend = new FetchServiceFactory(baseURlFrontend);
+const hostLogin = process.env.NEXT_PUBLIC_SERVER_FRONTEND || "localhost";
+const portLogin = process.env.LOGIN_FRONTEND_PORT || 3001;
 
-export const apiServerFrontend = factoryFrontend.createAPIConnection();
+export const urlLogin = `http://${hostLogin}:${portLogin}`;
