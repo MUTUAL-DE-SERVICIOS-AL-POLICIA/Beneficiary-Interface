@@ -3,7 +3,7 @@ import { Checkbox } from "@heroui/checkbox";
 import { useCallback, useMemo } from "react";
 
 import { InputCustom } from "@/components/common";
-import { Person } from "@/domain";
+import { Person } from "@/utils/interfaces";
 
 const fields = [
   { label: "Primer nombre", key: "firstName", order: 1 },

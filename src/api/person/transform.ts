@@ -1,6 +1,6 @@
 import { KinshipDto, PersonAffiliateDto, PersonDto, PersonsDto } from "./dto";
 
-import { Kinship, Person, PersonAffiliate } from "@/domain";
+import { Kinship, Person, PersonAffiliate } from "@/utils/interfaces";
 
 export const transformToPerson = (
   personDto: PersonDto,

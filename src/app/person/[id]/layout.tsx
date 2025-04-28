@@ -5,7 +5,7 @@ import { PersonProvider } from "@/utils/context/PersonContext";
 import { getAffiliate } from "@/api/affiliate/api";
 import { getPerson } from "@/api/person/api";
 import { Sidebar } from "@/components/persons";
-import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/domain";
+import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/utils/interfaces";
 import { createEmptyObject } from "@/utils/helpers/utils";
 
 interface ProfileLayoutProps {

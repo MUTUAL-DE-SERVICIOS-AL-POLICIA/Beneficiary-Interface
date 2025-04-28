@@ -1,7 +1,7 @@
 "use server";
 import { transformToAffiliate } from "./transform";
 
-import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/domain";
+import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/utils/interfaces";
 import { createEmptyObject } from "@/utils/helpers/utils";
 import { apiClient } from "@/utils/services";
 import { ResponseData } from "@/utils/types";

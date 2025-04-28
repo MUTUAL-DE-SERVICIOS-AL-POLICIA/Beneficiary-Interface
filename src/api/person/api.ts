@@ -2,7 +2,7 @@
 import { PersonsDto } from "./dto";
 import { transformToPerson, transformToPersons } from "./transform";
 
-import { Person, PersonAffiliate, TablePersons } from "@/domain";
+import { Person, PersonAffiliate, TablePersons } from "@//utils/interfaces";
 import { createEmptyObject } from "@/utils/helpers/utils";
 import { apiClient } from "@/utils/services";
 import { ResponseData } from "@/utils/types";

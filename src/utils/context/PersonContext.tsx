@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext } from "react";
 
-import { Person, PersonAffiliate } from "@/domain";
+import { Person, PersonAffiliate } from "@/utils/interfaces";
 
 interface PersonContextProps {
   personData: Person;

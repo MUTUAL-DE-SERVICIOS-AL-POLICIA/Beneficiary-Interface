@@ -1,6 +1,6 @@
 "use client";
 import { InputCustom } from "@/components/common";
-import { Person } from "@/domain";
+import { Person } from "@/utils/interfaces";
 
 interface DeathInfoProps {
   person: Person;
