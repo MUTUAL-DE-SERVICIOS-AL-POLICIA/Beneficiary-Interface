@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { PersonsProvider } from "@/context/PersonsContext";
+import { PersonsProvider } from "@/utils/context/PersonsContext";
 import { getPersons } from "@/api/person/api";
 
 export const dynamic = "force-dynamic";

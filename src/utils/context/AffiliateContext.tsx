@@ -1,7 +1,7 @@
 "use client";
 import { createContext } from "react";
 
-import { AffiliateState } from "../domain/index";
+import { AffiliateState } from "../../domain/index";
 
 import { Affiliate, Category, Degree, Unit } from "@/domain";
 

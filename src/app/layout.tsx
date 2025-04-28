@@ -4,7 +4,7 @@ import { Metadata, Viewport } from "next";
 
 import { Providers } from "./providers";
 
-import AlertProvider from "@/context/AlertProvider";
+import AlertProvider from "@/utils/context/AlertProvider";
 import { BreadcrumbsComponent } from "@/components/breadcrumbs";
 import { Navbar } from "@/components/navbar";
 import { fontSans } from "@/config/fonts";
