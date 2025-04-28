@@ -2,8 +2,7 @@ import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "
 import NextLink from "next/link";
 
 import { UserComponent } from "./user";
-import { Logo } from "@/components/icons";
-import { ThemeSwitch } from "@/components/theme-switch";
+import { Logo , ThemeSwitch} from "@/components/common";
 import { getUserCookie } from "@/utils/helpers/cookies";
 import { Suspense } from "react";
 export const Navbar = async () => {

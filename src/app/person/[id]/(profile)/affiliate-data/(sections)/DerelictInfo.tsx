@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { InputCustom } from "@/components/input";
+import { InputCustom } from "@/components/common";
 import { useAffiliate } from "@/utils/hooks/useAffiliate";
 
 const DerelictInfo = React.memo(() => {

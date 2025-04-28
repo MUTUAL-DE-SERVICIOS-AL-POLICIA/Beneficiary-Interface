@@ -9,7 +9,7 @@ import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { AccordionComponent } from "@/components/accordion";
+import { AccordionComponent } from "@/components/common/accordion";
 import { ListboxComponent } from "@/components/list";
 import { sidebarConfig, SidebarItem } from "@/config/static";
 import { usePerson } from "@/utils/hooks/usePerson";

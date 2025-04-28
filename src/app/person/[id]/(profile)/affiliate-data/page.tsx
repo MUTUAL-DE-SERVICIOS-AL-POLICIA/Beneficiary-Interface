@@ -14,7 +14,7 @@ import StateInfo from "./(sections)/StateInfo";
 
 import { getAffiliateDocuments } from "@/api/affiliate/api";
 import { createUpdateDocument, getAllDocuments } from "@/api/document/api";
-import { ModalDocument } from "@/components/modal-document";
+import { ModalDocument } from "@/components/common/modal-document";
 import { useAffiliate } from "@/utils/hooks/useAffiliate";
 import { useAlert } from "@/utils/hooks/useAlerts";
 

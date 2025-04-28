@@ -2,7 +2,7 @@
 import { Checkbox } from "@heroui/checkbox";
 import { useCallback, useMemo } from "react";
 
-import { InputCustom } from "@/components/input";
+import { InputCustom } from "@/components/common";
 import { Person } from "@/domain";
 
 const fields = [

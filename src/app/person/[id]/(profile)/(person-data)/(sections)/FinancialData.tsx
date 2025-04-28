@@ -1,5 +1,5 @@
 "use client";
-import { InputCustom } from "@/components/input";
+import { InputCustom } from "@/components/common";
 import { Person } from "@/domain";
 
 interface FinancialDataProps {
