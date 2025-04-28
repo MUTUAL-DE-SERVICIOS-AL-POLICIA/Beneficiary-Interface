@@ -4,7 +4,6 @@ import NextLink from "next/link";
 import { UserComponent } from "./user";
 import { Logo } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { User as UserInterface } from "@/utils/interfaces/index";
 import { getUserCookie } from "@/utils/helpers/cookies";
 import { Suspense } from "react";
 export const Navbar = async () => {

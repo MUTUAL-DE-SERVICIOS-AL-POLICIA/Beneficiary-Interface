@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 
 import AlertProvider from "@/utils/context/AlertProvider";
 import { BreadcrumbsComponent } from "@/components/breadcrumbs";
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/config/fonts";
 import { siteConfig } from "@/config/static";
 
