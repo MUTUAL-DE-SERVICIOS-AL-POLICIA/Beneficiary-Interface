@@ -19,7 +19,7 @@ import { useDebounce } from "use-debounce";
 
 import { SearchIcon, VerticalDotsIcon } from "./icons";
 
-import { useAlert } from "@/hooks/useAlerts";
+import { useAlert } from "@/utils/hooks/useAlerts";
 
 export interface Column {
   id: number;

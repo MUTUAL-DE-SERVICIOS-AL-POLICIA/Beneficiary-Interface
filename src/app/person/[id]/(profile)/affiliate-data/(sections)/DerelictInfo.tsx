@@ -2,7 +2,7 @@
 import React from "react";
 
 import { InputCustom } from "@/components/input";
-import { useAffiliate } from "@/hooks/useAffiliate";
+import { useAffiliate } from "@/utils/hooks/useAffiliate";
 
 const DerelictInfo = React.memo(() => {
   const { affiliateData } = useAffiliate();

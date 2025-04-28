@@ -12,7 +12,7 @@ import {
   registerFingerprints,
 } from "@/api/biometric/biometric";
 import { Hands } from "@/components/hands";
-import { useAlert } from "@/hooks/useAlerts";
+import { useAlert } from "@/utils/hooks/useAlerts";
 
 interface Fingerprint {
   fingerprintTypeId: number;

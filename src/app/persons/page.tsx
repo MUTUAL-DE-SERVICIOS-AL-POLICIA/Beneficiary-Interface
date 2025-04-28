@@ -2,7 +2,7 @@
 import { getPersons } from "@/api/person/api";
 import { TableComponent } from "@/components/table";
 import { personTableHeaders as headerColumns } from "@/config/static";
-import { usePersons } from "@/hooks/usePersons";
+import { usePersons } from "@/utils/hooks/usePersons";
 
 export default function Persons() {
   const { error, personsData, total } = usePersons();

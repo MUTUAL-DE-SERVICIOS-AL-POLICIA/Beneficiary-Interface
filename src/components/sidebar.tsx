@@ -12,7 +12,7 @@ import { useState } from "react";
 import { AccordionComponent } from "@/components/accordion";
 import { ListboxComponent } from "@/components/list";
 import { sidebarConfig, SidebarItem } from "@/config/static";
-import { usePerson } from "@/hooks/usePerson";
+import { usePerson } from "@/utils/hooks/usePerson";
 
 export function Sidebar() {
   const router = useRouter();
