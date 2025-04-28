@@ -6,7 +6,7 @@ import { getAffiliate } from "@/api/affiliate/api";
 import { getPerson } from "@/api/person/api";
 import { Sidebar } from "@/components/sidebar";
 import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/domain";
-import { createEmptyObject } from "@/helpers/utils";
+import { createEmptyObject } from "@/utils/helpers/utils";
 
 interface ProfileLayoutProps {
   children: ReactNode;
