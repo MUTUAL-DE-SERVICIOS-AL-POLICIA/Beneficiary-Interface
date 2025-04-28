@@ -5,7 +5,7 @@ import { transformToPerson, transformToPersons } from "./transform";
 import { Person, PersonAffiliate, TablePersons } from "@/domain";
 import { createEmptyObject } from "@/helpers/utils";
 import { apiClient } from "@/utils/services";
-import { ResponseData } from "@/types";
+import { ResponseData } from "@/utils/types";
 
 export const getPersons = async (
   limit: number = 10,

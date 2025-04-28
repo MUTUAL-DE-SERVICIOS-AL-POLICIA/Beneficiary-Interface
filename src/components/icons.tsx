@@ -1,18 +1,13 @@
 import * as React from "react";
 
-import { IconSvgProps } from "@/types";
+import { IconSvgProps } from "@/utils/types";
 
 export const MuserpolLogo = () => (
   <svg className="flex flex-row w-full h-20 m-2" viewBox="0 0 200 60">
     <image height="80" href="muserpol-logo.png" width="180" x="10" y="-8" />
   </svg>
 );
-export const Logo: React.FC<IconSvgProps> = ({
-  size,
-  width,
-  height,
-  ...props
-}) => {
+export const Logo: React.FC<IconSvgProps> = ({ size, width, height, ...props }) => {
   const finalSize = size ?? width ?? height;
   const finalWidth = width ?? finalSize;
   const finalHeight = height ?? finalSize;
@@ -25,13 +20,7 @@ export const Logo: React.FC<IconSvgProps> = ({
       width={finalWidth}
       {...props}
     >
-      <image
-        height={finalHeight}
-        href="muserpol-logo.png"
-        width={finalWidth}
-        x="0"
-        y="0"
-      />
+      <image height={finalHeight} href="muserpol-logo.png" width={finalWidth} x="0" y="0" />
     </svg>
   );
 };

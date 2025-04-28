@@ -4,7 +4,7 @@ import { transformToAffiliate } from "./transform";
 import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/domain";
 import { createEmptyObject } from "@/helpers/utils";
 import { apiClient } from "@/utils/services";
-import { ResponseData } from "@/types";
+import { ResponseData } from "@/utils/types";
 
 export const getAffiliate = async (affiliateId: string): Promise<ResponseData> => {
   try {
