@@ -1,4 +1,4 @@
-import { checkCookie } from "../helpers/cookie";
+import { checkCookie } from "../../helpers/cookie";
 export abstract class APIConnection {
   protected baseUrl: string;
 

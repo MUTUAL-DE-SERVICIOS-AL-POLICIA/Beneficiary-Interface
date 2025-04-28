@@ -1,5 +1,5 @@
 "use server";
-import { apiClient } from "@/services";
+import { apiClient } from "@/utils/services";
 import { ResponseData } from "@/types";
 
 export const getAllDocuments = async (): Promise<ResponseData> => {

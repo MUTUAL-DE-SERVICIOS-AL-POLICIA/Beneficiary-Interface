@@ -11,7 +11,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { createUpdateDocument } from "@/api/document/api";
 import { ModalDocument } from "@/components/modal-document";
 import { useAlert } from "@/hooks/useAlerts";
-import { apiClient } from "@/services";
+import { apiClient } from "@/utils/services";
 
 interface AffiliateDocumentsProps {
   affiliateId: any;

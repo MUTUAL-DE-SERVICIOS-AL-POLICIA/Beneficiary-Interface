@@ -5,7 +5,7 @@ import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/d
 import { User } from "@heroui/user";
 
 import { logout } from "@/api";
-import { urlLogin } from "@/services";
+import { urlLogin } from "@/utils/services";
 
 export function UserComponent() {
   const handleLogout = async () => {
