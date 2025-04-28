@@ -1,7 +1,7 @@
 "use client";
 import { getPersons } from "@/api/person/api";
 import { TableComponent } from "@/components/persons";
-import { personTableHeaders as headerColumns } from "@/config/static";
+import { personTableHeaders as headerColumns } from "@/utils/static";
 import { usePersons } from "@/utils/hooks/usePersons";
 
 export default function Persons() {

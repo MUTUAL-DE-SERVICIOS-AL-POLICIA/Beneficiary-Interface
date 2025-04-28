@@ -5,10 +5,10 @@ import { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 
 import AlertProvider from "@/utils/context/AlertProvider";
-import { BreadcrumbsComponent } from "@/components/common/breadcrumbs"; 
+import { BreadcrumbsComponent } from "@/components/common/breadcrumbs";
 import { Navbar } from "@/components/header/navbar";
-import { fontSans } from "@/config/fonts";
-import { siteConfig } from "@/config/static";
+import { fontSans } from "@/utils/fonts";
+import { siteConfig } from "@/utils/static";
 
 export const metadata: Metadata = {
   title: {
