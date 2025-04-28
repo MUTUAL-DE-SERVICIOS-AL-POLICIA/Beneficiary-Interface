@@ -1,7 +1,7 @@
 import { faFingerprint, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { Column } from "@/components/table";
+import { Column } from "@/components/persons/table";
 
 interface SubMenuItem {
   key: string | number;

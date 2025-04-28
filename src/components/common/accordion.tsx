@@ -3,7 +3,7 @@ import { Card, CardBody } from "@heroui/card";
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { useState } from "react";
 
-import { ListboxComponent } from "@/components/list";
+import { ListboxComponent } from "@/components/persons";
 import { SidebarItem } from "@/config/static";
 
 export const AccordionComponent = (sidebarItem: SidebarItem) => {

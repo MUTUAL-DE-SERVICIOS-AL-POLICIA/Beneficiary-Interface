@@ -11,7 +11,7 @@ import {
   getRegisteredFingerprints,
   registerFingerprints,
 } from "@/api/biometric/biometric";
-import { Hands } from "@/components/hands";
+import { Hands } from "@/components/persons";
 import { useAlert } from "@/utils/hooks/useAlerts";
 
 interface Fingerprint {
