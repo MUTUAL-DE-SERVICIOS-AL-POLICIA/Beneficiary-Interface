@@ -3,6 +3,7 @@
 import { AvatarIcon } from "@heroui/avatar";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
 import { User } from "@heroui/user";
+
 import { logout } from "@/api";
 import { urlLogin } from "@/utils/services";
 import { User as UserInterface } from "@/utils/interfaces/index";

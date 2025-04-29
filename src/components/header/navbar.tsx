@@ -1,12 +1,14 @@
 import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "@heroui/navbar";
 import NextLink from "next/link";
+import { Suspense } from "react";
 
 import { UserComponent } from "./user";
-import { Logo , ThemeSwitch} from "@/components/common";
+
+import { Logo, ThemeSwitch } from "@/components/common";
 import { getUserCookie } from "@/utils/helpers/cookies";
-import { Suspense } from "react";
 export const Navbar = async () => {
   const { data } = await getUserCookie();
+
   return (
     <Suspense>
       <NextUINavbar maxWidth="xl" position="sticky">

@@ -1,6 +1,7 @@
 "use server";
 import { cookies } from "next/headers";
-import { User, ResponseData } from '../interfaces/index';
+
+import { ResponseData } from "../interfaces/index";
 export const checkCookie = async () => {
   const cookie = getCookie("msp");
 
@@ -26,6 +27,7 @@ export async function getUserCookie(): Promise<ResponseData> {
         message: "No se encontró la cookie 'user'",
       };
     }
+
     return {
       error: false,
       message: "Cookie 'user' obtenida exitosamente",

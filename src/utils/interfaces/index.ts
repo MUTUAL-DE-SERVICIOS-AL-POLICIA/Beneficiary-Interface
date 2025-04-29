@@ -113,4 +113,3 @@ export interface Category {
   percentage: string | null;
   status: boolean | null;
 }
-
