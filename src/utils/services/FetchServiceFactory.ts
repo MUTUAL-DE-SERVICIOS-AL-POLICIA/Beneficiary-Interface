@@ -2,7 +2,7 @@ import { APIConnection } from "./APIConnection";
 import { APIConnectionFactory } from "./APIConnectionFactory";
 import { FetchService } from "./FetchService";
 
-import { checkIp } from "@/helpers/ip";
+import { checkIp } from "@/utils/helpers/ip";
 
 export class FetchServiceFactory extends APIConnectionFactory {
   private baseUrl: string;

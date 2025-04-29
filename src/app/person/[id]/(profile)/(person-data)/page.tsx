@@ -7,8 +7,8 @@ import { DeathInfo } from "./(sections)/DeathInfo";
 import { FinancialData } from "./(sections)/FinancialData";
 import { PersonalInfo } from "./(sections)/PersonalInfo";
 
-import { useAlert } from "@/hooks/useAlerts";
-import { usePerson } from "@/hooks/usePerson";
+import { useAlert } from "@/utils/hooks/useAlerts";
+import { usePerson } from "@/utils/hooks/usePerson";
 
 export default function PersonDataPage() {
   // const [isEditing, setIsEditing] = useState(false);

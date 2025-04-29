@@ -11,8 +11,8 @@ import {
   getRegisteredFingerprints,
   registerFingerprints,
 } from "@/api/biometric/biometric";
-import { Hands } from "@/components/hands";
-import { useAlert } from "@/hooks/useAlerts";
+import { Hands } from "@/components/persons";
+import { useAlert } from "@/utils/hooks/useAlerts";
 
 interface Fingerprint {
   fingerprintTypeId: number;

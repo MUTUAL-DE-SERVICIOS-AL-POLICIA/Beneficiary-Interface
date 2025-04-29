@@ -9,9 +9,9 @@ import React, { useCallback, useMemo, useState } from "react";
 // import printJS from "print-js";
 
 import { createUpdateDocument } from "@/api/document/api";
-import { ModalDocument } from "@/components/modal-document";
-import { useAlert } from "@/hooks/useAlerts";
-import { apiClient } from "@/services";
+import { ModalDocument } from "@/components/common/modal-document";
+import { useAlert } from "@/utils/hooks/useAlerts";
+import { apiClient } from "@/utils/services";
 
 interface AffiliateDocumentsProps {
   affiliateId: any;

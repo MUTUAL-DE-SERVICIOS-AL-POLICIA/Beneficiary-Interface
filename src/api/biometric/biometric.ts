@@ -1,5 +1,5 @@
 "use server";
-import { apiClient, apiClientBiometric } from "@/services";
+import { apiClient, apiClientBiometric } from "@/utils/services";
 
 export const checkBiometricStatus = async () => {
   try {
