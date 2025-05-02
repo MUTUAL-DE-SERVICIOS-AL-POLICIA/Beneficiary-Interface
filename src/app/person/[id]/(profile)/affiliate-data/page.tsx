@@ -14,9 +14,9 @@ import StateInfo from "./(sections)/StateInfo";
 
 import { getAffiliateDocuments } from "@/api/affiliate/api";
 import { createUpdateDocument, getAllDocuments } from "@/api/document/api";
-import { ModalDocument } from "@/components/modal-document";
-import { useAffiliate } from "@/hooks/useAffiliate";
-import { useAlert } from "@/hooks/useAlerts";
+import { ModalDocument } from "@/components/common/modal-document";
+import { useAffiliate } from "@/utils/hooks/useAffiliate";
+import { useAlert } from "@/utils/hooks/useAlerts";
 
 export default function AffiliateDataPage() {
   const [documents, setDocuments] = useState<any>([]);

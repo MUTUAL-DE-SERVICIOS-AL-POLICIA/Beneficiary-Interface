@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 
-import { InputCustom } from "@/components/input";
-import { useAffiliate } from "@/hooks/useAffiliate";
+import { InputCustom } from "@/components/common";
+import { useAffiliate } from "@/utils/hooks/useAffiliate";
 
 const EntryInfo = React.memo(() => {
   const { affiliateData } = useAffiliate();

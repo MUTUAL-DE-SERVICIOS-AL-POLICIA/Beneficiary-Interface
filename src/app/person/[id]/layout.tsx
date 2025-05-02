@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 
-import { AffiliateProvider } from "@/context/AffiliateContext";
-import { PersonProvider } from "@/context/PersonContext";
+import { AffiliateProvider } from "@/utils/context/AffiliateContext";
+import { PersonProvider } from "@/utils/context/PersonContext";
 import { getAffiliate } from "@/api/affiliate/api";
 import { getPerson } from "@/api/person/api";
-import { Sidebar } from "@/components/sidebar";
-import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/domain";
-import { createEmptyObject } from "@/helpers/utils";
+import { Sidebar } from "@/components/persons";
+import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/utils/interfaces";
+import { createEmptyObject } from "@/utils/helpers/utils";
 
 interface ProfileLayoutProps {
   children: ReactNode;

@@ -17,9 +17,9 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-import { SearchIcon, VerticalDotsIcon } from "./icons";
+import { SearchIcon, VerticalDotsIcon } from "../common";
 
-import { useAlert } from "@/hooks/useAlerts";
+import { useAlert } from "@/utils/hooks/useAlerts";
 
 export interface Column {
   id: number;

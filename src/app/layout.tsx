@@ -1,14 +1,15 @@
-import "@/styles/globals.css";
+import "@/utils/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
 
 import { Providers } from "./providers";
 
-import AlertProvider from "@/context/AlertProvider";
-import { BreadcrumbsComponent } from "@/components/breadcrumbs";
-import { Navbar } from "@/components/navbar";
-import { fontSans } from "@/config/fonts";
-import { siteConfig } from "@/config/static";
+import AlertProvider from "@/utils/context/AlertProvider";
+import { BreadcrumbsComponent } from "@/components/common/breadcrumbs";
+import { Navbar } from "@/components/header/navbar";
+import { fontSans } from "@/utils/fonts";
+import { siteConfig } from "@/utils/static";
+import { title } from "@/components/common";
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icono_muserpol.svg",
   },
 };
 
@@ -38,9 +39,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="relative flex flex-col h-screen overflow-y-scroll">
               <Navbar />
               <main className="container mx-auto max-w-7xl flex-grow">
-                <div className="container">
+                <span className={title({ size: "sm" })}>Beneficiarios</span>
+                {/* <div className="container">
                   <BreadcrumbsComponent />
-                </div>
+                </div> */}
                 {children}
               </main>
             </div>

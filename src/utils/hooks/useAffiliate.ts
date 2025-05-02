@@ -1,7 +1,7 @@
 "use client";
 import { useContext } from "react";
 
-import { AffiliateContext } from "@/context/AffiliateContext";
+import { AffiliateContext } from "@/utils/context/AffiliateContext";
 
 export const useAffiliate = () => {
   const context = useContext(AffiliateContext);

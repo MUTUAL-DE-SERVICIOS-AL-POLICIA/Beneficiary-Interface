@@ -9,10 +9,10 @@ import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { AccordionComponent } from "@/components/accordion";
-import { ListboxComponent } from "@/components/list";
-import { sidebarConfig, SidebarItem } from "@/config/static";
-import { usePerson } from "@/hooks/usePerson";
+import { AccordionComponent } from "@/components/common/accordion";
+import { ListboxComponent } from "@/components/persons/list";
+import { sidebarConfig, SidebarItem } from "@/utils/static";
+import { usePerson } from "@/utils/hooks/usePerson";
 
 export function Sidebar() {
   const router = useRouter();

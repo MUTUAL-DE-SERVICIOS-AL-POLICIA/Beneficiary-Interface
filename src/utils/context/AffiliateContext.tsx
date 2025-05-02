@@ -1,9 +1,7 @@
 "use client";
 import { createContext } from "react";
 
-import { AffiliateState } from "../domain/index";
-
-import { Affiliate, Category, Degree, Unit } from "@/domain";
+import { Affiliate, AffiliateState, Category, Degree, Unit } from "@/utils/interfaces";
 
 interface AffiliateContextProps {
   affiliateData: Affiliate;

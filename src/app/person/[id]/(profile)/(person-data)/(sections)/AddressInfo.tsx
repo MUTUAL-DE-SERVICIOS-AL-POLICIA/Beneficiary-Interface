@@ -1,5 +1,5 @@
 "use client";
-import { InputCustom } from "@/components/input";
+import { InputCustom } from "@/components/common";
 
 export const AddressInfo: React.FC = () => (
   <fieldset className="border border-gray-400 rounded-md p-4 mb-1">
