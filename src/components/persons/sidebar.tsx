@@ -5,13 +5,16 @@ import { Avatar } from "@heroui/avatar";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFingerprint, faUserNurse, faUserTie } from "@fortawesome/free-solid-svg-icons";
+
 // dependencias de la tecnologia
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { AccordionComponent } from "@/components/common/accordion";
 import { ListboxComponent } from "@/components/persons/list";
-import { sidebarConfig, SidebarItem } from "@/utils/static";
+import { SidebarItem } from "@/utils/interfaces";
 import { usePerson } from "@/utils/hooks/usePerson";
 
 export function Sidebar() {
@@ -22,6 +25,44 @@ export function Sidebar() {
   const [activeItem, setActiveItem] = useState<string | number>("");
   const [expandedKey, setExpandedKey] = useState<string | number>("");
 
+  interface SidebarConfig {
+    sidebarItems: Omit<SidebarItem, "handleAction">[];
+  }
+
+  const sidebarConfig: SidebarConfig = {
+    sidebarItems: [
+      {
+        topTitle: "Datos generales de la persona",
+        title: "DATOS DE LA PERSONA",
+        description: "Información general",
+        customKey: "menu-1",
+        icon: <FontAwesomeIcon icon={faUserTie} size="lg" />,
+        path: "",
+        subMenu: [
+          // {
+          //   title: 'FOTOGRAFIAS',
+          //   key: 'photo',
+          //   icon: <FontAwesomeIcon icon={faPhotoFilm} />,
+          //   path: '/photos'
+          // },
+          {
+            title: "HUELLAS",
+            key: "finger",
+            icon: <FontAwesomeIcon icon={faFingerprint} />,
+            path: "/fingerprints",
+          },
+        ],
+      },
+      {
+        topTitle: "Datos específicos como policía",
+        title: "DATOS DE POLICÍA",
+        description: "Datos específicos de policía",
+        customKey: "menu-2",
+        icon: <FontAwesomeIcon icon={faUserNurse} size="lg" />,
+        path: "/affiliate-data",
+      },
+    ],
+  };
   const { sidebarItems } = sidebarConfig;
 
   const handleAction = (path: string) => {
