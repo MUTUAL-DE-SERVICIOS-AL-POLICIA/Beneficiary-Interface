@@ -20,13 +20,7 @@ import { useDebounce } from "use-debounce";
 import { SearchIcon, VerticalDotsIcon } from "../common";
 
 import { useAlert } from "@/utils/hooks/useAlerts";
-
-export interface Column {
-  id: number;
-  key?: string;
-  name: string;
-  sortable?: boolean;
-}
+import { Column } from "@/utils/interfaces";
 
 interface PropsTable {
   data: any;
