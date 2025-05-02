@@ -9,6 +9,7 @@ import { BreadcrumbsComponent } from "@/components/common/breadcrumbs";
 import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
 import { siteConfig } from "@/utils/static";
+import { title } from "@/components/common";
 
 export const metadata: Metadata = {
   title: {
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icono_muserpol.svg",
   },
 };
 
@@ -38,9 +39,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="relative flex flex-col h-screen overflow-y-scroll">
               <Navbar />
               <main className="container mx-auto max-w-7xl flex-grow">
-                <div className="container">
+                <span className={title({ size: "sm" })}>Beneficiarios</span>
+                {/* <div className="container">
                   <BreadcrumbsComponent />
-                </div>
+                </div> */}
                 {children}
               </main>
             </div>
