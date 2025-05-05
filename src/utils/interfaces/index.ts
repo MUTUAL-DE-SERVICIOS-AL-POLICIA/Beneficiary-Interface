@@ -45,6 +45,35 @@ export interface Person {
   financialEntity: FinancialEntity;
 }
 
+export interface Column {
+  id: number;
+  key?: string;
+  name: string;
+  sortable?: boolean;
+}
+
+interface SubMenuItem {
+  key: string | number;
+  icon?: React.JSX.Element;
+  title: string;
+  topTitle?: string;
+  path: string;
+}
+
+export interface SidebarItem {
+  title: string;
+  topTitle: string;
+  subMenu?: SubMenuItem[];
+  description: string;
+  icon?: React.ReactNode;
+  customKey: string | number;
+  path: string;
+  selectedPath?: string;
+  handleAction: (path: string) => void;
+  activeItem?: string | number;
+  setActiveItem?: any;
+}
+
 export interface FinancialEntity {
   id: number;
   name: string;

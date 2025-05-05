@@ -8,15 +8,14 @@ import AlertProvider from "@/utils/context/AlertProvider";
 import { BreadcrumbsComponent } from "@/components/common/breadcrumbs";
 import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
-import { siteConfig } from "@/utils/static";
 import { title } from "@/components/common";
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: "Beneficiarios",
+    template: `%s - Beneficiarios`,
   },
-  description: siteConfig.description,
+  description: "Página de beneficiarios",
   icons: {
     icon: "/icono_muserpol.svg",
   },

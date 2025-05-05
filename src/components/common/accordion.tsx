@@ -4,7 +4,7 @@ import { Listbox, ListboxItem, ListboxSection } from "@heroui/listbox";
 import { useState } from "react";
 
 import { ListboxComponent } from "@/components/persons";
-import { SidebarItem } from "@/utils/static";
+import { SidebarItem } from "@/utils/interfaces";
 
 export const AccordionComponent = (sidebarItem: SidebarItem) => {
   const { handleAction, activeItem, setActiveItem } = sidebarItem;
