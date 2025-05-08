@@ -1,7 +1,7 @@
 "use server";
 import { cookies } from "next/headers";
 
-import { ResponseData } from "../interfaces/index";
+import { ResponseData } from "../interfaces";
 export const checkCookie = async () => {
   const cookie = getCookie("msp");
 
