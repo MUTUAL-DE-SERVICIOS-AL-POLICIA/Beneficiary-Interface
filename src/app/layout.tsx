@@ -9,6 +9,7 @@ import { BreadcrumbsComponent } from "@/components/common/breadcrumbs";
 import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
 import { title } from "@/components/common";
+import { getDeployEnvironment } from "@/utils/env";
 
 export const metadata: Metadata = {
   title: {
@@ -44,6 +45,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div> */}
                 {children}
               </main>
+              {getDeployEnvironment() === "dev" && (
+                <footer className="fixed bottom-0 left-0 w-full bg-red-600 text-white text-center py-2 text-sm z-50">
+                  <span className="uppercase text-sm font-semibold">Versión de pruebas</span>
+                </footer>
+              )}
             </div>
           </AlertProvider>
         </Providers>
