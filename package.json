@@ -47,6 +47,7 @@
     "use-debounce": "10.0.4"
   },
   "devDependencies": {
+    "@eslint/js": "^9.26.0",
     "@next/eslint-plugin-next": "15.2.3",
     "@react-types/shared": "3.28.0",
     "@types/node": "22.13.10",
@@ -66,6 +67,7 @@
     "eslint-plugin-react": "7.37.4",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-unused-imports": "4.1.4",
+    "globals": "^16.1.0",
     "postcss": "^8.5.3",
     "prettier": "3.5.3",
     "tailwind-variants": "1.0.0",
