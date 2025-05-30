@@ -1,22 +1,24 @@
 import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "@heroui/navbar";
-import NextLink from "next/link";
-import { Suspense } from "react";
+import { Link } from "@heroui/link";
+import React, { Suspense } from "react";
 
-import { UserComponent } from "./user";
+import { Logo } from "@/components/common/icons";
+import { ThemeSwitch } from "@/components/common/theme-switch";
+import UserComponent from "@/components/header/user";
+import { urlLogin } from "@/utils/services";
+import { getUserCookie } from "@/utils/helpers/cookie";
 
-import { Logo, ThemeSwitch } from "@/components/common";
-import { getUserCookie } from "@/utils/helpers/cookies";
 export const Navbar = async () => {
   const { data } = await getUserCookie();
 
   return (
-    <Suspense>
-      <NextUINavbar maxWidth="xl" position="sticky">
+    <Suspense fallback={<div>Cargando...</div>}>
+      <NextUINavbar isBordered maxWidth="xl" position="sticky">
         <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
           <NavbarBrand as="li" className="gap-3 max-w-fit">
-            <NextLink className="flex justify-start items-center gap-1" href="/apphub">
+            <Link className="flex justify-start items-center gap-1" href={`${urlLogin}/apphub`}>
               <Logo height={30} width={80} />
-            </NextLink>
+            </Link>
           </NavbarBrand>
         </NavbarContent>
 
