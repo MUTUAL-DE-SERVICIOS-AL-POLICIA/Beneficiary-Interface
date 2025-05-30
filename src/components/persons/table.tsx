@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@heroui/button";
 import { Card } from "@heroui/card";
-import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+import { Tooltip } from "@heroui/tooltip";
 import { Input } from "@heroui/input";
 import { Pagination } from "@heroui/pagination";
 import {
@@ -16,17 +16,10 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
+import { addToast } from "@heroui/toast";
 
-import { SearchIcon, VerticalDotsIcon } from "../common";
-
-import { useAlert } from "@/utils/hooks/useAlerts";
-
-export interface Column {
-  id: number;
-  key?: string;
-  name: string;
-  sortable?: boolean;
-}
+import { SearchIcon, PersonInfoIcon } from "@/components/common";
+import { Column } from "@/utils/interfaces";
 
 interface PropsTable {
   data: any;
@@ -54,7 +47,6 @@ export const TableComponent = ({
   error,
 }: PropsTable) => {
   const router = useRouter();
-  const { Alert } = useAlert();
 
   const [filterValue, setFilterValue] = useState<string>("");
   const [page, setPage] = useState(startPage);
@@ -73,14 +65,18 @@ export const TableComponent = ({
 
   const [debouncedFilterValue] = useDebounce(filterValue, 200);
 
-  const handleViewPerson = (id: number) => {
-    router.push(`/person/${id}`);
-  };
-
   useEffect(() => {
     if (error) {
-      Alert({ message: "Error al obtener los datos", variant: "error" });
+      addToast({
+        title: "Ocurrió un error",
+        description: "Error al obtener los datos",
+        color: "danger",
+        timeout: 2000,
+        shouldShowTimeoutProgress: true,
+      });
     }
+
+    return;
   }, [error]);
 
   useEffect(() => {
@@ -97,7 +93,15 @@ export const TableComponent = ({
         setFiltered(persons);
         setAll(Number.isFinite(total) ? total : 0);
       } catch {
-        Alert({ message: "Error al cargar los datos", variant: "error" });
+        addToast({
+          title: "Ocurrió un error",
+          description: "Error al obtener los datos",
+          color: "danger",
+          timeout: 2000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        return;
       }
     };
 
@@ -118,7 +122,15 @@ export const TableComponent = ({
       setFiltered(persons);
       setPage(newPage);
     } catch {
-      Alert({ message: "Error al cambiar de página", variant: "error" });
+      addToast({
+        title: "Ocurrió un error",
+        description: "Error al cambiar de página",
+        color: "danger",
+        timeout: 2000,
+        shouldShowTimeoutProgress: true,
+      });
+
+      return;
     }
   };
 
@@ -220,19 +232,16 @@ export const TableComponent = ({
       case "actions":
         return (
           <div className="relative flex justify-center gap-2">
-            <Dropdown className="bg-background border-1 border-default-200">
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu data-testid="menu">
-                <DropdownItem key={"1"} onPress={() => handleViewPerson(item.id)}>
-                  Ver persona
-                </DropdownItem>
-                <DropdownItem key={"2"}>Editar</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            <Tooltip content="ver" placement="right">
+              <Button
+                isIconOnly
+                size="sm"
+                variant="bordered"
+                onPress={() => router.push(`/persons/${item.uuidColumn}`)}
+              >
+                <PersonInfoIcon />
+              </Button>
+            </Tooltip>
           </div>
         );
       default:

@@ -1,20 +1,19 @@
 "use client";
-
 import { AvatarIcon } from "@heroui/avatar";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
 import { User } from "@heroui/user";
+import { redirect } from "next/navigation";
 
-import { logout } from "@/api";
-import { urlLogin } from "@/utils/services";
-import { User as UserInterface } from "@/utils/interfaces/index";
+import { User as UserInterface } from "@/utils/interfaces";
+import { logout } from "@/api/auth";
 
 interface Props {
   user: UserInterface;
 }
-export function UserComponent({ user }: Props) {
+export default function UserComponent({ user }: Props) {
   const handleLogout = async () => {
     await logout();
-    window.location.href = `${urlLogin}/login`;
+    redirect("/");
   };
 
   return (
@@ -37,7 +36,7 @@ export function UserComponent({ user }: Props) {
           <p>{user?.name}</p>
         </DropdownItem>
         <DropdownItem key="logout" color="danger" onPress={handleLogout}>
-          <p className="text-red-600">Cerrar Sesión</p>
+          <p className="text-red-600">Cerrar sesión</p>
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
