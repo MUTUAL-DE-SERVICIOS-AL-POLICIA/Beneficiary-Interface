@@ -1,9 +1,5 @@
-"use client";
-import { getPersons } from "@/api/person/api";
+import { getPersons } from "@/api/person";
 import { TableComponent } from "@/components/persons";
-import { usePersons } from "@/utils/hooks/usePersons";
-import { subtitle } from "../../components/common";
-import { Fragment } from "react";
 
 interface Column {
   id: number;
@@ -11,8 +7,9 @@ interface Column {
   name: string;
   sortable?: boolean;
 }
-export default function Persons() {
-  const { error, personsData, total } = usePersons();
+export default async function Persons() {
+  const { error, persons, total } = await getPersons(10, 1, "", "id");
+
   const personTableHeaders: Column[] = [
     { id: 1, name: "PRIMER NOMBRE", key: "firstName", sortable: true },
     { id: 2, name: "SEGUNDO NOMBRE", key: "secondName", sortable: true },
@@ -22,18 +19,16 @@ export default function Persons() {
     { id: 6, name: "GENERO", key: "gender" },
     { id: 7, name: "ACCIÓN", key: "actions" },
   ];
+
   return (
-    <Fragment>
-      <span className={subtitle({ fullWidth: true })}>Personas registradas</span>
-      <TableComponent
-        data={personsData}
-        error={error}
-        getData={getPersons}
-        headerColumns={personTableHeaders}
-        startPage={1}
-        startRowsPerPage={10}
-        total={total}
-      />
-    </Fragment>
+    <TableComponent
+      data={persons}
+      error={error}
+      getData={getPersons}
+      headerColumns={personTableHeaders}
+      startPage={1}
+      startRowsPerPage={10}
+      total={total}
+    />
   );
 }
