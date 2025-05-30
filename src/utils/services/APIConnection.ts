@@ -1,4 +1,4 @@
-import { checkCookie } from "../helpers/cookies";
+import { getCookie } from "@/utils/helpers/cookie";
 export abstract class APIConnection {
   protected baseUrl: string;
 
@@ -34,9 +34,9 @@ export abstract class APIConnection {
   }
 
   protected async handleRequest(endpoint: string, requestConfig: RequestInit): Promise<any> {
-    const cookie = await checkCookie();
+    const cookie = await getCookie("msp");
 
-    if (cookie != undefined) {
+    if (cookie) {
       if (!requestConfig.headers) {
         requestConfig.headers = {};
       }
