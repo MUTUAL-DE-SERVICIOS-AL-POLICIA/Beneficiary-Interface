@@ -22,3 +22,9 @@ export const middleware = async () => {
     return NextResponse.redirect(url);
   }
 };
+
+export const config = {
+  matcher: [
+    "/((?!_next/|favicon.ico|static/|images/|fonts/|api/|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.svg|.*\\.webp|.*\\.gif|.*\\.ico).*)",
+  ],
+};
