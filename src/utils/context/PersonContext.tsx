@@ -1,31 +1,39 @@
 "use client";
-import React, { createContext } from "react";
+import React, { createContext, useContext, ReactNode } from "react";
 
-import { Person, PersonAffiliate } from "@/utils/interfaces";
+import { Person, FinancialEntity, PensionEntity, CityBirth } from "@/utils/interfaces";
 
 interface PersonContextProps {
-  personData: Person;
-  personAffiliateData: PersonAffiliate[];
-  error: boolean;
+  person: Person;
+  affiliateId: string;
+  financialEntity: FinancialEntity;
+  pensionEntity: PensionEntity;
+  cityBirth: CityBirth;
 }
 
-export const PersonContext = createContext<PersonContextProps | undefined>(undefined);
+const PersonContext = createContext<PersonContextProps | undefined>(undefined);
+
+PersonContext.displayName = "PersonContext";
 
 export const PersonProvider: React.FC<{
   person: Person;
-  personAffiliate: PersonAffiliate[];
-  error: boolean;
-  children: React.ReactNode;
-}> = ({ person, personAffiliate, error, children }) => {
-  return (
-    <PersonContext.Provider
-      value={{
-        personData: person,
-        personAffiliateData: personAffiliate,
-        error: error,
-      }}
-    >
-      {children}
-    </PersonContext.Provider>
-  );
+  affiliateId: string;
+  financialEntity: FinancialEntity;
+  pensionEntity: PensionEntity;
+  cityBirth: CityBirth;
+  children: ReactNode;
+}> = ({ person, financialEntity, pensionEntity, cityBirth, affiliateId, children }) => (
+  <PersonContext.Provider value={{ person, financialEntity, pensionEntity, cityBirth, affiliateId }}>
+    {children}
+  </PersonContext.Provider>
+);
+
+export const usePerson = () => {
+  const context = useContext(PersonContext);
+
+  if (!context) {
+    throw new Error("usePerson debe usarse dentro de un PersonProvider");
+  }
+
+  return context;
 };
