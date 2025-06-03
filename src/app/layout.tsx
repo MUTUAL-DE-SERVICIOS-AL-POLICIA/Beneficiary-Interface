@@ -11,10 +11,10 @@ import { getDeployEnvironment } from "@/utils/env";
 
 export const metadata: Metadata = {
   title: {
-    default: "Herramienta Informático Beneficiarios",
-    template: `%s - Herramienta Informático Beneficiarios`,
+    default: "Beneficiarios",
+    template: `%s - Beneficiarios`,
   },
-  description: "Herramienta Informático Beneficiarios",
+  description: "Beneficiarios",
   icons: {
     icon: "/icono_muserpol.svg",
   },
@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="relative flex flex-col h-screen overflow-y-scroll">
             <Navbar />
             <main className="container mx-auto max-w-7xl flex-grow">
-              <span className={title({ size: "sm" })}>Herramienta Informático Beneficiarios</span>
+              <span className={title({ size: "sm" })}>Herramienta Tecnológica Beneficiarios</span>
               <div className={subtitle()}>
                 <BreadcrumbsState />
               </div>
