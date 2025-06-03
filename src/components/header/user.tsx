@@ -2,7 +2,7 @@
 import { AvatarIcon } from "@heroui/avatar";
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
 import { User } from "@heroui/user";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { User as UserInterface } from "@/utils/interfaces";
 import { logout } from "@/api/auth";
@@ -11,9 +11,10 @@ interface Props {
   user: UserInterface;
 }
 export default function UserComponent({ user }: Props) {
+  const router = useRouter();
   const handleLogout = async () => {
     await logout();
-    redirect("/");
+    router.push("/");
   };
 
   return (
