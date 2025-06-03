@@ -10,7 +10,7 @@ import { Tooltip } from "@heroui/tooltip";
 
 import { getAllFingerprintsIds } from "@/api/person";
 import { FingerprintCore, Fingerprint } from "@/utils/interfaces";
-import { TouchPulgarIcon, CircleIcon, TouchIndiceIcon, TouchRegisterIcon } from "@/components/common";
+import { TouchPulgarIcon, TouchIndiceIcon, TouchRegisterIcon } from "@/components/common";
 import { captureOneFingerprint, captureTwoFingerprints } from "@/api/biometric";
 import { postFingerprints } from "@/api/person";
 import { usePerson } from "@/utils/context/PersonContext";
@@ -185,7 +185,6 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
           timeout: 2000,
           shouldShowTimeoutProgress: true,
         });
-        CircleIcon;
 
         return;
       }
@@ -276,7 +275,6 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">Seleccione una opción:</ModalHeader>
-              <Divider />
               <ModalBody>
                 <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
                   Registro de 2 huellas
@@ -310,7 +308,6 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
                               )}
                             </div>
                           }
-                          startContent={<CircleIcon />}
                         >
                           {fingerprint.name}
                         </ListboxItem>
@@ -334,7 +331,6 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
                           key={fingerprint.id}
                           color="success"
                           endContent={isIndice ? <TouchIndiceIcon /> : <TouchPulgarIcon />}
-                          startContent={<CircleIcon />}
                         >
                           {fingerprint.name}
                         </ListboxItem>
@@ -343,7 +339,6 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
                   </Listbox>
                 </div>
               </ModalBody>
-              <Divider />
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cerrar
