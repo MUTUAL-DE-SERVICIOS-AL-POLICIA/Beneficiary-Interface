@@ -1,23 +1,22 @@
-import "@/styles/globals.css";
+import "@/utils/styles/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
 
 import { Providers } from "./providers";
 
-import AlertProvider from "@/context/AlertProvider";
-import { BreadcrumbsComponent } from "@/components/breadcrumbs";
-import { Navbar } from "@/components/navbar";
-import { fontSans } from "@/config/fonts";
-import { siteConfig } from "@/config/static";
+import { Navbar } from "@/components/header/navbar";
+import { fontSans } from "@/utils/fonts";
+import { title, subtitle, BreadcrumbsState } from "@/components/common";
+import { getDeployEnvironment } from "@/utils/env";
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
+    default: "Beneficiarios",
+    template: `%s - Beneficiarios`,
   },
-  description: siteConfig.description,
+  description: "Beneficiarios",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icono_muserpol.svg",
   },
 };
 
@@ -28,23 +27,27 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang="en">
       <head />
       <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <AlertProvider>
-            <div className="relative flex flex-col h-screen overflow-y-scroll">
-              <Navbar />
-              <main className="container mx-auto max-w-7xl flex-grow">
-                <div className="container">
-                  <BreadcrumbsComponent />
-                </div>
-                {children}
-              </main>
-            </div>
-          </AlertProvider>
+          <div className="relative flex flex-col h-screen overflow-y-scroll">
+            <Navbar />
+            <main className="container mx-auto max-w-7xl flex-grow">
+              <span className={title({ size: "sm" })}>Herramienta Tecnológica Beneficiarios</span>
+              <div className={subtitle()}>
+                <BreadcrumbsState />
+              </div>
+              {children}
+            </main>
+            {getDeployEnvironment() === "dev" && (
+              <footer className="fixed bottom-0 left-0 w-full bg-red-600 text-white text-center py-2 text-sm z-50">
+                <span className="uppercase text-sm font-semibold">Versión de pruebas</span>
+              </footer>
+            )}
+          </div>
         </Providers>
       </body>
     </html>
