@@ -62,7 +62,13 @@ export const Affiliates = () => {
         </div>
       )}
       {isAffiliates.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 p-2">
+        <div
+          className={`${
+            isAffiliates.length < 4
+              ? "flex flex-wrap justify-center gap-2 p-2"
+              : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 p-2"
+          }`}
+        >
           {isAffiliates.map((item, index) => (
             <Card
               key={index}
