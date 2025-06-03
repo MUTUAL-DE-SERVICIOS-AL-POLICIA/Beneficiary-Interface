@@ -34,26 +34,20 @@ export const Sidebar = ({ user, features }: Props) => {
       <Divider />
       <CardBody>
         <TabsSidebar tabSidebar={person} />
-        <Divider className="py-1" />
 
         {features.isPolice && (
           <>
             <TabsSidebar tabSidebar={police} />
-            <Divider className="py-1" />
           </>
         )}
-
         {features.hasBeneficiaries && (
           <>
             <TabsSidebar tabSidebar={beneficiaries} />
-            <Divider className="py-1" />
           </>
         )}
-
         {features.hasAffiliates && (
           <>
             <TabsSidebar tabSidebar={affiliates} />
-            <Divider className="py-1" />
           </>
         )}
       </CardBody>
