@@ -7,7 +7,7 @@ export const middleware = async () => {
   const token = cookie?.value;
 
   const host = process.env.NEXT_PUBLIC_SERVER_FRONTEND || "";
-  const port = process.env.LOGIN_FRONTEND_PORT || "";
+  const port = process.env.LOGIN_FRONTEND_PORT || "3001";
   const url = "http://" + host + ":" + port + "/login";
 
   try {
