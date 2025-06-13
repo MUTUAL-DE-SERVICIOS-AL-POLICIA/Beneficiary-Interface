@@ -1,12 +1,14 @@
+"use client";
 import { Avatar } from "@heroui/avatar";
 
 import { basicPersonInfo } from "@/utils/types";
-
+import { CopyButton } from "@/components/common";
 interface Props {
   user: basicPersonInfo;
   isPolice: boolean;
+  isCopy?: boolean;
 }
-export const UserInfo = ({ user, isPolice }: Props) => {
+export const UserInfo = ({ user, isPolice, isCopy=false }: Props) => {
   return (
     <div className="flex my-4">
       <div className="flex flex-col gap-1 items-center">
@@ -21,9 +23,10 @@ export const UserInfo = ({ user, isPolice }: Props) => {
         <h4 className="text-medium font-semibold leading-none text-default-800 text-pretty text-center">
           {user?.fullName}
         </h4>
-        <div className="flex gap-1">
+        <div className="flex items-center gap-1">
           <p className="font-semibold text-default-800 text-small"> C.I. </p>
           <p className="text-default-600 text-small">{user?.identityCard}</p>
+          {isCopy && <CopyButton text={user?.identityCard} placement="right" />}
         </div>
         {isPolice && (
           <div className="flex gap-1">
