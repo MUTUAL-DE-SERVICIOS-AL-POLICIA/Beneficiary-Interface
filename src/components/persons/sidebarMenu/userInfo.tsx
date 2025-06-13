@@ -8,7 +8,7 @@ interface Props {
   isPolice: boolean;
   isCopy?: boolean;
 }
-export const UserInfo = ({ user, isPolice, isCopy=false }: Props) => {
+export const UserInfo = ({ user, isPolice, isCopy = false }: Props) => {
   return (
     <div className="flex my-4">
       <div className="flex flex-col gap-1 items-center">
@@ -26,7 +26,7 @@ export const UserInfo = ({ user, isPolice, isCopy=false }: Props) => {
         <div className="flex items-center gap-1">
           <p className="font-semibold text-default-800 text-small"> C.I. </p>
           <p className="text-default-600 text-small">{user?.identityCard}</p>
-          {isCopy && <CopyButton text={user?.identityCard} placement="right" />}
+          {isCopy && <CopyButton placement="right" text={user?.identityCard} />}
         </div>
         {isPolice && (
           <div className="flex gap-1">

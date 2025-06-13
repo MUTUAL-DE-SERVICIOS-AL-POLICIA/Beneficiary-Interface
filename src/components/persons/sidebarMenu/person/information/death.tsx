@@ -15,7 +15,14 @@ export const Death = ({ deathCertificateNumber, dateDeath, reasonDeath }: Props)
           <InputCustom label="Nro certificado" type="text" value={deathCertificateNumber} />
         </div>
         <div className="flex flex-col w-1/2 space-y-2">
-          <DateInputCustom labelPlacement="outside" radius="sm" variant="faded" isReadOnly label="Fecha fallecimiento" value={dateDeath+""} />
+          <DateInputCustom
+            isReadOnly
+            label="Fecha fallecimiento"
+            labelPlacement="outside"
+            radius="sm"
+            value={dateDeath + ""}
+            variant="faded"
+          />
         </div>
       </div>
       <div className="flex gap-6">

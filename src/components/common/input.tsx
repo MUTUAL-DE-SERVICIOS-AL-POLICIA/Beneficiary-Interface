@@ -1,6 +1,7 @@
 import { Input } from "@heroui/input";
 import { ComponentProps } from "react";
 import clsx from "clsx";
+
 import { CopyButton } from "@/components/common";
 
 type InputProps = ComponentProps<typeof Input>;
@@ -31,12 +32,13 @@ export const InputCustom = ({
   return (
     <Input
       classNames={{
-        inputWrapper: clsx("border", "dark:hover:border-green-800", "dark:group-data-[focus=true]:border-green-800"),
-      }}      
-      endContent={isCopy ? (
-        <CopyButton text={value} tooltip="Copiar" placement="bottom" />
-      ) : endContent
-      }
+        inputWrapper: clsx(
+          "border",
+          "dark:hover:border-green-800",
+          "dark:group-data-[focus=true]:border-green-800",
+        ),
+      }}
+      endContent={isCopy ? <CopyButton placement="bottom" text={value} tooltip="Copiar" /> : endContent}
       label={label}
       labelPlacement={labelPlacement}
       placeholder={placeholder}

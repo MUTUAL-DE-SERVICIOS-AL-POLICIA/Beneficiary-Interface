@@ -643,14 +643,7 @@ export const DocumentViewIcon = (props: IconSvgProps) => {
 
 export const CopyIcon = (props: IconSvgProps) => {
   return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      height="24"
-      viewBox="0 0 24 24"
-      width="18"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg aria-hidden="true" fill="none" height="24" viewBox="0 0 24 24" width="18" {...props}>
       <path
         d="M9 8v3a1 1 0 0 1-1 1H5m11 4h2a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1m4 3v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7.13a1 1 0 0 1 .24-.65L7.7 8.35A1 1 0 0 1 8.46 8H13a1 1 0 0 1 1 1Z"
         stroke="currentColor"
@@ -664,21 +657,32 @@ export const ContactsPhoneIcon = (props: IconSvgProps) => {
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      width="24"
-      height="24"
       className="text-black dark:text-white"
+      fill="currentColor"
+      height="24"
+      viewBox="0 0 24 24"
+      width="24"
       {...props}
     >
-      <rect x="5.5" y="2" width="15" height="20" rx="2" ry="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      <circle cx="4" cy="5" r="0.8" fill="currentColor" />
-      <circle cx="4" cy="10" r="0.8" fill="currentColor" />
-      <circle cx="4" cy="15" r="0.8" fill="currentColor" />
+      <rect
+        fill="none"
+        height="20"
+        rx="2"
+        ry="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        width="15"
+        x="5.5"
+        y="2"
+      />
+      <circle cx="4" cy="5" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="10" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="15" fill="currentColor" r="0.8" />
       <path
+        d="M15.1 14.5c-.8-.3-1.6-.7-2.2-1.3-.6-.6-1-1.4-1.3-2.2-.1-.4 0-.9.3-1.2l.8-.8c.2-.2.2-.5 0-.7l-2-2c-.2-.2-.5-.2-.7 0l-.9.9c-.5.5-.6 1.3-.5 2 .3 1.3 1 2.6 2.1 3.7 1.1 1.1 2.4 1.8 3.7 2.1.7.2 1.5 0 2-.5l.9-.9c.2-.2.2-.5 0-.7l-2-2c-.2-.2-.5-.2-.7 0l-.8.8c-.3.3-.7.4-1.1.3z"
+        fill="currentColor"
         transform="translate(-1,0) scale(1.1)"
-        fill="currentColor" 
-        d="M15.1 14.5c-.8-.3-1.6-.7-2.2-1.3-.6-.6-1-1.4-1.3-2.2-.1-.4 0-.9.3-1.2l.8-.8c.2-.2.2-.5 0-.7l-2-2c-.2-.2-.5-.2-.7 0l-.9.9c-.5.5-.6 1.3-.5 2 .3 1.3 1 2.6 2.1 3.7 1.1 1.1 2.4 1.8 3.7 2.1.7.2 1.5 0 2-.5l.9-.9c.2-.2.2-.5 0-.7l-2-2c-.2-.2-.5-.2-.7 0l-.8.8c-.3.3-.7.4-1.1.3z" />
+      />
     </svg>
   );
 };
@@ -686,22 +690,32 @@ export const ContactsCellPhoneIcon = (props: IconSvgProps) => {
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      width="24"
-      height="24"
       className="text-black dark:text-white"
+      fill="currentColor"
+      height="24"
+      viewBox="0 0 24 24"
+      width="24"
       {...props}
     >
-      <rect x="5.5" y="2" width="15" height="20" rx="2" ry="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      <circle cx="4" cy="5" r="0.8" fill="currentColor" />
-      <circle cx="4" cy="10" r="0.8" fill="currentColor" />
-      <circle cx="4" cy="15" r="0.8" fill="currentColor" />
+      <rect
+        fill="none"
+        height="20"
+        rx="2"
+        ry="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        width="15"
+        x="5.5"
+        y="2"
+      />
+      <circle cx="4" cy="5" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="10" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="15" fill="currentColor" r="0.8" />
       <path
-        transform="translate(6,4.5) scale(0.6)"
-        fillRule="evenodd"
         clipRule="evenodd"
         d="M5 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4Zm12 12V5H7v11h10Zm-5 1a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+        fillRule="evenodd"
+        transform="translate(6,4.5) scale(0.6)"
       />
     </svg>
   );

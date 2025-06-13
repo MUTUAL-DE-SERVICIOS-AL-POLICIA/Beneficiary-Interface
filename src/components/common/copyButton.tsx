@@ -2,8 +2,9 @@
 
 import { Tooltip } from "@heroui/tooltip";
 import { Button } from "@heroui/button";
-import { CopyIcon } from "@/components/common/icons";
 import { useCallback } from "react";
+
+import { CopyIcon } from "@/components/common/icons";
 
 interface CopyButtonProps {
   text: string;
@@ -12,12 +13,7 @@ interface CopyButtonProps {
   size?: "sm" | "md" | "lg";
 }
 
-export const CopyButton = ({
-  text,
-  tooltip = "Copiar",
-  placement = "top",
-  size = "sm",
-}: CopyButtonProps) => {
+export const CopyButton = ({ text, tooltip = "Copiar", placement = "top", size = "sm" }: CopyButtonProps) => {
   const handleCopy = useCallback(() => {
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(text).catch((err) => {
@@ -26,6 +22,7 @@ export const CopyButton = ({
     } else {
       try {
         const textarea = document.createElement("textarea");
+
         textarea.value = text;
         Object.assign(textarea.style, {
           position: "fixed",

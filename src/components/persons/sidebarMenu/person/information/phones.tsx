@@ -1,10 +1,10 @@
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
-import { ContactsPhoneIcon, ContactsCellPhoneIcon } from "@/components/common/icons";
-import { InputCustom } from "@/components/common";
-
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/drawer";
 import { useDisclosure } from "@heroui/modal";
+
+import { ContactsPhoneIcon, ContactsCellPhoneIcon } from "@/components/common/icons";
+import { InputCustom } from "@/components/common";
 
 interface PhoneDisplayProps {
   label: string;
@@ -17,15 +17,11 @@ export function PhonesDrawer({ label, phoneNumbers, labelDrawer = "Telefonos" }:
 
   const hasNumbers = phoneNumbers.length > 0;
   const firstNumber = hasNumbers ? phoneNumbers[0] : "";
-  
+
   return (
     <>
       <div className="flex items-end gap-2">
-        <InputCustom
-          isCopy= {hasNumbers}
-          label={label}
-          value={firstNumber}
-        />
+        <InputCustom isCopy={hasNumbers} label={label} value={firstNumber} />
 
         <Tooltip content="Ver todos" placement="bottom">
           <div>
@@ -36,26 +32,22 @@ export function PhonesDrawer({ label, phoneNumbers, labelDrawer = "Telefonos" }:
               variant="faded"
               onPress={onOpen}
             >
-              {labelDrawer === "Celulares" ? <ContactsCellPhoneIcon /> : <ContactsPhoneIcon /> }
-              
+              {labelDrawer === "Celulares" ? <ContactsCellPhoneIcon /> : <ContactsPhoneIcon />}
             </Button>
           </div>
         </Tooltip>
       </div>
 
-      <Drawer isOpen={isOpen} onOpenChange={onOpenChange} backdrop="opaque">
-        <DrawerContent className="w-[20%]" >
-          {(onClose) => (
+      <Drawer backdrop="opaque" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <DrawerContent className="w-[20%]">
+          {() => (
             <>
               <DrawerHeader className="text-lg font-semibold">{labelDrawer}</DrawerHeader>
               <DrawerBody>
                 {hasNumbers ? (
                   <div className="flex flex-col gap-3">
                     {phoneNumbers.map((number, idx) => (
-                      <InputCustom
-                        key={idx}
-                        value={number}
-                      />               
+                      <InputCustom key={idx} value={number} />
                     ))}
                   </div>
                 ) : (

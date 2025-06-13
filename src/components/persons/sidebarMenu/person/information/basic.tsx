@@ -1,4 +1,3 @@
-import { parseDate } from "@internationalized/date";
 import { useCallback, useMemo } from "react";
 
 import { PhonesDrawer } from "./phones";
@@ -30,11 +29,13 @@ export const Basic = ({ person }: Props) => {
   const renderField = useCallback((person: any, label: string, key: any) => {
     if (key === "cellPhoneNumbers") {
       const phoneNumbers = [];
+
       if (person.cellPhoneNumber) {
         const phoneNumbersArray = person.cellPhoneNumber
-        .split(",")
-        .map((num: string) => num.trim())
-        .filter(Boolean);
+          .split(",")
+          .map((num: string) => num.trim())
+          .filter(Boolean);
+
         phoneNumbers.push(...phoneNumbersArray);
       }
 
@@ -45,53 +46,56 @@ export const Basic = ({ person }: Props) => {
       );
     } else if (key === "phoneNumbers") {
       const phoneNumbers = [];
-       if (person.phoneNumber) {
+
+      if (person.phoneNumber) {
         const phoneNumbersArray = person.phoneNumber
-        .split(",")
-        .map((num: string) => num.trim())
-        .filter(Boolean);
+          .split(",")
+          .map((num: string) => num.trim())
+          .filter(Boolean);
+
         phoneNumbers.push(...phoneNumbersArray);
       }
+
       return (
         <div key={key}>
           <PhonesDrawer label={label} phoneNumbers={phoneNumbers} />
         </div>
       );
     } else if (key === "isDuedateUndefined") {
-      if (person[key] === true){
+      if (person[key] === true) {
         return (
           <div key={key} className="flex space-y-2 text-center justify-center">
             <InputCustom label={label} type="text" value="Indefinido" />
           </div>
         );
       }
+
       return (
         <div key={key} className="flex space-y-2 justify-center">
           <DateInputCustom
+            isReadOnly
             label={label}
             labelPlacement="outside"
             radius="sm"
-            variant="faded"
-            isReadOnly
             value={person.dueDate}
+            variant="faded"
           />
         </div>
-      );  
+      );
     } else if (key === "birthDate") {
-        return (
-          <div key={key} className="flex space-y-2 justify-center">
-            <DateInputCustom
-              label={label}
-              labelPlacement="outside"
-              radius="sm"
-              variant="faded"
-              isReadOnly
-              value={person[key]}
-            />
-          </div>
-        );  
-    }
-     else {
+      return (
+        <div key={key} className="flex space-y-2 justify-center">
+          <DateInputCustom
+            isReadOnly
+            label={label}
+            labelPlacement="outside"
+            radius="sm"
+            value={person[key]}
+            variant="faded"
+          />
+        </div>
+      );
+    } else {
       return (
         <div key={key} className="space-y-2">
           {serviceFields.find((elemento) => elemento.key === key) ? (
