@@ -1,7 +1,9 @@
-import { Checkbox } from "@heroui/checkbox";
+import { parseDate } from "@internationalized/date";
 import { useCallback, useMemo } from "react";
 
-import { InputCustom } from "@/components/common";
+import { PhonesDrawer } from "./phones";
+
+import { InputCustom, DateInputCustom } from "@/components/common";
 import { Person as PersonInterface } from "@/utils/interfaces";
 
 const fields = [
@@ -10,11 +12,12 @@ const fields = [
   { label: "Apellido paterno", key: "lastName", order: 3 },
   { label: "Apellido materno", key: "mothersLastName", order: 4 },
   { label: "Carnet Identidad", key: "identityCard", order: 5 },
-  { label: "", key: "isDuedateUndefined", order: 6 },
+  { label: "Caducidad carnet", key: "isDuedateUndefined", order: 6 },
   { label: "Fecha Nacimiento", key: "birthDate", order: 7 },
   { label: "Género", key: "gender", order: 9 },
   { label: "Estado civil", key: "civilStatus", order: 10 },
-  { label: "Número telefónico", key: "cellPhoneNumber", order: 11 },
+  { label: "Número de teléfono", key: "phoneNumbers", order: 11 },
+  { label: "Número de celular", key: "cellPhoneNumbers", order: 12 },
 ];
 
 const serviceFields = [{ label: "Lugar Nacimiento", key: "cityBirth", order: 8 }];
@@ -25,20 +28,75 @@ interface Props {
 
 export const Basic = ({ person }: Props) => {
   const renderField = useCallback((person: any, label: string, key: any) => {
-    if (key === "isDuedateUndefined") {
+    if (key === "cellPhoneNumbers") {
+      const phoneNumbers = [];
+      if (person.cellPhoneNumber) {
+        const phoneNumbersArray = person.cellPhoneNumber
+        .split(",")
+        .map((num: string) => num.trim())
+        .filter(Boolean);
+        phoneNumbers.push(...phoneNumbersArray);
+      }
+
       return (
-        <div key={key} className="flex space-y-2 text-center justify-center">
-          <Checkbox color="default" isSelected={person[key]} radius="sm">
-            Indefinido
-          </Checkbox>
+        <div key={key}>
+          <PhonesDrawer label={label} labelDrawer="Celulares" phoneNumbers={phoneNumbers} />
         </div>
       );
-    } else {
+    } else if (key === "phoneNumbers") {
+      const phoneNumbers = [];
+       if (person.phoneNumber) {
+        const phoneNumbersArray = person.phoneNumber
+        .split(",")
+        .map((num: string) => num.trim())
+        .filter(Boolean);
+        phoneNumbers.push(...phoneNumbersArray);
+      }
+      return (
+        <div key={key}>
+          <PhonesDrawer label={label} phoneNumbers={phoneNumbers} />
+        </div>
+      );
+    } else if (key === "isDuedateUndefined") {
+      if (person[key] === true){
+        return (
+          <div key={key} className="flex space-y-2 text-center justify-center">
+            <InputCustom label={label} type="text" value="Indefinido" />
+          </div>
+        );
+      }
+      return (
+        <div key={key} className="flex space-y-2 justify-center">
+          <DateInputCustom
+            label={label}
+            labelPlacement="outside"
+            radius="sm"
+            variant="faded"
+            isReadOnly
+            value={person.dueDate}
+          />
+        </div>
+      );  
+    } else if (key === "birthDate") {
+        return (
+          <div key={key} className="flex space-y-2 justify-center">
+            <DateInputCustom
+              label={label}
+              labelPlacement="outside"
+              radius="sm"
+              variant="faded"
+              isReadOnly
+              value={person[key]}
+            />
+          </div>
+        );  
+    }
+     else {
       return (
         <div key={key} className="space-y-2">
           {serviceFields.find((elemento) => elemento.key === key) ? (
             person[key] && person[key].status ? (
-              <InputCustom label={label} value={(person[key] && person[key].name) ?? "Sin dato"} />
+              <InputCustom label={label} value={(person[key] && person[key].name) ?? "Sin registro"} />
             ) : (
               // TODO: mostrar una alerta
               <></>
