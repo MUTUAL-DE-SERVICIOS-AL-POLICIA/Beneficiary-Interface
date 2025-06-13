@@ -1,6 +1,6 @@
 "use client";
 
-import { InputCustom } from "@/components/common";
+import { DateInputCustom, InputCustom } from "@/components/common";
 
 interface Props {
   dateDerelict: string | Date;
@@ -15,7 +15,7 @@ export const Derelict = ({ dateDerelict, reasonDerelict }: Props) => {
       </legend>
       <div className="flex gap-6">
         <div className="flex flex-col w-1/2 space-y-2">
-          <InputCustom label="Fecha de desvinculación" type="date" value={dateDerelict} />
+          <DateInputCustom label="Fecha de desvinculación" value={dateDerelict} />
         </div>
         <div className="flex flex-col w-1/2 space-y-2">
           <InputCustom label="Motivo de desvinculación" type="text" value={reasonDerelict} />

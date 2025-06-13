@@ -1,4 +1,4 @@
-import { InputCustom } from "@/components/common";
+import { DateInputCustom, InputCustom } from "@/components/common";
 
 interface Props {
   deathCertificateNumber: string;
@@ -15,7 +15,14 @@ export const Death = ({ deathCertificateNumber, dateDeath, reasonDeath }: Props)
           <InputCustom label="Nro certificado" type="text" value={deathCertificateNumber} />
         </div>
         <div className="flex flex-col w-1/2 space-y-2">
-          <InputCustom label="Fecha fallecimiento" type="date" value={dateDeath} />
+          <DateInputCustom
+            isReadOnly
+            label="Fecha fallecimiento"
+            labelPlacement="outside"
+            radius="sm"
+            value={dateDeath + ""}
+            variant="faded"
+          />
         </div>
       </div>
       <div className="flex gap-6">
