@@ -96,6 +96,7 @@ export interface PensionEntity {
 export interface PersonAffiliate {
   typeId: number;
   kinship: Kinship;
+  state?: boolean;
 }
 
 export interface Kinship {
