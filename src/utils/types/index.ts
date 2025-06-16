@@ -1,17 +1,18 @@
 import { SVGProps } from "react";
 
-import { Person } from "@/utils/interfaces";
+import { Person, PersonAffiliate } from "@/utils/interfaces";
 import { Affiliate, Category, Degree, Unit, AffiliateState, StateType } from "@/utils/interfaces";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export type basicPersonInfo = Pick<Person, "identityCard" | "uuidColumn"> & {
-  fullName: string;
-  nup?: number;
-  kinship?: string;
-};
+export type basicPersonInfo = Pick<Person, "identityCard" | "uuidColumn"> &
+  Pick<PersonAffiliate, "state"> & {
+    fullName: string;
+    nup?: number;
+    kinship?: string;
+  };
 
 export type PoliceData = Affiliate & {
   category: Category;

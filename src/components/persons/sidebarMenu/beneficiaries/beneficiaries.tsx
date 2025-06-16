@@ -63,7 +63,7 @@ export const Beneficiaries = () => {
       {isBeneficiaries.length > 0 ? (
         <div
           className={`${
-            isBeneficiaries.length < 4
+            isBeneficiaries.length < 3
               ? "flex flex-wrap justify-center gap-2 p-2"
               : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 p-2"
           }`}
@@ -84,6 +84,7 @@ export const Beneficiaries = () => {
                   nup: item.nup,
                   identityCard: item.identityCard,
                   kinship: item.kinship,
+                  state: item.state,
                 }}
               />
             </Card>

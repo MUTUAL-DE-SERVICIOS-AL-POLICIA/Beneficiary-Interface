@@ -1,35 +1,51 @@
 import { Input } from "@heroui/input";
 import { ComponentProps } from "react";
+import clsx from "clsx";
+
+import { CopyButton } from "@/components/common";
 
 type InputProps = ComponentProps<typeof Input>;
 
-const classNames = {
-  inputWrapper: ["border", "dark:hover:border-lime-400", "dark:group-data-[focus=true]:border-lime-400"],
-};
-
 interface InputCustomProps {
-  label: string;
+  label?: string;
   placeholder?: string;
   labelPlacement?: InputProps["labelPlacement"];
   variant?: InputProps["variant"];
   radius?: InputProps["radius"];
-  value: any;
+  value?: any;
   type?: InputProps["type"];
+  isCopy?: boolean;
+  endContent?: InputProps["endContent"];
 }
 
-export const InputCustom = (props: InputCustomProps) => {
-  const { label, placeholder, labelPlacement, variant, radius, value, type } = props;
-
+export const InputCustom = ({
+  label = undefined,
+  placeholder = "Sin registro",
+  labelPlacement = "outside",
+  variant = "faded",
+  radius = "sm",
+  value = undefined,
+  type,
+  isCopy = false,
+  endContent,
+}: InputCustomProps) => {
   return (
     <Input
-      classNames={classNames}
+      classNames={{
+        inputWrapper: clsx(
+          "border",
+          "dark:hover:border-green-800",
+          "dark:group-data-[focus=true]:border-green-800",
+        ),
+      }}
+      endContent={isCopy ? <CopyButton placement="bottom" text={value} tooltip="Copiar" /> : endContent}
       label={label}
-      labelPlacement={labelPlacement ?? "outside"}
-      placeholder={placeholder ?? "Sin dato"}
-      radius={radius ?? "sm"}
+      labelPlacement={labelPlacement}
+      placeholder={placeholder}
+      radius={radius}
       type={type}
-      value={value ?? "Sin dato"}
-      variant={variant ?? "faded"}
+      value={value ?? undefined}
+      variant={variant}
     />
   );
 };

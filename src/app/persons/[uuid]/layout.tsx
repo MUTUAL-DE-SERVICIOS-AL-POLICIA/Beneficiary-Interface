@@ -27,6 +27,7 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
     fullName: fullName,
     nup: data.nup,
     identityCard: data.identityCard,
+    state: true,
   };
 
   return (
@@ -37,11 +38,12 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
       pensionEntity={data.pensionEntity}
       person={data}
     >
-      <Card className="flex flex-col md:flex-row gap-2 py-2 px-2">
+      <Card className="flex-1 max-w-[300px] 2xl:max-w-[400px] border-small rounded-small border-default-200 dark:border-default-200 p-2">
         <Sidebar features={data.features} user={basicInfo} />
-        <Card className="w-full md:flex-1 border-small rounded-small border-default-200 dark:border-default-200 min-h-[470px] 2xl:min-h-[700px]">
-          {children}
-        </Card>
+      </Card>
+
+      <Card className="flex-1 border-small rounded-small border-default-200 dark:border-default-200 p-2">
+        {children}
       </Card>
     </PersonProvider>
   );

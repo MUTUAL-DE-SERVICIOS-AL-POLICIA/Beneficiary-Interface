@@ -640,3 +640,168 @@ export const DocumentViewIcon = (props: IconSvgProps) => {
     </svg>
   );
 };
+
+export const CopyIcon = (props: IconSvgProps) => {
+  return (
+    <svg aria-hidden="true" fill="none" height="24" viewBox="0 0 24 24" width="18" {...props}>
+      <path
+        d="M9 8v3a1 1 0 0 1-1 1H5m11 4h2a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-7a1 1 0 0 0-1 1v1m4 3v10a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7.13a1 1 0 0 1 .24-.65L7.7 8.35A1 1 0 0 1 8.46 8H13a1 1 0 0 1 1 1Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1"
+      />
+    </svg>
+  );
+};
+export const ContactsPhoneIcon = (props: IconSvgProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      className="text-black dark:text-white"
+      fill="currentColor"
+      height="24"
+      viewBox="0 0 24 24"
+      width="24"
+      {...props}
+    >
+      <rect
+        fill="none"
+        height="20"
+        rx="2"
+        ry="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        width="15"
+        x="5.5"
+        y="2"
+      />
+      <circle cx="4" cy="5" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="10" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="15" fill="currentColor" r="0.8" />
+      <path
+        d="M15.1 14.5c-.8-.3-1.6-.7-2.2-1.3-.6-.6-1-1.4-1.3-2.2-.1-.4 0-.9.3-1.2l.8-.8c.2-.2.2-.5 0-.7l-2-2c-.2-.2-.5-.2-.7 0l-.9.9c-.5.5-.6 1.3-.5 2 .3 1.3 1 2.6 2.1 3.7 1.1 1.1 2.4 1.8 3.7 2.1.7.2 1.5 0 2-.5l.9-.9c.2-.2.2-.5 0-.7l-2-2c-.2-.2-.5-.2-.7 0l-.8.8c-.3.3-.7.4-1.1.3z"
+        fill="currentColor"
+        transform="translate(-1,0) scale(1.1)"
+      />
+    </svg>
+  );
+};
+export const ContactsCellPhoneIcon = (props: IconSvgProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      className="text-black dark:text-white"
+      fill="currentColor"
+      height="24"
+      viewBox="0 0 24 24"
+      width="24"
+      {...props}
+    >
+      <rect
+        fill="none"
+        height="20"
+        rx="2"
+        ry="2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        width="15"
+        x="5.5"
+        y="2"
+      />
+      <circle cx="4" cy="5" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="10" fill="currentColor" r="0.8" />
+      <circle cx="4" cy="15" fill="currentColor" r="0.8" />
+      <path
+        clipRule="evenodd"
+        d="M5 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4Zm12 12V5H7v11h10Zm-5 1a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H12Z"
+        fillRule="evenodd"
+        transform="translate(6,4.5) scale(0.6)"
+      />
+    </svg>
+  );
+};
+
+export const CollapseTrueIcon = (props: IconSvgProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      height="24px"
+      role="presentation"
+      viewBox="0 0 24 24"
+      width="24px"
+      {...props}
+    >
+      <g>
+        <path d="M0 0H24V24H0z" fill="none" />
+        <path
+          d="M21 18v2H3v-2h18zM6.596 3.904L8.01 5.318 4.828 8.5l3.182 3.182-1.414 1.414L2 8.5l4.596-4.596zM21 11v2h-9v-2h9zm0-7v2h-9V4h9z"
+          fill="green"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const CollapseFalseIcon = (props: IconSvgProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      height="24px"
+      role="presentation"
+      viewBox="0 0 24 24"
+      width="24px"
+      {...props}
+    >
+      <g>
+        <path d="M0 0H24V24H0z" fill="none" />
+        <path
+          d="M21 18v2H3v-2h18zM17.404 3.904L22 8.5l-4.596 4.596-1.414-1.414L19.172 8.5 15.99 5.318l1.414-1.414zM12 11v2H3v-2h9zm0-7v2H3V4h9z"
+          fill="green"
+        />
+      </g>
+    </svg>
+  );
+};
+
+export const PersonsIcon = (props: IconSvgProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="#006400"
+      focusable="false"
+      height="24px"
+      role="presentation"
+      viewBox="0 0 98.666 98.666"
+      width="24px"
+      {...props}
+    >
+      <g>
+        <g>
+          <circle cx="49.332" cy="53.557" r="10.297" />
+          <path
+            d="M53.7,64.556h-8.737c-7.269,0-13.183,5.916-13.183,13.184v10.688l0.027,0.166l0.735,0.229
+            c6.937,2.168,12.965,2.892,17.927,2.892c9.688,0,15.303-2.764,15.65-2.938l0.688-0.351l0.071,0.002V77.739
+            C66.883,70.472,60.971,64.556,53.7,64.556z"
+          />
+          <circle cx="28.312" cy="23.563" r="16.611" />
+          <path
+            d="M70.35,40.174c9.174,0,16.609-7.44,16.609-16.613c0-9.17-7.438-16.609-16.609-16.609c-9.176,0-16.61,7.437-16.61,16.609
+            S61.174,40.174,70.35,40.174z"
+          />
+          <path
+            d="M41.258,62.936c-2.637-2.274-4.314-5.632-4.314-9.378c0-4.594,2.519-8.604,6.243-10.743
+            c-2.425-0.965-5.061-1.511-7.826-1.511H21.266C9.54,41.303,0,50.847,0,62.571v17.241l0.043,0.269L1.23,80.45
+            c10.982,3.432,20.542,4.613,28.458,4.656v-7.367C29.688,70.595,34.623,64.599,41.258,62.936z"
+          />
+          <path
+            d="M77.398,41.303H63.305c-2.765,0-5.398,0.546-7.824,1.511c3.727,2.139,6.246,6.147,6.246,10.743
+            c0,3.744-1.678,7.102-4.313,9.376c2.656,0.661,5.101,2.02,7.088,4.008c2.888,2.89,4.479,6.726,4.478,10.8v7.365
+            c7.916-0.043,17.477-1.225,28.457-4.656l1.187-0.369l0.044-0.269V62.571C98.664,50.847,89.124,41.303,77.398,41.303z"
+          />
+        </g>
+      </g>
+    </svg>
+  );
+};
