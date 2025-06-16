@@ -94,7 +94,7 @@ export const Document = ({ affiliateId, documents }: AffiliateDocumentsProps) =>
   return (
     <>
       <div className="flex flex-col w-full">
-        <div className="max-h-[380px] 2xl:max-h-[600px] overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+        <div className="max-h-[430px] 2xl:max-h-[710px] overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
           <CheckboxGroup classNames={{ base: "w-full" }} value={groupSelected} onChange={setGroupSelected}>
             {documents.map(({ procedureDocumentId, name, shortened }: any, index: number) => (
               <div

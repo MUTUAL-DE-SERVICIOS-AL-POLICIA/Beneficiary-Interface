@@ -1,7 +1,5 @@
 "use client";
 import { Button } from "@heroui/button";
-import { Card } from "@heroui/card";
-import { Tooltip } from "@heroui/tooltip";
 import { Input } from "@heroui/input";
 import { Pagination } from "@heroui/pagination";
 import {
@@ -13,12 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@heroui/table";
+import { addToast } from "@heroui/toast";
+import { Tooltip } from "@heroui/tooltip";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { addToast } from "@heroui/toast";
 
-import { SearchIcon, PersonInfoIcon } from "@/components/common";
+import { PersonInfoIcon, SearchIcon } from "@/components/common";
 import { Column } from "@/utils/interfaces";
 
 interface PropsTable {
@@ -26,7 +25,6 @@ interface PropsTable {
   total: number;
   headerColumns: Column[];
   startPage: number;
-  startRowsPerPage: number;
   getData: (
     rowsPerPage: number,
     page?: number,
@@ -37,19 +35,12 @@ interface PropsTable {
   error: boolean;
 }
 
-export const TableComponent = ({
-  headerColumns,
-  data,
-  total,
-  startPage,
-  startRowsPerPage,
-  getData,
-  error,
-}: PropsTable) => {
+export const TableComponent = ({ headerColumns, data, total, startPage, getData, error }: PropsTable) => {
   const router = useRouter();
 
   const [filterValue, setFilterValue] = useState<string>("");
   const [page, setPage] = useState(startPage);
+  const [startRowsPerPage, setStartRowsPerPage] = useState(15);
   const [rowsPerPage, setRowsPerPage] = useState(startRowsPerPage);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "id",
@@ -78,7 +69,24 @@ export const TableComponent = ({
 
     return;
   }, [error]);
+  useEffect(() => {
+    const updateRowsPerPage = () => {
+      const width = window.innerWidth;
 
+      if (width >= 1536) {
+        setRowsPerPage(15);
+        setStartRowsPerPage(15);
+      } else {
+        setRowsPerPage(8);
+        setStartRowsPerPage(8);
+      }
+    };
+
+    updateRowsPerPage();
+    window.addEventListener("resize", updateRowsPerPage);
+
+    return () => window.removeEventListener("resize", updateRowsPerPage);
+  }, []);
   useEffect(() => {
     const fetchFilteredItems = async () => {
       try {
@@ -216,8 +224,12 @@ export const TableComponent = ({
               onChange={onRowsPerPageChange}
             >
               <option value={startRowsPerPage}>{startRowsPerPage}</option>
-              <option value={startRowsPerPage + 5}>{startRowsPerPage + 5}</option>
-              <option value={startRowsPerPage + 10}>{startRowsPerPage + 10}</option>
+              <option value={Math.ceil((startRowsPerPage * 2) / 10) * 10}>
+                {Math.ceil((startRowsPerPage * 2) / 10) * 10}
+              </option>
+              <option value={Math.ceil((startRowsPerPage * 3) / 10) * 10}>
+                {Math.ceil((startRowsPerPage * 3) / 10) * 10}
+              </option>
             </select>
           </label>
         </div>
@@ -265,44 +277,40 @@ export const TableComponent = ({
   );
 
   return (
-    <Card className="border-small rounded-small border-default-100 dark:border-default-200 p-10">
-      <Table
-        isCompact
-        removeWrapper
-        aria-label="Table of content"
-        bottomContent={bottomContent}
-        bottomContentPlacement="outside"
-        classNames={classNames}
-        data-testid="persons-table"
-        selectionMode="single"
-        shadow="lg"
-        sortDescriptor={sortDescriptor}
-        topContent={topContent}
-        topContentPlacement="outside"
-        onSortChange={setSortDescriptor}
-      >
-        <TableHeader columns={headerColumns}>
-          {(column: Column) => (
-            <TableColumn
-              key={column.key}
-              align={column.key == "identityCard" ? "end" : "start"}
-              allowsSorting={column.sortable}
-              className="text-default-900 font-semibold"
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody emptyContent={"Sin datos"} items={[...filtered]}>
-          {(item: Column) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell className="text-default-600">{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </Card>
+    <Table
+      isCompact
+      removeWrapper
+      aria-label="Table of content"
+      bottomContent={bottomContent}
+      bottomContentPlacement="outside"
+      classNames={classNames}
+      data-testid="persons-table"
+      selectionMode="single"
+      shadow="lg"
+      sortDescriptor={sortDescriptor}
+      topContent={topContent}
+      topContentPlacement="outside"
+      onSortChange={setSortDescriptor}
+    >
+      <TableHeader columns={headerColumns}>
+        {(column: Column) => (
+          <TableColumn
+            key={column.key}
+            align={column.key == "identityCard" ? "end" : "start"}
+            allowsSorting={column.sortable}
+            className="text-default-900 font-semibold"
+          >
+            {column.name}
+          </TableColumn>
+        )}
+      </TableHeader>
+      <TableBody emptyContent={"Sin datos"} items={[...filtered]}>
+        {(item: Column) => (
+          <TableRow key={item.id}>
+            {(columnKey) => <TableCell className="text-default-600">{renderCell(item, columnKey)}</TableCell>}
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   );
 };

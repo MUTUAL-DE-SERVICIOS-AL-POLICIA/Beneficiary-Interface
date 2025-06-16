@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader } from "@heroui/card";
+import { CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 
 import { UserInfo, TabsSidebar } from "./";
@@ -27,7 +27,7 @@ export const Sidebar = ({ user, features }: Props) => {
   const affiliates = [{ name: "AFILIADOS", key: "affiliates", icon: "AffiliateDataIcon" }];
 
   return (
-    <Card className="w-full max-w-[300px] border-small rounded-small border-default-200 dark:border-default-200">
+    <>
       <CardHeader className="justify-center">
         <UserInfo isCopy isPolice={features.isPolice} user={user} />
       </CardHeader>
@@ -51,6 +51,6 @@ export const Sidebar = ({ user, features }: Props) => {
           </>
         )}
       </CardBody>
-    </Card>
+    </>
   );
 };

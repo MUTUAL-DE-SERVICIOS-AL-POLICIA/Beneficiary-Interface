@@ -39,6 +39,7 @@ export const UserInfo = ({ user, isPolice, isCopy = false }: Props) => {
             <p className="text-small font-semibold text-default-800">{user?.kinship}</p>
           </div>
         )}
+        {!user?.state && <p className="text-small text-yellow-600 text-center">- No vigente -</p>}
       </div>
     </div>
   );

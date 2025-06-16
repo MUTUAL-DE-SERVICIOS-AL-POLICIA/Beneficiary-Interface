@@ -6,7 +6,7 @@ export const PersonalData = () => {
   const { person, financialEntity } = usePerson();
 
   return (
-    <div className="px-5 py-5 space-y-3">
+    <div className="px-5 py-5 space-y-3 max-h-[520px] 2xl:max-h-[710px] overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
       {/* <h1 className="text-md font-semibold">DATOS PERSONALES</h1>
       <Divider className="bg-gray-400 mb-5" /> */}
       <Basic person={person} />

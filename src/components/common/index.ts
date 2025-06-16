@@ -21,6 +21,9 @@ export {
   DocumentRegisterIcon,
   DocumentViewIcon,
   DocumentEditIcon,
+  CollapseFalseIcon,
+  CollapseTrueIcon,
+  PersonsIcon,
 } from "./icons";
 export { InputCustom } from "./input";
 export { DateInputCustom } from "./dateInput";
