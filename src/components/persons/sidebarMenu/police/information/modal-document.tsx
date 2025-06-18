@@ -12,8 +12,7 @@ interface ModalProps {
   isUpdated: boolean;
 }
 
-export function ModalDocument(props: ModalProps) {
-  const { open, onOpenChange, data, action, loading, isUpdated } = props;
+export function ModalDocument({ open, onOpenChange, data, action, loading, isUpdated }: ModalProps) {
   const [file, setFile] = useState<any>(undefined);
   const [fileError, setFileError] = useState(false);
 
@@ -62,7 +61,7 @@ export function ModalDocument(props: ModalProps) {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={open}
-        size="5xl" // primer diferencia
+        size="5xl"
         onOpenChange={onOpenChange}
       >
         <ModalContent>
