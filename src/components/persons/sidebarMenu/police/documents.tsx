@@ -116,7 +116,6 @@ export const Documents = () => {
       )}
       <div className="m-3 space-y-3">
         <div className="flex justify-end items-center">
-          {/* <h1 className="text-md font-semibold">DOCUMENTOS</h1> */}
           <Tooltip content="Nuevo documento">
             <Button endContent={<DocumentRegisterIcon />} onPress={handleDocumentRecord}>
               REGISTRAR
