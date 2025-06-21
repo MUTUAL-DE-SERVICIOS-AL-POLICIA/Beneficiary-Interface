@@ -58,43 +58,47 @@ export const Document = ({ affiliateId, documents }: AffiliateDocumentsProps) =>
   };
 
   const uploadFile = async (file: any) => {
-    const formData = new FormData();
-
-    formData.append("documentPdf", file);
     setIsLoading(true);
-    if (currentDocumentId !== null) {
-      const { error, message } = await createUpdateDocument(affiliateId, currentDocumentId, formData);
+    try {
+      const formData = new FormData();
 
-      if (!error) {
+      formData.append("documentPdf", file);
+      if (currentDocumentId !== null) {
+        const { error, message } = await createUpdateDocument(affiliateId, currentDocumentId, formData);
+
+        if (error) {
+          addToast({
+            title: "Ocurrió un error",
+            description: message,
+            color: "danger",
+            timeout: 2000,
+            shouldShowTimeoutProgress: true,
+          });
+
+          return;
+        }
         addToast({
           title: "Aceptado",
-          description: "Ocurrió un error al obtener el documento",
+          description: "Documento actualizado correctamente",
           color: "success",
           timeout: 2000,
           shouldShowTimeoutProgress: true,
         });
 
         return;
-      } else {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 2000,
-          shouldShowTimeoutProgress: true,
-        });
-
-        return;
       }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+      toggleDialog();
     }
-    setIsLoading(false);
-    toggleDialog();
   };
 
   return (
     <>
       <div className="flex flex-col w-full">
-        <div className="max-h-[380px] 2xl:max-h-[600px] overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+        <div className="max-h-[430px] 2xl:max-h-[710px] overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
           <CheckboxGroup classNames={{ base: "w-full" }} value={groupSelected} onChange={setGroupSelected}>
             {documents.map(({ procedureDocumentId, name, shortened }: any, index: number) => (
               <div

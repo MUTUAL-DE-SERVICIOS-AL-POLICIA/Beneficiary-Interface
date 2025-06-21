@@ -1,9 +1,9 @@
-export { TabsSidebar } from "./tabsSidebar";
-export { UserInfo } from "./userInfo";
-export { Sidebar } from "./sidebar";
-export { PersonalData } from "./person/personalData";
-export { PoliceData } from "./police/policeData";
-export { Documents } from "./police/documents";
-export { Fingerprints } from "./person/fingerprints";
 export { Affiliates } from "./affiliates/affiliates";
 export { Beneficiaries } from "./beneficiaries/beneficiaries";
+export { Fingerprints } from "./person/fingerprints";
+export { PersonalData } from "./person/personalData";
+export { Documents } from "./police/documents";
+export { PoliceData } from "./police/policeData";
+export { Sidebar } from "./sidebar";
+export { TabsSidebar } from "./tabsSidebar";
+export { UserInfo } from "./userInfo";
