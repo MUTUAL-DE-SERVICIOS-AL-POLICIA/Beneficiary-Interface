@@ -6,12 +6,11 @@ import { addToast } from "@heroui/toast";
 import { Tooltip } from "@heroui/tooltip";
 import { useEffect, useState } from "react";
 
-import { Document } from "./information";
+import { Document, ModalDocument } from "./information";
 
 import { getAffiliateDocuments } from "@/api/affiliate";
 import { createUpdateDocument, getAllDocuments } from "@/api/document";
 import { DocumentRegisterIcon } from "@/components/common";
-import { ModalDocument } from "@/components/persons/sidebarMenu/police/information/modal-document";
 import { usePerson } from "@/utils/context/PersonContext";
 
 export const Documents = () => {
@@ -103,36 +102,29 @@ export const Documents = () => {
   };
 
   return (
-    <>
+    <div className="relative h-full w-full">
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <Spinner
-            classNames={{ label: "text-foreground mt-4" }}
-            color="success"
-            size="lg"
-            variant="spinner"
-          />
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <Spinner color="success" size="lg" variant="spinner" />
         </div>
       )}
-      <div className="m-3 space-y-3">
-        <div className="flex justify-end items-center">
-          <Tooltip content="Nuevo documento">
-            <Button endContent={<DocumentRegisterIcon />} onPress={handleDocumentRecord}>
-              REGISTRAR
-            </Button>
-          </Tooltip>
-        </div>
-        <Divider className="bg-gray-400 mb-5 w-full" />
-        <div className="flex gap-1">
-          <div className="flex flex-col w-full">
-            {documents.length > 0 ? (
-              <Document affiliateId={affiliateId} documents={documents} />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full text-gray-400 text-sm italic">
-                SIN DOCUMENTOS REGISTRADOS
-              </div>
-            )}
-          </div>
+      <div className="flex justify-end items-center">
+        <Tooltip content="Nuevo documento">
+          <Button endContent={<DocumentRegisterIcon />} onPress={handleDocumentRecord}>
+            REGISTRAR
+          </Button>
+        </Tooltip>
+      </div>
+      <Divider className="bg-gray-400 w-full mt-2 mb-2" />
+      <div className="flex gap-1 overflow-y-auto h-full">
+        <div className="flex flex-col w-full">
+          {documents.length > 0 ? (
+            <Document affiliateId={affiliateId} documents={documents} />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full text-gray-400 text-sm italic">
+              SIN DOCUMENTOS REGISTRADOS
+            </div>
+          )}
         </div>
       </div>
 
@@ -144,6 +136,6 @@ export const Documents = () => {
         open={isDialogOpen}
         onOpenChange={toggleDialog}
       />
-    </>
+    </div>
   );
 };
