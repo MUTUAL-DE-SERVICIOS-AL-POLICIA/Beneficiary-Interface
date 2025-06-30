@@ -48,22 +48,19 @@ export const Fingerprints = () => {
   };
 
   return (
-    <>
+    <div className="relative h-full w-full">
       {loading && (
-        <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
           <Spinner color="success" size="lg" variant="spinner" />
         </div>
       )}
-      <div className="m-3 space-y-3 ">
-        <div className="flex justify-end items-center">
-          <ModalFingerprints onRefreshFingerprints={getFingerprints} onSelectFinger={setSelectedFinger} />
-        </div>
-        <Divider className="bg-gray-400 w-full" />
-        <div className="flex justify-center" />
-        <div className="flex justify-center items-center">
-          <Hands fingerprints={[...registeredFingerprints]} selectedOption={selectedFinger} />
-        </div>
+      <div className="flex justify-end items-center">
+        <ModalFingerprints onRefreshFingerprints={getFingerprints} onSelectFinger={setSelectedFinger} />
       </div>
-    </>
+      <Divider className="bg-gray-400 w-full mt-2 mb-2" />
+      <div className="flex justify-center items-center p-2">
+        <Hands fingerprints={[...registeredFingerprints]} selectedOption={selectedFinger} />
+      </div>
+    </div>
   );
 };

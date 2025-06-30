@@ -57,7 +57,7 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
 
       return;
     } catch (error) {
-      console.error("Error al obtener usuarios del ldap:", error);
+      console.error("Error al obtener tipos de huellas:", error);
     } finally {
       setLoading(false);
       onOpen();
@@ -222,12 +222,12 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
       )}
       {loadingSaved && (
         <>
-          <div className="absolute top-[18%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="absolute top-[15%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center">
               Guardando ...
             </span>
           </div>
-          <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <Spinner
               classNames={{
                 label:
@@ -243,12 +243,12 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
       )}
       {loadingRegister && (
         <>
-          <div className="absolute top-[18%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="absolute top-[15%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center">
               Registrando ...
             </span>
           </div>
-          <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+          <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <Spinner
               classNames={{
                 label:

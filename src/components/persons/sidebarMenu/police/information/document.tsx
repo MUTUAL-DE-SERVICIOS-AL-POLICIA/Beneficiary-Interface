@@ -8,12 +8,12 @@ import { useCallback, useState } from "react";
 
 import { createUpdateDocument } from "@/api/document";
 import { DocumentEditIcon, DocumentViewIcon } from "@/components/common";
-import { ModalDocument } from "@/components/persons/sidebarMenu/police/information/modal-document";
-import { Document as DocumentInterface } from "@/utils/interfaces";
+import { ModalDocument } from "@/components/persons/sidebarMenu/police/information/modalDocument";
+import { AffiliateDocument } from "@/utils/interfaces";
 import { apiClient } from "@/utils/services";
 interface AffiliateDocumentsProps {
   affiliateId: any;
-  documents: DocumentInterface[];
+  documents: AffiliateDocument[];
 }
 
 export const Document = ({ affiliateId, documents }: AffiliateDocumentsProps) => {
@@ -98,51 +98,49 @@ export const Document = ({ affiliateId, documents }: AffiliateDocumentsProps) =>
   return (
     <>
       <div className="flex flex-col w-full">
-        <div className="max-h-[430px] 2xl:max-h-[710px] overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-          <CheckboxGroup classNames={{ base: "w-full" }} value={groupSelected} onChange={setGroupSelected}>
-            {documents.map(({ procedureDocumentId, name, shortened }: any, index: number) => (
-              <div
-                key={procedureDocumentId}
-                className={cn(
-                  "flex max-w-full w-full bg-content1 m-0 border-gray-400 items-center",
-                  "hover:bg-content3 dark:hover:border-lime-400 bg-content2 justify-between",
-                  "cursor-pointer rounded-lg gap-2 p-4 border",
-                  groupSelected.includes(index + 1) && "border-selected",
-                )}
-              >
-                <div className="w-full flex justify-between gap-3">
-                  <div className="flex flex-row items-start gap-3">
-                    <span className="text-md font-bold">{index + 1} &nbsp;</span>
-                    <span className="text-sm uppercase">
-                      {name}
-                      <b>&nbsp;({shortened})</b>
-                    </span>
-                  </div>
-                  <div className="flex flex-row items-end gap-1">
-                    <Tooltip content="Visualizar">
-                      <Button
-                        isIconOnly
-                        className="p-1"
-                        onPress={() => handleDocumentDownload(procedureDocumentId)}
-                      >
-                        <DocumentViewIcon />
-                      </Button>
-                    </Tooltip>
-                    <Tooltip content="Actualizar">
-                      <Button
-                        isIconOnly
-                        className="p-1"
-                        onPress={() => handleDocumentUpdate(procedureDocumentId)}
-                      >
-                        <DocumentEditIcon />
-                      </Button>
-                    </Tooltip>
-                  </div>
+        <CheckboxGroup classNames={{ base: "w-full" }} value={groupSelected} onChange={setGroupSelected}>
+          {documents.map(({ procedureDocumentId, name, shortened }: any, index: number) => (
+            <div
+              key={procedureDocumentId}
+              className={cn(
+                "flex max-w-full w-full bg-content1 m-0 border-gray-400 items-center",
+                "hover:bg-content3 dark:hover:border-lime-400 bg-content2 justify-between",
+                "cursor-pointer rounded-lg gap-2 p-4 border",
+                groupSelected.includes(index + 1) && "border-selected",
+              )}
+            >
+              <div className="w-full flex justify-between gap-3">
+                <div className="flex flex-row items-start gap-3">
+                  <span className="text-md font-bold">{index + 1} &nbsp;</span>
+                  <span className="text-sm uppercase">
+                    {name}
+                    <b>&nbsp;({shortened})</b>
+                  </span>
+                </div>
+                <div className="flex flex-row items-end gap-1">
+                  <Tooltip content="Visualizar">
+                    <Button
+                      isIconOnly
+                      className="p-1"
+                      onPress={() => handleDocumentDownload(procedureDocumentId)}
+                    >
+                      <DocumentViewIcon />
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content="Actualizar">
+                    <Button
+                      isIconOnly
+                      className="p-1"
+                      onPress={() => handleDocumentUpdate(procedureDocumentId)}
+                    >
+                      <DocumentEditIcon />
+                    </Button>
+                  </Tooltip>
                 </div>
               </div>
-            ))}
-          </CheckboxGroup>
-        </div>
+            </div>
+          ))}
+        </CheckboxGroup>
       </div>
 
       <ModalDocument
