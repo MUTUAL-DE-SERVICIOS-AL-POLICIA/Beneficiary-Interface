@@ -4,6 +4,7 @@ export { Fingerprints } from "./person/fingerprints";
 export { PersonalData } from "./person/personalData";
 export { Documents } from "./police/documents";
 export { PoliceData } from "./police/policeData";
+export { FileDossiers } from "./police/fileDossiers";
 export { Sidebar } from "./sidebar";
 export { TabsSidebar } from "./tabsSidebar";
 export { UserInfo } from "./userInfo";
