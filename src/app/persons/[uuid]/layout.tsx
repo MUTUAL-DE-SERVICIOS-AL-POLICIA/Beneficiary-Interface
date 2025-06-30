@@ -38,11 +38,11 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
       pensionEntity={data.pensionEntity}
       person={data}
     >
-      <Card className="flex-1 max-w-[300px] 2xl:max-w-[400px] border-small rounded-small border-default-200 dark:border-default-200 p-2">
+      <Card className="flex-1 min-w-[250px] max-w-[300px] 2xl:max-w-[400px] border-small rounded-small border-default-200 dark:border-default-200 h-full">
         <Sidebar features={data.features} user={basicInfo} />
       </Card>
 
-      <Card className="flex-1 border-small rounded-small border-default-200 dark:border-default-200 p-2">
+      <Card className="flex-1 min-w-[650px] border-small rounded-small border-default-200 dark:border-default-200 p-3 space-y-3 h-full">
         {children}
       </Card>
     </PersonProvider>
