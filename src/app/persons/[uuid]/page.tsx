@@ -8,6 +8,7 @@ import {
   Fingerprints,
   Beneficiaries,
   Affiliates,
+  FileDossiers,
 } from "@/components/persons/sidebarMenu";
 
 export default function Page() {
@@ -22,6 +23,8 @@ export default function Page() {
         return <PoliceData />;
       case "documents":
         return <Documents />;
+      case "fileDossiers":
+        return <FileDossiers />;
       case "beneficiaries":
         return <Beneficiaries />;
       case "affiliates":
