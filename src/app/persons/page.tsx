@@ -22,13 +22,15 @@ export default async function Persons() {
   ];
 
   return (
-    <Card className="flex-1 rounded-small border-default-100 dark:border-default-200 p-2 max-h-[540px] 2xl:max-h-[820px] overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+    <Card className="flex-1 rounded-small border-default-100 dark:border-default-200 p-2 h-full w-full overflow-y-auto">
       <TableComponent
         data={persons}
         error={error}
         getData={getPersons}
         headerColumns={personTableHeaders}
         startPage={1}
+        startRowsMay={14}
+        startRowsMen={7}
         total={total}
       />
     </Card>
