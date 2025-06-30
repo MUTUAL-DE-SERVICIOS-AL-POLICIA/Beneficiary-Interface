@@ -163,8 +163,20 @@ export interface TabSidebar {
   icon: string;
 }
 
-export interface Document {
+export interface AffiliateDocument {
   procedureDocumentId: number | null;
+  name: string | null;
+  shortened: string | null;
+}
+
+export interface FileDossier {
+  id: number | null;
+  name: string | null;
+  shortened: string | null;
+}
+export interface AffiliateFileDossier {
+  affiliateId: number | null;
+  fileDossierId: number;
   name: string | null;
   shortened: string | null;
 }
