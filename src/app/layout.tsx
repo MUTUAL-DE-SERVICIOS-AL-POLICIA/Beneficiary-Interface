@@ -6,7 +6,7 @@ import { Providers } from "./providers";
 
 import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
-import { subtitle, BreadcrumbsState } from "@/components/common";
+import { BreadcrumbsState } from "@/components/common";
 import { SidebarRoot } from "@/components/header/sidebarRoot";
 
 export const metadata: Metadata = {
@@ -35,12 +35,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="flex flex-col h-screen">
             <Navbar />
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-x-hidden">
               <SidebarRoot />
-              <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-neutral-950">
-                <div className={subtitle()}>
-                  <BreadcrumbsState />
-                </div>
+              <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-neutral-950">
+                <BreadcrumbsState />
                 {children}
               </main>
             </div>
