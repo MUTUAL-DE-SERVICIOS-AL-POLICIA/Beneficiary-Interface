@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { addToast } from "@heroui/toast";
 import { Spinner } from "@heroui/spinner";
-import { Divider } from "@heroui/divider";
 
-import { FileDossier, ModalFileDossier } from "./information";
+import { FileDossier } from "./information";
+import { ManageFileDossier } from "./manage";
 
 import { usePerson } from "@/utils/context/PersonContext";
 import { getAffiliateShowFileDossiers } from "@/api/affiliate";
@@ -13,10 +13,19 @@ export const FileDossiers = () => {
   const [fileDossiers, setFileDossiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { affiliateId } = usePerson();
+  const [onEdit, setOnEdit] = useState(false);
 
   useEffect(() => {
     getFileDossiersAffiliate();
   }, []);
+
+  const switchEdit = () => {
+    setOnEdit(!onEdit);
+  };
+
+  const canceledAll = () => {
+    setOnEdit(false);
+  };
 
   const getFileDossiersAffiliate = async () => {
     try {
@@ -51,18 +60,28 @@ export const FileDossiers = () => {
   };
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative flex flex-col h-full w-full">
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
           <Spinner color="success" size="lg" variant="spinner" />
         </div>
       )}
-      <div className="flex justify-end items-center">
-        <ModalFileDossier onRefreshFileDossiers={getFileDossiersAffiliate} />
-      </div>
-      <Divider className="bg-gray-400 mb-2 mt-2 w-full" />
-      <div className="flex gap-1 h-full">
-        <FileDossier fileDossiers={fileDossiers} />
+      <ManageFileDossier
+        toEdit
+        toRegister
+        existFileDossiers={fileDossiers.length > 0}
+        switchEdit={switchEdit}
+        onCancel={canceledAll}
+        onEdit={onEdit}
+        onRefreshFileDossiers={getFileDossiersAffiliate}
+      />
+      <div className="flex gap-1 flex-1 min-h-0">
+        <FileDossier
+          fileDossiers={fileDossiers}
+          onCancel={canceledAll}
+          onEdit={onEdit}
+          onRefreshFileDossiers={getFileDossiersAffiliate}
+        />
       </div>
     </div>
   );

@@ -108,7 +108,22 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
         createFingerprint(rightFingerName, derecha.wsq, derecha.quality),
       ].filter(Boolean) as Fingerprint[];
 
-      const response = await postFingerprints(personId, fingerprints);
+      const personFingerprints: any = [];
+      const wsqFingerprints: any = [];
+
+      fingerprints.forEach((fingerprint) => {
+        personFingerprints.push({
+          fingerprintTypeId: fingerprint.fingerprintTypeId,
+          quality: fingerprint.quality,
+        });
+
+        wsqFingerprints.push({
+          fieldname: `file[${fingerprint.fingerprintTypeId}]`,
+          buffer: fingerprint.wsq,
+        });
+      });
+
+      const response = await postFingerprints(personId, { personFingerprints, wsqFingerprints });
 
       if (response.error) {
         addToast({
@@ -130,13 +145,13 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
         shouldShowTimeoutProgress: true,
       });
 
-      setLoadingSaved(false);
       await onRefreshFingerprints();
 
       return;
     } catch (e: any) {
       console.error(e);
     } finally {
+      setLoadingSaved(false);
       onSelectFinger(undefined);
     }
   };
@@ -167,15 +182,21 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
       setLoadingRegister(false);
       setLoadingSaved(true);
 
-      const dataFingerprints: Fingerprint[] = [
+      const personFingerprints: any[] = [
         {
           fingerprintTypeId,
-          wsq: data.wsq,
           quality: data.quality,
         },
       ];
 
-      const response = await postFingerprints(personId, dataFingerprints);
+      const wsqFingerprints: any[] = [
+        {
+          fieldname: `file[${fingerprintTypeId}]`,
+          buffer: data.wsq,
+        },
+      ];
+
+      const response = await postFingerprints(personId, { personFingerprints, wsqFingerprints });
 
       if (response.error) {
         addToast({
@@ -191,35 +212,25 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
 
       addToast({
         title: "Aceptado",
-        description: "Huella registrada exitosamente",
+        description: response.message,
         color: "success",
         timeout: 2000,
         shouldShowTimeoutProgress: true,
       });
 
-      setLoadingSaved(false);
       await onRefreshFingerprints();
 
       return;
     } catch (e: any) {
       console.error(e);
     } finally {
+      setLoadingSaved(false);
       onSelectFinger(undefined);
     }
   };
 
   return (
     <>
-      {loading && (
-        <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <Spinner
-            classNames={{ label: "text-foreground mt-4" }}
-            color="success"
-            size="lg"
-            variant="spinner"
-          />
-        </div>
-      )}
       {loadingSaved && (
         <>
           <div className="absolute top-[15%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
@@ -228,16 +239,9 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
             </span>
           </div>
           <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <Spinner
-              classNames={{
-                label:
-                  "text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center",
-              }}
-              color="success"
-              label="Huella(s) capturada(s)"
-              size="lg"
-              variant="spinner"
-            />
+            <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center">
+              Huella(s) capturada(s)
+            </span>
           </div>
         </>
       )}
@@ -264,7 +268,7 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
       )}
 
       <Tooltip content="Nueva huella">
-        <Button disabled={loadingSaved || loadingRegister} onPress={getFingerprints}>
+        <Button disabled={loadingSaved || loadingRegister} isLoading={loading} onPress={getFingerprints}>
           REGISTRAR
           <TouchRegisterIcon />
         </Button>

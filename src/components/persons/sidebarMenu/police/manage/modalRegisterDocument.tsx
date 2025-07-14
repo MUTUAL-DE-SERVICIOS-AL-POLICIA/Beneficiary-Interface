@@ -1,34 +1,32 @@
 import { Button } from "@heroui/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/modal";
 import { Tooltip } from "@heroui/tooltip";
-import React, { useState } from "react";
+import { useState } from "react";
 import { addToast } from "@heroui/toast";
 import { Input } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Form } from "@heroui/form";
-import { Selection } from "@heroui/table";
 
-import { FileDossier as FileDossierInterface } from "@/utils/interfaces";
+import { Document as DocumentInterface } from "@/utils/interfaces";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getAllFileDossiers, postCreateUpdateFileDossier } from "@/api/affiliate";
+import { getDocuments, createUpdateDocument } from "@/api/affiliate";
 import { DocumentRegisterIcon } from "@/components/common";
 
-interface ModalProps {
-  onRefreshFileDossiers: () => Promise<void>;
+interface Props {
+  onRefreshDocuments: () => Promise<void>;
 }
 
-export function ModalFileDossier({ onRefreshFileDossiers }: ModalProps) {
+export function ModalRegisterDocument({ onRefreshDocuments }: Props) {
   const [loading, setLoading] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [fileDossiers, setFileDossiers] = useState<any>([]);
+  const [documents, setDocuments] = useState<any>([]);
   const { affiliateId } = usePerson();
-  const [fileDossierId, setFileDossierId] = useState<Selection>(new Set([]));
-
-  const getFileDossiers = async () => {
+  const [documentId, setDocumentId] = useState<any>(null);
+  const getAllDocuments = async () => {
     setLoading(true);
     try {
-      const { error, message, data } = await getAllFileDossiers();
+      const { error, message, data } = await getDocuments();
 
       if (error) {
         addToast({
@@ -38,12 +36,12 @@ export function ModalFileDossier({ onRefreshFileDossiers }: ModalProps) {
           timeout: 2000,
           shouldShowTimeoutProgress: true,
         });
-        setFileDossiers([]);
+        setDocuments([]);
 
         return;
       }
 
-      setFileDossiers(data);
+      setDocuments(data);
 
       return;
     } catch (error) {
@@ -57,8 +55,8 @@ export function ModalFileDossier({ onRefreshFileDossiers }: ModalProps) {
     setLoadingSave(true);
     e.preventDefault();
     try {
-      const formData = new FormData(e.currentTarget);
-      const file = formData.get("fileDossierPdf");
+      const data = new FormData(e.currentTarget);
+      const file = data.get("documentPdf");
 
       if (!(file instanceof File)) {
         addToast({
@@ -72,11 +70,11 @@ export function ModalFileDossier({ onRefreshFileDossiers }: ModalProps) {
         return;
       }
 
-      const { error, message } = await postCreateUpdateFileDossier(
-        affiliateId,
-        String(Array.from(fileDossierId)[0]),
-        file,
-      );
+      const formData = new FormData();
+
+      formData.append(`file[${documentId}]`, file);
+
+      const { error, message } = await createUpdateDocument(affiliateId, documentId, formData);
 
       if (error) {
         addToast({
@@ -97,22 +95,22 @@ export function ModalFileDossier({ onRefreshFileDossiers }: ModalProps) {
         timeout: 2000,
         shouldShowTimeoutProgress: true,
       });
-      onRefreshFileDossiers();
+      onRefreshDocuments();
 
       return;
     } catch (error) {
-      console.error("Error al obtener los tipos de expedientes:", error);
+      console.error("Error subir expediente:", error);
     } finally {
       setLoadingSave(false);
-      setFileDossierId(new Set([]));
+      setDocumentId(new Set([]));
       onClose();
     }
   };
 
   return (
     <>
-      <Tooltip content="Nuevo expediente">
-        <Button endContent={<DocumentRegisterIcon />} isLoading={loading} onPress={getFileDossiers}>
+      <Tooltip content="Crear/Actualizar">
+        <Button endContent={<DocumentRegisterIcon />} isLoading={loading} onPress={getAllDocuments}>
           REGISTRAR
         </Button>
       </Tooltip>
@@ -122,28 +120,37 @@ export function ModalFileDossier({ onRefreshFileDossiers }: ModalProps) {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={isOpen}
-        size="md"
+        size="5xl"
         onClose={onClose}
       >
         <Form onSubmit={onSubmit}>
           <ModalContent>
             {(onClose) => (
               <>
-                <ModalHeader className="flex flex-col">REGISTRAR NUEVO EXPEDIENTE</ModalHeader>
+                <ModalHeader className="flex flex-col">SELECCIONE DOCUMENTO</ModalHeader>
                 <ModalBody>
-                  <Select
+                  <Autocomplete
                     isRequired
-                    items={fileDossiers}
-                    label="Expedientes"
-                    placeholder="Seleccione un expediente"
-                    selectedKeys={fileDossierId}
-                    onSelectionChange={setFileDossierId}
+                    className="w-full"
+                    defaultItems={documents}
+                    label="Buscar documento"
+                    labelPlacement="inside"
+                    variant="bordered"
+                    onSelectionChange={setDocumentId}
                   >
-                    {(fileDossier: FileDossierInterface) => (
-                      <SelectItem key={fileDossier.id}>{fileDossier.name}</SelectItem>
+                    {(document: DocumentInterface) => (
+                      <AutocompleteItem
+                        key={document.id}
+                        textValue={`(${document.shortened}): ${document.name}`}
+                      >
+                        <div className="text-small truncate">
+                          <span className="font-semibold">({document.shortened}): </span>
+                          <span>{document.name}</span>
+                        </div>
+                      </AutocompleteItem>
                     )}
-                  </Select>
-                  <Input isRequired name="fileDossierPdf" type="file" />
+                  </Autocomplete>
+                  <Input isRequired name="documentPdf" type="file" />
                 </ModalBody>
                 <ModalFooter>
                   <Button onPress={onClose}>Cerrar</Button>

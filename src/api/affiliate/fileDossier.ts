@@ -2,65 +2,6 @@
 
 import { apiClient } from "@/utils/services";
 import { ResponseData } from "@/utils/interfaces";
-
-export const getAffiliate = async (affiliateId: string): Promise<ResponseData> => {
-  try {
-    const response = await apiClient.GET(`affiliates/${affiliateId}`);
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        error: true,
-        message: data.message,
-        data: response.statusText,
-      };
-    }
-
-    return {
-      error: false,
-      message: "Datos del afiliado obtenido exitosamente",
-      data,
-    };
-  } catch (e: any) {
-    console.error(e);
-
-    return {
-      error: true,
-      message: "Error al obtener datos del afiliado",
-    };
-  }
-};
-
-export const getAffiliateDocuments = async (affiliateId: string): Promise<ResponseData> => {
-  try {
-    const response = await apiClient.GET(`affiliates/${affiliateId}/documents`);
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        error: true,
-        message: "Ocurrió un error",
-        data: response.statusText,
-      };
-    }
-
-    return {
-      error: false,
-      message: "Documentos del afiliado obtenido exitosamente",
-      data,
-    };
-  } catch (e: any) {
-    console.error(e);
-
-    return {
-      error: true,
-      message: "Error al obtener los documentos del afiliado",
-      statusDocuments: false,
-      affiliateDocuments: [],
-    };
-  }
-};
-
 export const getAffiliateFileDossiers = async (): Promise<ResponseData> => {
   try {
     const response = await apiClient.GET(`affiliates/fileDossiers`);
@@ -153,46 +94,60 @@ export const getAllFileDossiers = async (): Promise<ResponseData> => {
 export const postCreateUpdateFileDossier = async (
   affiliateId: string,
   fileDossierId: string,
-  body: any,
+  initialName: string,
+  totalChunks: number,
 ): Promise<ResponseData> => {
   try {
-    const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
-    const totalChunks = Math.ceil(body.size / CHUNK_SIZE);
-
-    for (let i = 0; i < totalChunks; i++) {
-      const start = i * CHUNK_SIZE;
-      const end = Math.min(body.size, start + CHUNK_SIZE);
-      const chunk = body.slice(start, end);
-
-      const chunkForm = new FormData();
-
-      chunkForm.append("chunk", chunk);
-
-      const response = await apiClient.POST(
-        `affiliates/${affiliateId}/fileDossier/${fileDossierId}/uploadChunk/${i}`,
-        chunkForm,
-        true,
-      );
-
-      if (!response.ok) {
-        throw new Error("Error al subir chunk " + i);
-      }
-    }
     const response = await apiClient.POST(
-      `affiliates/${affiliateId}/fileDossier/${fileDossierId}/concatChunksAndUploadFile/${totalChunks}`,
-      {},
+      `affiliates/${affiliateId}/fileDossier/${fileDossierId}/createOrUpdateFileDossier`,
+      {
+        initialName,
+        totalChunks,
+      },
     );
 
     if (!response.ok) {
       return {
         error: true,
-        message: "Error al crear o actualizar expediente",
+        message: "Ocurrió un error al crear o actualizar el expediente",
+        data: response.statusText,
       };
     }
 
     return {
       error: false,
       message: "Expediente creado o actualizado correctamente",
+    };
+  } catch (e: any) {
+    console.error(e);
+
+    return {
+      error: true,
+      message: "Error al crear o actualizar el expediente",
+      data: e.message,
+    };
+  }
+};
+
+export const deleteFileDossier = async (
+  affiliateId: string,
+  fileDossierId: string,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.DELETE(`affiliates/${affiliateId}/fileDossiers/${fileDossierId}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Ocurrido un error al eliminar el expediente",
+        data: response.statusText,
+      };
+    }
+
+    return {
+      error: false,
+      message: data.message,
     };
   } catch (e: any) {
     console.error(e);

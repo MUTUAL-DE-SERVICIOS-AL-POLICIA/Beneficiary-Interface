@@ -164,7 +164,8 @@ export interface TabSidebar {
 }
 
 export interface AffiliateDocument {
-  procedureDocumentId: number | null;
+  affiliateId: number | null;
+  procedureDocumentId: number;
   name: string | null;
   shortened: string | null;
 }
@@ -174,6 +175,13 @@ export interface FileDossier {
   name: string | null;
   shortened: string | null;
 }
+
+export interface Document {
+  id: number | null;
+  name: string | null;
+  shortened: string | null;
+}
+
 export interface AffiliateFileDossier {
   affiliateId: number | null;
   fileDossierId: number;
