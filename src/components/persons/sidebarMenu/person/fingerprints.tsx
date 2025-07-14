@@ -5,7 +5,7 @@ import { Spinner } from "@heroui/spinner";
 import { Divider } from "@heroui/divider";
 
 import { Hands } from "./information";
-import { ModalFingerprints } from "./information/modalFingerprints";
+import { ModalFingerprints } from "./manage/modalRegisterFingerprints";
 
 import { usePerson } from "@/utils/context/PersonContext";
 import { getRegisteredFingerprints } from "@/api/person";
