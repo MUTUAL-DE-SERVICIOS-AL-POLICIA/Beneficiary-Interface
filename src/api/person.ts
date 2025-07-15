@@ -224,41 +224,36 @@ export const getBeneficiaries = async (id: string): Promise<ResponseData> => {
   }
 };
 
-export const postFingerprints = async (personId: number, fingerprints: any) => {
+export const postFingerprints = async (
+  personId: number,
+  body: {
+    personFingerprints: any[];
+    wsqFingerprints: any[];
+  },
+) => {
   try {
-    const response = await apiClient.POST("persons/createPersonFingerprint", {
-      personId,
-      fingerprints,
-    });
+    const response = await apiClient.POST(`persons/${personId}/createPersonFingerprint`, body);
+    const data = await response.json();
 
-    const { status } = response;
-    const responseData = await response.json();
-
-    if (status == 201) {
-      const { message } = responseData;
-
-      return {
-        error: false,
-        message,
-      };
-    }
-    if (status >= 400) {
+    if (!response.ok) {
       return {
         error: true,
-        message: "Error al registrar las huellas",
+        message: "Ocurrió un error al registrar las huellas",
+        data: response.statusText,
       };
     }
 
     return {
-      error: true,
-      message: "Ocurrió un error",
+      error: false,
+      message: data.message || "Huella(s) registradas exitosamente",
     };
   } catch (e: any) {
     console.error(e);
 
     return {
       error: true,
-      message: "Error al registrar las huellas",
+      message: "Error al obtener datos de la persona",
+      data: e.message,
     };
   }
 };

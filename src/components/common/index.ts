@@ -24,6 +24,9 @@ export {
   CollapseFalseIcon,
   CollapseTrueIcon,
   PersonsIcon,
+  FileDossiersIcon,
+  GarbageIcon,
+  CancelIcon,
 } from "./icons";
 export { InputCustom } from "./input";
 export { DateInputCustom } from "./dateInput";
@@ -31,3 +34,4 @@ export { CopyButton } from "./copyButton";
 export { title, subtitle } from "./primitives";
 export { ThemeSwitch } from "./theme-switch";
 export { AlertServer } from "./alertServer";
+export { ModalAlert } from "./modalAlert";
