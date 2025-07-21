@@ -33,7 +33,7 @@ export const Navbar = async () => {
               <div className="flex flex-col items-center text-center leading-tight">
                 <span className="font-bold text-md uppercase">HERRAMIENTA TECNOLÓGICA BENEFICIARIOS</span>
                 {(environment === "dev" || environment === "test") && (
-                  <span className="mt-1 text-xs font-medium text-white bg-red-500 px-2 py-0.5 rounded shadow-sm shadow-red-300 border border-white/20">
+                  <span className="mt-1 text-xs font-medium text-white bg-red-500 px-2 py-0.5 rounded-sm shadow-xs shadow-red-300 border border-white/20">
                     {environment === "test" ? "VERSIÓN DE PRUEBAS" : "VERSIÓN DE DESARROLLO"}
                   </span>
                 )}
