@@ -860,3 +860,47 @@ export const CancelIcon = (props: IconSvgProps) => {
     </svg>
   );
 };
+
+export const RegisterIcon = (props: IconSvgProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="currentColor"
+      focusable="false"
+      height="18px"
+      role="presentation"
+      viewBox="0 0 96 96"
+      width="18px"
+      {...props}
+    >
+      <g>
+        <path d="M66,42H54V30a6,6,0,0,0-12,0V42H30a6,6,0,0,0,0,12H42V66a6,6,0,0,0,12,0V54H66a6,6,0,0,0,0-12Z" />
+        <path d="M48,0A48,48,0,1,0,96,48,48.0512,48.0512,0,0,0,48,0Zm0,84A36,36,0,1,1,84,48,36.0393,36.0393,0,0,1,48,84Z" />
+      </g>
+    </svg>
+  );
+};
+
+export const EditIcon = (props: IconSvgProps) => {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="currentColor"
+      focusable="false"
+      height="18px"
+      role="presentation"
+      viewBox="0 0 24 24"
+      width="18px"
+      {...props}
+    >
+      <path
+        clipRule="evenodd"
+        d="m3.99 16.854-1.314 3.504a.75.75 0 0 0 .966.965l3.503-1.314a3 3 
+        0 0 0 1.068-.687L18.36 9.175s-.354-1.061-1.414-2.122c-1.06-1.06-2.122-1.414-2.122-1.414L4.677 15.786a3 3 0 0 0-.687 
+        1.068zm12.249-12.63 1.383-1.383c.248-.248.579-.406.925-.348.487.08 1.232.322 1.934 1.025.703.703.945 1.447 1.025 
+        1.934.058.346-.1.677-.348.925L19.774 7.76s-.353-1.06-1.414-2.12c-1.06-1.062-2.121-1.415-2.121-1.415z"
+        fillRule="evenodd"
+      />
+    </svg>
+  );
+};

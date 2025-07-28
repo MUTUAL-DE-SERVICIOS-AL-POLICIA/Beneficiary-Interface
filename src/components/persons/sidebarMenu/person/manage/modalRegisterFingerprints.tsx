@@ -3,14 +3,13 @@ import React, { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { addToast } from "@heroui/toast";
-import { Spinner } from "@heroui/spinner";
 import { Listbox, ListboxItem } from "@heroui/listbox";
 import { Divider } from "@heroui/divider";
-import { Tooltip } from "@heroui/tooltip";
 
 import { getAllFingerprintsIds } from "@/api/person";
 import { FingerprintCore, Fingerprint } from "@/utils/interfaces";
-import { TouchPulgarIcon, TouchIndiceIcon, TouchRegisterIcon } from "@/components/common";
+import { TouchPulgarIcon, TouchIndiceIcon } from "@/components";
+import { ButtonRegister, SpinnerLoading } from "@/components/common";
 import { captureOneFingerprint, captureTwoFingerprints } from "@/api/biometric";
 import { postFingerprints } from "@/api/person";
 import { usePerson } from "@/utils/context/PersonContext";
@@ -18,9 +17,10 @@ import { usePerson } from "@/utils/context/PersonContext";
 interface Props {
   onSelectFinger: (fingerName: string | undefined) => void;
   onRefreshFingerprints: () => Promise<void>;
+  isDisabled?: boolean;
 }
 
-export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Props) => {
+export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprints, isDisabled }: Props) => {
   const { person } = usePerson();
   const personId = person.id;
 
@@ -231,48 +231,30 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
 
   return (
     <>
-      {loadingSaved && (
-        <>
-          <div className="absolute top-[15%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded-sm min-w-[1000px] text-center">
-              Guardando ...
-            </span>
-          </div>
-          <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded-sm min-w-[1000px] text-center">
-              Huella(s) capturada(s)
-            </span>
-          </div>
-        </>
-      )}
-      {loadingRegister && (
-        <>
-          <div className="absolute top-[15%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded-sm min-w-[1000px] text-center">
-              Registrando ...
-            </span>
-          </div>
-          <div className="absolute top-[65%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <Spinner
-              classNames={{
-                label:
-                  "text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded-sm min-w-[1000px] text-center",
-              }}
-              color="success"
-              label="Coloque el/los dedos seleccionado(s) en el sensor biométrico"
-              size="lg"
-              variant="spinner"
-            />
-          </div>
-        </>
-      )}
+      <SpinnerLoading
+        isTextSpinner
+        isTextTop
+        isLoading={loadingSaved}
+        labelSpinner="Huella(s) capturada(s)"
+        labelTop="Guardando ..."
+        topSpinner="top-[65%]"
+      />
 
-      <Tooltip content="Nueva huella">
-        <Button disabled={loadingSaved || loadingRegister} isLoading={loading} onPress={getFingerprints}>
-          REGISTRAR
-          <TouchRegisterIcon />
-        </Button>
-      </Tooltip>
+      <SpinnerLoading
+        isTextSpinner
+        isTextTop
+        isLoading={loadingRegister}
+        labelSpinner="Coloque el/los dedos seleccionado(s) en el sensor biométrico"
+        labelTop="Registrando ..."
+        topSpinner="top-[65%]"
+      />
+
+      <ButtonRegister
+        isDisabled={loadingSaved || loadingRegister || isDisabled}
+        isLoading={loading}
+        textTop="nueva huella"
+        onPress={getFingerprints}
+      />
 
       <Modal isDismissable={false} isOpen={isOpen} size="md" onClose={onClose}>
         <ModalContent>

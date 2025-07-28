@@ -1,30 +1,30 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { addToast } from "@heroui/toast";
-import { Spinner } from "@heroui/spinner";
 
-import { FileDossier } from "./information";
-import { ManageFileDossier } from "./manage";
+import { ModalRegisterFileDossier } from "./manage";
 
 import { usePerson } from "@/utils/context/PersonContext";
 import { getAffiliateShowFileDossiers } from "@/api/affiliate";
+import { HeaderManage, CardActions, EmptyContent, SpinnerLoading, ViewerPdf } from "@/components/common";
+import { AffiliateFileDossier } from "@/utils/interfaces";
+import { deleteFileDossier, getViewFileDossier } from "@/api/affiliate";
 
 export const FileDossiers = () => {
   const [fileDossiers, setFileDossiers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingDocument, setLoadingDocument] = useState(false);
   const { affiliateId } = usePerson();
-  const [onEdit, setOnEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [activeFileDossierId, setActiveFileDossierId] = useState<number | null>(null);
 
   useEffect(() => {
     getFileDossiersAffiliate();
   }, []);
 
   const switchEdit = () => {
-    setOnEdit(!onEdit);
-  };
-
-  const canceledAll = () => {
-    setOnEdit(false);
+    setIsEdit(!isEdit);
   };
 
   const getFileDossiersAffiliate = async () => {
@@ -59,29 +59,113 @@ export const FileDossiers = () => {
     }
   };
 
+  const removeFileDossier = async (fileDossierId: number) => {
+    try {
+      const { error, message } = await deleteFileDossier(affiliateId, String(fileDossierId));
+
+      if (error) {
+        addToast({
+          title: "Ocurrido un error",
+          description: message,
+          color: "danger",
+          timeout: 2000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        return;
+      }
+      setPdfBlob(null);
+      setActiveFileDossierId(null);
+      getFileDossiersAffiliate();
+      switchEdit();
+      addToast({
+        title: "Expediente eliminado",
+        description: message,
+        color: "success",
+        timeout: 2000,
+        shouldShowTimeoutProgress: true,
+      });
+
+      return;
+    } catch (error) {
+      console.error("Error al eliminar expediente:", error);
+    }
+  };
+
+  const viewTransition = async (fileDossierId: number) => {
+    try {
+      setLoadingDocument(true);
+      setActiveFileDossierId(fileDossierId);
+      const { error, message, data } = await getViewFileDossier(affiliateId, String(fileDossierId));
+
+      if (error) {
+        addToast({
+          title: "Ocurrió un error",
+          description: message,
+          color: "danger",
+          timeout: 2000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        return;
+      }
+
+      setPdfBlob(data);
+    } catch (error) {
+      console.error("Error al obtener el expediente:", error);
+    } finally {
+      setLoadingDocument(false);
+    }
+  };
+
+  const renderContent = () => {
+    if (loadingDocument) return <SpinnerLoading isLoading />;
+    if (pdfBlob) return <ViewerPdf blob={pdfBlob} />;
+
+    return <EmptyContent text="SELECCIONA UN EXPEDIENTE PARA VISUALIZAR" />;
+  };
+
   return (
-    <div className="relative flex flex-col h-full w-full">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <Spinner color="success" size="lg" variant="spinner" />
-        </div>
-      )}
-      <ManageFileDossier
+    <div className="relative flex flex-col h-full w-full min-h-0">
+      <SpinnerLoading isLoading={loading} />
+
+      <HeaderManage
         toEdit
         toRegister
-        existFileDossiers={fileDossiers.length > 0}
+        componentRegister={
+          <ModalRegisterFileDossier isDisabled={isEdit} onRefreshFileDossiers={getFileDossiersAffiliate} />
+        }
+        isEdit={isEdit}
         switchEdit={switchEdit}
-        onCancel={canceledAll}
-        onEdit={onEdit}
-        onRefreshFileDossiers={getFileDossiersAffiliate}
       />
+
       <div className="flex gap-1 flex-1 min-h-0">
-        <FileDossier
-          fileDossiers={fileDossiers}
-          onCancel={canceledAll}
-          onEdit={onEdit}
-          onRefreshFileDossiers={getFileDossiersAffiliate}
-        />
+        <div className="flex flex-col w-[52%] gap-y-1 overflow-y-auto">
+          {fileDossiers.length > 0 ? (
+            fileDossiers.map((fileDossier: AffiliateFileDossier, key) => (
+              <CardActions
+                key={key}
+                activeId={String(activeFileDossierId)}
+                dataId={String(fileDossier.fileDossierId)}
+                isEdit={isEdit}
+                isLoading={loadingDocument}
+                removeData={() => removeFileDossier(fileDossier.fileDossierId)}
+                sizeTextBody="text-xl"
+                textActive="VISUALIZANDO"
+                textBody={`${fileDossier.name}`}
+                textHeader={`${fileDossier.shortened}`}
+                textHover="VISUALIZAR"
+                textLoading="CARGANDO..."
+                onDelete
+                onPress={() => viewTransition(fileDossier.fileDossierId)}
+              />
+            ))
+          ) : (
+            <EmptyContent text="NO EXISTEN EXPEDIENTES REGISTRADOS" />
+          )}
+        </div>
+
+        <div className="relative w-[48%] border-l pl-2 h-full">{renderContent()}</div>
       </div>
     </div>
   );
