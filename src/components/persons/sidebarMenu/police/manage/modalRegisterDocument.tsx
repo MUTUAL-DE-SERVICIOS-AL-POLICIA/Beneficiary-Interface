@@ -1,6 +1,5 @@
 import { Button } from "@heroui/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/modal";
-import { Tooltip } from "@heroui/tooltip";
 import { useState } from "react";
 import { addToast } from "@heroui/toast";
 import { Input } from "@heroui/input";
@@ -10,13 +9,14 @@ import { Form } from "@heroui/form";
 import { Document as DocumentInterface } from "@/utils/interfaces";
 import { usePerson } from "@/utils/context/PersonContext";
 import { getDocuments, createUpdateDocument } from "@/api/affiliate";
-import { DocumentRegisterIcon } from "@/components/common";
+import { ButtonRegister } from "@/components/common";
 
 interface Props {
   onRefreshDocuments: () => Promise<void>;
+  isDisabled?: boolean;
 }
 
-export function ModalRegisterDocument({ onRefreshDocuments }: Props) {
+export function ModalRegisterDocument({ onRefreshDocuments, isDisabled }: Props) {
   const [loading, setLoading] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -109,12 +109,12 @@ export function ModalRegisterDocument({ onRefreshDocuments }: Props) {
 
   return (
     <>
-      <Tooltip content="Crear/Actualizar">
-        <Button endContent={<DocumentRegisterIcon />} isLoading={loading} onPress={getAllDocuments}>
-          REGISTRAR
-        </Button>
-      </Tooltip>
-
+      <ButtonRegister
+        isDisabled={isDisabled}
+        isLoading={loading}
+        textTop="crear/actualizar"
+        onPress={getAllDocuments}
+      />
       <Modal
         hideCloseButton
         isDismissable={false}
