@@ -4,7 +4,7 @@ import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 import { useRouter, usePathname } from "next/navigation";
 
-import { PersonsIcon, CollapseTrueIcon, CollapseFalseIcon } from "@/components/common";
+import { PersonsIcon, CollapseTrueIcon, CollapseFalseIcon } from "@/components";
 import { useSidebar } from "@/app/providers";
 
 export const SidebarRoot = () => {
