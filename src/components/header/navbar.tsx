@@ -1,13 +1,13 @@
-import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "@heroui/navbar";
 import { Link } from "@heroui/link";
-import React, { Suspense } from "react";
+import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "@heroui/navbar";
+import { Suspense } from "react";
 
-import { getDeployEnvironment } from "@/utils/env";
-import { Logo } from "@/components/common/icons";
 import { ThemeSwitch } from "@/components/common/theme-switch";
 import UserComponent from "@/components/header/user";
-import { urlLogin } from "@/utils/services";
+import { Logo } from "@/components/icons";
+import { getDeployEnvironment } from "@/utils/env";
 import { getUserCookie } from "@/utils/helpers/cookie";
+import { urlLogin } from "@/utils/services";
 
 export const Navbar = async () => {
   const { data } = await getUserCookie();
