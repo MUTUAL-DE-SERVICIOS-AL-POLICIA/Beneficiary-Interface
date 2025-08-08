@@ -28,4 +28,6 @@ export {
   CancelIcon,
   RegisterIcon,
   EditIcon,
+  ExpandIcon,
+  CollapseIcon,
 } from "./icons";
