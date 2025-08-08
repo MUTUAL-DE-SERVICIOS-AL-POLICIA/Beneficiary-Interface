@@ -13,3 +13,5 @@ export { SpinnerLoading } from "./spinnerLoading";
 export { CardActions } from "./cardActions";
 export { EmptyContent } from "./emptyContent";
 export { ViewerPdf } from "./viewerPdf";
+export { UserSession } from "./userSession";
+export { ButtonExpand } from "./buttonExpand";
