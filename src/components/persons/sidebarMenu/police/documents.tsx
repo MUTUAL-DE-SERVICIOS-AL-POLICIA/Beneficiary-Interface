@@ -7,7 +7,14 @@ import { ModalRegisterDocument } from "./manage";
 import { getAffiliateDocuments } from "@/api/affiliate";
 import { usePerson } from "@/utils/context/PersonContext";
 import { AffiliateDocument } from "@/utils/interfaces";
-import { HeaderManage, CardActions, EmptyContent, SpinnerLoading, ViewerPdf } from "@/components/common";
+import {
+  HeaderManage,
+  CardActions,
+  EmptyContent,
+  SpinnerLoading,
+  ViewerPdf,
+  ButtonExpand,
+} from "@/components/common";
 import { getViewDocument } from "@/api/affiliate";
 
 export const Documents = () => {
@@ -18,6 +25,8 @@ export const Documents = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [activeDocumentId, setActiveDocumentId] = useState<number | null>(null);
+  const [sizePdf, setSizePdf] = useState<string>("w-[48%] border-l pl-2");
+  const [sizeColumn, setSizeColumn] = useState<string>("w-[52%]");
 
   useEffect(() => {
     getDocumentsAffiliate();
@@ -74,9 +83,26 @@ export const Documents = () => {
       setLoadingDocument(false);
     }
   };
+
+  const handleResize = () => {
+    if (sizePdf === "w-[100%]") {
+      setSizePdf("w-[48%] border-l pl-2");
+      setSizeColumn("w-[52%]");
+    } else {
+      setSizePdf("w-[100%]");
+      setSizeColumn("w-[0%]");
+    }
+  };
+
   const renderContent = () => {
     if (loadingDocument) return <SpinnerLoading isLoading />;
-    if (pdfBlob) return <ViewerPdf blob={pdfBlob} />;
+    if (pdfBlob)
+      return (
+        <>
+          <ButtonExpand onPress={handleResize} />
+          <ViewerPdf blob={pdfBlob} />
+        </>
+      );
 
     return <EmptyContent text="SELECCIONA UN DOCUMENTO PARA VISUALIZAR" />;
   };
@@ -95,7 +121,7 @@ export const Documents = () => {
       />
 
       <div className="flex gap-1 flex-1 min-h-0">
-        <div className="flex flex-col w-[52%] gap-y-1 overflow-y-auto">
+        <div className={`flex flex-col gap-y-1 overflow-y-auto ${sizeColumn}`}>
           {documents.length > 0 ? (
             documents.map((document: AffiliateDocument, key) => (
               <CardActions
@@ -119,7 +145,7 @@ export const Documents = () => {
           )}
         </div>
 
-        <div className="relative w-[48%] border-l pl-2 h-full">{renderContent()}</div>
+        <div className={`relative h-full ${sizePdf}`}>{renderContent()}</div>
       </div>
     </div>
   );

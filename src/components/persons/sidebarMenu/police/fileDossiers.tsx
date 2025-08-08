@@ -6,7 +6,14 @@ import { ModalRegisterFileDossier } from "./manage";
 
 import { usePerson } from "@/utils/context/PersonContext";
 import { getAffiliateShowFileDossiers } from "@/api/affiliate";
-import { HeaderManage, CardActions, EmptyContent, SpinnerLoading, ViewerPdf } from "@/components/common";
+import {
+  HeaderManage,
+  CardActions,
+  EmptyContent,
+  SpinnerLoading,
+  ViewerPdf,
+  ButtonExpand,
+} from "@/components/common";
 import { AffiliateFileDossier } from "@/utils/interfaces";
 import { deleteFileDossier, getViewFileDossier } from "@/api/affiliate";
 
@@ -18,6 +25,8 @@ export const FileDossiers = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
   const [activeFileDossierId, setActiveFileDossierId] = useState<number | null>(null);
+  const [sizePdf, setSizePdf] = useState<string>("w-[48%] border-l pl-2");
+  const [sizeColumn, setSizeColumn] = useState<string>("w-[52%]");
 
   useEffect(() => {
     getFileDossiersAffiliate();
@@ -118,9 +127,25 @@ export const FileDossiers = () => {
     }
   };
 
+  const handleResize = () => {
+    if (sizePdf === "w-[100%]") {
+      setSizePdf("w-[48%] border-l pl-2");
+      setSizeColumn("w-[52%]");
+    } else {
+      setSizePdf("w-[100%]");
+      setSizeColumn("w-[0%]");
+    }
+  };
+
   const renderContent = () => {
     if (loadingDocument) return <SpinnerLoading isLoading />;
-    if (pdfBlob) return <ViewerPdf blob={pdfBlob} />;
+    if (pdfBlob)
+      return (
+        <>
+          <ButtonExpand onPress={handleResize} />
+          <ViewerPdf blob={pdfBlob} />
+        </>
+      );
 
     return <EmptyContent text="SELECCIONA UN EXPEDIENTE PARA VISUALIZAR" />;
   };
@@ -140,7 +165,7 @@ export const FileDossiers = () => {
       />
 
       <div className="flex gap-1 flex-1 min-h-0">
-        <div className="flex flex-col w-[52%] gap-y-1 overflow-y-auto">
+        <div className={`flex flex-col gap-y-1 overflow-y-auto ${sizeColumn}`}>
           {fileDossiers.length > 0 ? (
             fileDossiers.map((fileDossier: AffiliateFileDossier, key) => (
               <CardActions
@@ -165,7 +190,7 @@ export const FileDossiers = () => {
           )}
         </div>
 
-        <div className="relative w-[48%] border-l pl-2 h-full">{renderContent()}</div>
+        <div className={`relative h-full ${sizePdf}`}>{renderContent()}</div>
       </div>
     </div>
   );
