@@ -1,10 +1,10 @@
 "use client";
 
-import { Tooltip } from "@heroui/tooltip";
 import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 import { useCallback } from "react";
 
-import { CopyIcon } from "@/components/common/icons";
+import { CopyIcon } from "@/components/icons";
 
 interface CopyButtonProps {
   text: string;

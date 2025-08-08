@@ -1,6 +1,5 @@
 import { Button } from "@heroui/button";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/modal";
-import { Tooltip } from "@heroui/tooltip";
 import { useState } from "react";
 import { addToast } from "@heroui/toast";
 import { Input } from "@heroui/input";
@@ -13,13 +12,14 @@ import { FileDossier as FileDossierInterface } from "@/utils/interfaces";
 import { usePerson } from "@/utils/context/PersonContext";
 import { getAllFileDossiers, postCreateUpdateFileDossier } from "@/api/affiliate";
 import { postUploadChunk } from "@/api/common";
-import { DocumentRegisterIcon } from "@/components/common";
+import { ButtonRegister } from "@/components/common";
 
 interface ModalProps {
   onRefreshFileDossiers: () => Promise<void>;
+  isDisabled?: boolean;
 }
 
-export function ModalRegisterFileDossier({ onRefreshFileDossiers }: ModalProps) {
+export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: ModalProps) {
   const [loading, setLoading] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -149,12 +149,12 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers }: ModalProps) 
 
   return (
     <>
-      <Tooltip content="Crear/Actualizar">
-        <Button endContent={<DocumentRegisterIcon />} isLoading={loading} onPress={getFileDossiers}>
-          REGISTRAR
-        </Button>
-      </Tooltip>
-
+      <ButtonRegister
+        isDisabled={isDisabled}
+        isLoading={loading}
+        textTop="crear/actualizar"
+        onPress={getFileDossiers}
+      />
       <Modal
         hideCloseButton
         isDismissable={false}

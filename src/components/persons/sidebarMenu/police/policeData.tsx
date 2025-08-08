@@ -1,5 +1,4 @@
 "use client";
-import { Spinner } from "@heroui/spinner";
 import { useEffect, useState } from "react";
 
 import { Derelict, Entry, Service, State } from "./information";
@@ -7,6 +6,7 @@ import { Derelict, Entry, Service, State } from "./information";
 import { getAffiliate } from "@/api/affiliate";
 import { usePerson } from "@/utils/context/PersonContext";
 import { initialPoliceData } from "@/utils/types";
+import { SpinnerLoading } from "@/components/common";
 
 export const PoliceData = () => {
   const [policeData, setPoliceData] = useState(initialPoliceData);
@@ -33,11 +33,8 @@ export const PoliceData = () => {
 
   return (
     <div className="relative h-full w-full">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <Spinner color="success" size="lg" variant="spinner" />
-        </div>
-      )}
+      <SpinnerLoading isLoading={loading} />
+
       <div className="flex gap-6">
         <Entry
           dateEntry={policeData?.dateEntry ?? "Sin registro"}

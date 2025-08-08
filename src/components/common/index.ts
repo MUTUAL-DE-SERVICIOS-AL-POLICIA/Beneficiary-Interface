@@ -1,33 +1,4 @@
 export { BreadcrumbsState } from "./breadcrumbsState";
-export {
-  MuserpolLogo,
-  Logo,
-  SearchIcon,
-  MoonFilledIcon,
-  SunFilledIcon,
-  VerticalDotsIcon,
-  PersonInfoIcon,
-  TouchIcon,
-  ChevronRightIcon,
-  PersonalDataIcon,
-  PoliceDataIcon,
-  DocumentsDataIcon,
-  AffiliateDataIcon,
-  BeneficiariesDataIcon,
-  TouchIndiceIcon,
-  TouchPulgarIcon,
-  CircleIcon,
-  TouchRegisterIcon,
-  DocumentRegisterIcon,
-  DocumentViewIcon,
-  DocumentEditIcon,
-  CollapseFalseIcon,
-  CollapseTrueIcon,
-  PersonsIcon,
-  FileDossiersIcon,
-  GarbageIcon,
-  CancelIcon,
-} from "./icons";
 export { InputCustom } from "./input";
 export { DateInputCustom } from "./dateInput";
 export { CopyButton } from "./copyButton";
@@ -35,3 +6,12 @@ export { title, subtitle } from "./primitives";
 export { ThemeSwitch } from "./theme-switch";
 export { AlertServer } from "./alertServer";
 export { ModalAlert } from "./modalAlert";
+export { ButtonRegister } from "./buttonRegister";
+export { ButtonEdit } from "./buttonEdit";
+export { HeaderManage } from "./headerManage";
+export { SpinnerLoading } from "./spinnerLoading";
+export { CardActions } from "./cardActions";
+export { EmptyContent } from "./emptyContent";
+export { ViewerPdf } from "./viewerPdf";
+export { UserSession } from "./userSession";
+export { ButtonExpand } from "./buttonExpand";

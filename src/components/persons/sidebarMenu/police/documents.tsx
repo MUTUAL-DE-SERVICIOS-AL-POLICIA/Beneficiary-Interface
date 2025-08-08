@@ -1,29 +1,39 @@
 "use client";
-import { Spinner } from "@heroui/spinner";
 import { useEffect, useState } from "react";
+import { addToast } from "@heroui/toast";
 
-import { Document } from "./information";
-import { ManageDocument } from "./manage";
+import { ModalRegisterDocument } from "./manage";
 
 import { getAffiliateDocuments } from "@/api/affiliate";
 import { usePerson } from "@/utils/context/PersonContext";
+import { AffiliateDocument } from "@/utils/interfaces";
+import {
+  HeaderManage,
+  CardActions,
+  EmptyContent,
+  SpinnerLoading,
+  ViewerPdf,
+  ButtonExpand,
+} from "@/components/common";
+import { getViewDocument } from "@/api/affiliate";
 
 export const Documents = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingDocument, setLoadingDocument] = useState(false);
   const { affiliateId } = usePerson();
-  const [onEdit, setOnEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [activeDocumentId, setActiveDocumentId] = useState<number | null>(null);
+  const [sizePdf, setSizePdf] = useState<string>("w-[48%] border-l pl-2");
+  const [sizeColumn, setSizeColumn] = useState<string>("w-[52%]");
 
   useEffect(() => {
     getDocumentsAffiliate();
   }, []);
 
   const switchEdit = () => {
-    setOnEdit(!onEdit);
-  };
-
-  const canceledAll = () => {
-    setOnEdit(false);
+    setIsEdit(!isEdit);
   };
 
   const getDocumentsAffiliate = async () => {
@@ -47,28 +57,95 @@ export const Documents = () => {
     }
   };
 
+  const viewTransition = async (documentId: number) => {
+    try {
+      setLoadingDocument(true);
+      setActiveDocumentId(documentId);
+
+      const { error, message, data } = await getViewDocument(affiliateId, String(documentId));
+
+      if (error) {
+        addToast({
+          title: "Ocurrió un error",
+          description: message,
+          color: "danger",
+          timeout: 2000,
+          shouldShowTimeoutProgress: true,
+        });
+
+        return;
+      }
+
+      setPdfBlob(data);
+    } catch (error) {
+      console.error("Error al obtener el expediente:", error);
+    } finally {
+      setLoadingDocument(false);
+    }
+  };
+
+  const handleResize = () => {
+    if (sizePdf === "w-[100%]") {
+      setSizePdf("w-[48%] border-l pl-2");
+      setSizeColumn("w-[52%]");
+    } else {
+      setSizePdf("w-[100%]");
+      setSizeColumn("w-[0%]");
+    }
+  };
+
+  const renderContent = () => {
+    if (loadingDocument) return <SpinnerLoading isLoading />;
+    if (pdfBlob)
+      return (
+        <>
+          <ButtonExpand onPress={handleResize} />
+          <ViewerPdf blob={pdfBlob} />
+        </>
+      );
+
+    return <EmptyContent text="SELECCIONA UN DOCUMENTO PARA VISUALIZAR" />;
+  };
+
   return (
     <div className="relative flex flex-col h-full w-full min-h-0">
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <Spinner color="success" size="lg" variant="spinner" />
-        </div>
-      )}
-      <ManageDocument
+      <SpinnerLoading isLoading={loading} />
+
+      <HeaderManage
         toRegister
-        existDocuments={documents.length > 0}
+        componentRegister={
+          <ModalRegisterDocument isDisabled={isEdit} onRefreshDocuments={getDocumentsAffiliate} />
+        }
+        isEdit={isEdit}
         switchEdit={switchEdit}
-        onCancel={canceledAll}
-        onEdit={onEdit}
-        onRefreshDocuments={getDocumentsAffiliate}
       />
+
       <div className="flex gap-1 flex-1 min-h-0">
-        <Document
-          documents={documents}
-          onCancel={canceledAll}
-          onEdit={onEdit}
-          onRefreshDocuments={getDocumentsAffiliate}
-        />
+        <div className={`flex flex-col gap-y-1 overflow-y-auto ${sizeColumn}`}>
+          {documents.length > 0 ? (
+            documents.map((document: AffiliateDocument, key) => (
+              <CardActions
+                key={key}
+                activeId={String(activeDocumentId)}
+                dataId={String(document.procedureDocumentId)}
+                height="min-h-[120px]"
+                isEdit={isEdit}
+                isLoading={loadingDocument}
+                sizeTextBody="text-sm"
+                textActive="VISUALIZANDO"
+                textBody={`${document.name}`}
+                textHeader={`${key + 1}. ${document.shortened}`}
+                textHover="VISUALIZAR"
+                textLoading="CARGANDO..."
+                onPress={() => viewTransition(document.procedureDocumentId)}
+              />
+            ))
+          ) : (
+            <EmptyContent text="NO EXISTEN EXPEDIENTES REGISTRADOS" />
+          )}
+        </div>
+
+        <div className={`relative h-full ${sizePdf}`}>{renderContent()}</div>
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-import { PersonInfoIcon, SearchIcon } from "@/components/common";
+import { PersonInfoIcon, SearchIcon } from "@/components";
 import { Column } from "@/utils/interfaces";
 
 interface PropsTable {
@@ -223,7 +223,7 @@ export const TableComponent = ({
           <label className="flex items-center text default-400 text-small">
             Filas por página:
             <select
-              className="text-default-700 text-small text-black dark:text-white"
+              className="text-default-700 text-small dark:text-white"
               disabled={isDisabled}
               value={rowsPerPage}
               onChange={onRowsPerPageChange}

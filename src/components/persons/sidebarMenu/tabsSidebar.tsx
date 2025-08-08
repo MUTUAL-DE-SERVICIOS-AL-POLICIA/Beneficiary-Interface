@@ -13,7 +13,7 @@ import {
   AffiliateDataIcon,
   BeneficiariesDataIcon,
   FileDossiersIcon,
-} from "@/components/common";
+} from "@/components";
 
 interface Props {
   tabSidebar: TabSidebar[];

@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 
-export const ViewerPdf = ({ blob }: { blob: Blob }) => {
+interface Props {
+  blob: Blob;
+}
+
+export const ViewerPdf = ({ blob }: Props) => {
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
