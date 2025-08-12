@@ -16,6 +16,7 @@ import {
 } from "@/components/common";
 import { AffiliateFileDossier } from "@/utils/interfaces";
 import { deleteFileDossier, getViewFileDossier } from "@/api/affiliate";
+import { getUserCookie } from "@/utils/helpers/cookie";
 
 export const FileDossiers = () => {
   const [fileDossiers, setFileDossiers] = useState([]);
@@ -27,13 +28,29 @@ export const FileDossiers = () => {
   const [activeFileDossierId, setActiveFileDossierId] = useState<number | null>(null);
   const [sizePdf, setSizePdf] = useState<string>("w-[48%] border-l pl-2");
   const [sizeColumn, setSizeColumn] = useState<string>("w-[52%]");
+  const [isPermissions, setIsPermissions] = useState(false);
+
+  const userPermissions = ["nmamani", "gromero", "lbautista"];
 
   useEffect(() => {
     getFileDossiersAffiliate();
+    getPermissions();
   }, []);
 
   const switchEdit = () => {
     setIsEdit(!isEdit);
+  };
+
+
+  const getPermissions = async () => {
+    const { data } = await getUserCookie();
+    const { username } = data;
+
+    if (userPermissions.includes(username)) {
+      setIsPermissions(true);
+    } else {
+      setIsPermissions(false);
+    }
   };
 
   const getFileDossiersAffiliate = async () => {
@@ -155,13 +172,13 @@ export const FileDossiers = () => {
       <SpinnerLoading isLoading={loading} />
 
       <HeaderManage
-        toEdit
-        toRegister
         componentRegister={
           <ModalRegisterFileDossier isDisabled={isEdit} onRefreshFileDossiers={getFileDossiersAffiliate} />
         }
         isEdit={isEdit}
         switchEdit={switchEdit}
+        toEdit={isPermissions}
+        toRegister={isPermissions}
       />
 
       <div className="flex gap-1 flex-1 min-h-0">
