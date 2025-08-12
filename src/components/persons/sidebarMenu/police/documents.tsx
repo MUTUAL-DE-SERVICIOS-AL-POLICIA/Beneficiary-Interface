@@ -1,26 +1,40 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Divider } from "@heroui/divider";
-import { Spinner } from "@heroui/spinner";
-import { addToast } from "@heroui/toast";
-import { Tooltip } from "@heroui/tooltip";
 import { useEffect, useState } from "react";
+import { addToast } from "@heroui/toast";
 
-import { Document } from "./information";
+import { ModalRegisterDocument } from "./manage";
 
 import { getAffiliateDocuments } from "@/api/affiliate";
-import { createUpdateDocument, getAllDocuments } from "@/api/document";
-import { DocumentRegisterIcon } from "@/components/common";
-import { ModalDocument } from "@/components/persons/sidebarMenu/police/information/modal-document";
 import { usePerson } from "@/utils/context/PersonContext";
+import { AffiliateDocument } from "@/utils/interfaces";
+import {
+  HeaderManage,
+  CardActions,
+  EmptyContent,
+  SpinnerLoading,
+  ViewerPdf,
+  ButtonExpand,
+} from "@/components/common";
+import { getViewDocument } from "@/api/affiliate";
 
 export const Documents = () => {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadingDocument, setLoadingDocument] = useState(false);
+  const { affiliateId } = usePerson();
+  const [isEdit, setIsEdit] = useState(false);
+  const [pdfBlob, setPdfBlob] = useState<Blob | null>(null);
+  const [activeDocumentId, setActiveDocumentId] = useState<number | null>(null);
+  const [sizePdf, setSizePdf] = useState<string>("w-[48%] border-l pl-2");
+  const [sizeColumn, setSizeColumn] = useState<string>("w-[52%]");
 
   useEffect(() => {
     getDocumentsAffiliate();
   }, []);
+
+  const switchEdit = () => {
+    setIsEdit(!isEdit);
+  };
 
   const getDocumentsAffiliate = async () => {
     try {
@@ -43,42 +57,18 @@ export const Documents = () => {
     }
   };
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [allDocuments, setAllDocuments] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { affiliateId } = usePerson();
-
-  const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
-
-  const handleDocumentRecord = async () => {
+  const viewTransition = async (documentId: number) => {
     try {
-      setIsLoading(true);
-      const { documents } = await getAllDocuments();
+      setLoadingDocument(true);
+      setActiveDocumentId(documentId);
 
-      setAllDocuments(documents);
-      toggleDialog();
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const registerFile = async (file: any, selectedKey: any) => {
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData();
-
-      formData.append("documentPdf", file);
-
-      const { error, message } = await createUpdateDocument(affiliateId, selectedKey, formData);
+      const { error, message, data } = await getViewDocument(affiliateId, String(documentId));
 
       if (error) {
         addToast({
-          title: "Ocurrió un problema",
+          title: "Ocurrió un error",
           description: message,
-          color: "warning",
+          color: "danger",
           timeout: 2000,
           shouldShowTimeoutProgress: true,
         });
@@ -86,64 +76,77 @@ export const Documents = () => {
         return;
       }
 
-      addToast({
-        title: "Aceptado",
-        description: message,
-        color: "success",
-        timeout: 2000,
-        shouldShowTimeoutProgress: true,
-      });
-      getDocumentsAffiliate();
+      setPdfBlob(data);
     } catch (error) {
-      console.log(error);
+      console.error("Error al obtener el expediente:", error);
     } finally {
-      setIsLoading(false);
-      toggleDialog();
+      setLoadingDocument(false);
     }
   };
 
-  return (
-    <>
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <Spinner
-            classNames={{ label: "text-foreground mt-4" }}
-            color="success"
-            size="lg"
-            variant="spinner"
-          />
-        </div>
-      )}
-      <div className="m-3 space-y-3">
-        <div className="flex justify-end items-center">
-          <Tooltip content="Nuevo documento">
-            <Button endContent={<DocumentRegisterIcon />} onPress={handleDocumentRecord}>
-              REGISTRAR
-            </Button>
-          </Tooltip>
-        </div>
-        <Divider className="bg-gray-400 mb-5 w-full" />
-        <div className="flex gap-1">
-          <div className="flex flex-col w-full">
-            {documents.length > 0 ? (
-              <Document affiliateId={affiliateId} documents={documents} />
-            ) : (
-              <div className="flex items-center justify-center w-full h-full text-gray-400 text-sm italic">
-                SIN DOCUMENTOS REGISTRADOS
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+  const handleResize = () => {
+    if (sizePdf === "w-[100%]") {
+      setSizePdf("w-[48%] border-l pl-2");
+      setSizeColumn("w-[52%]");
+    } else {
+      setSizePdf("w-[100%]");
+      setSizeColumn("w-[0%]");
+    }
+  };
 
-      <ModalDocument
-        action={registerFile}
-        data={allDocuments}
-        isUpdated={false}
-        loading={isLoading}
-        open={isDialogOpen}
-        onOpenChange={toggleDialog}
+  const renderContent = () => {
+    if (loadingDocument) return <SpinnerLoading isLoading />;
+    if (pdfBlob)
+      return (
+        <>
+          <ButtonExpand onPress={handleResize} />
+          <ViewerPdf blob={pdfBlob} />
+        </>
+      );
+
+    return <EmptyContent text="SELECCIONA UN DOCUMENTO PARA VISUALIZAR" />;
+  };
+
+  return (
+    <div className="relative flex flex-col h-full w-full min-h-0">
+      <SpinnerLoading isLoading={loading} />
+
+      <HeaderManage
+        toRegister
+        componentRegister={
+          <ModalRegisterDocument isDisabled={isEdit} onRefreshDocuments={getDocumentsAffiliate} />
+        }
+        isEdit={isEdit}
+        switchEdit={switchEdit}
       />
-    </>
+
+      <div className="flex gap-1 flex-1 min-h-0">
+        <div className={`flex flex-col gap-y-1 overflow-y-auto ${sizeColumn}`}>
+          {documents.length > 0 ? (
+            documents.map((document: AffiliateDocument, key) => (
+              <CardActions
+                key={key}
+                activeId={String(activeDocumentId)}
+                dataId={String(document.procedureDocumentId)}
+                height="min-h-[120px]"
+                isEdit={isEdit}
+                isLoading={loadingDocument}
+                sizeTextBody="text-sm"
+                textActive="VISUALIZANDO"
+                textBody={`${document.name}`}
+                textHeader={`${key + 1}. ${document.shortened}`}
+                textHover="VISUALIZAR"
+                textLoading="CARGANDO..."
+                onPress={() => viewTransition(document.procedureDocumentId)}
+              />
+            ))
+          ) : (
+            <EmptyContent text="NO EXISTEN EXPEDIENTES REGISTRADOS" />
+          )}
+        </div>
+
+        <div className={`relative h-full ${sizePdf}`}>{renderContent()}</div>
+      </div>
+    </div>
   );
 };

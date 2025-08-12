@@ -3,6 +3,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
 
+import { subtitle } from "./primitives";
+
 import { urlLogin } from "@/utils/services";
 
 export const BreadcrumbsState = () => {
@@ -24,22 +26,20 @@ export const BreadcrumbsState = () => {
   });
 
   return (
-    <div className="flex flex-col flex-wrap gap-4">
-      <Breadcrumbs underline="hover">
-        <BreadcrumbItem key="roles">
-          <Link href={urlLogin}>Inicio</Link>
-        </BreadcrumbItem>
+    <Breadcrumbs className={subtitle() + "w-full m-2"} underline="hover">
+      <BreadcrumbItem key="roles">
+        <Link href={urlLogin}>Inicio</Link>
+      </BreadcrumbItem>
 
-        {breadcrumbs.map((crumb, index) => {
-          const isCurrent = index === breadcrumbs.length - 1;
+      {breadcrumbs.map((crumb, index) => {
+        const isCurrent = index === breadcrumbs.length - 1;
 
-          return (
-            <BreadcrumbItem key={crumb.href} isCurrent={isCurrent}>
-              <Link href={crumb.href}>{crumb.label}</Link>
-            </BreadcrumbItem>
-          );
-        })}
-      </Breadcrumbs>
-    </div>
+        return (
+          <BreadcrumbItem key={crumb.href} isCurrent={isCurrent}>
+            <Link href={crumb.href}>{crumb.label}</Link>
+          </BreadcrumbItem>
+        );
+      })}
+    </Breadcrumbs>
   );
 };

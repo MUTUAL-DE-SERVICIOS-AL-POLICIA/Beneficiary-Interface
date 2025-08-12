@@ -3,14 +3,13 @@ import React, { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
 import { Button } from "@heroui/button";
 import { addToast } from "@heroui/toast";
-import { Spinner } from "@heroui/spinner";
 import { Listbox, ListboxItem } from "@heroui/listbox";
 import { Divider } from "@heroui/divider";
-import { Tooltip } from "@heroui/tooltip";
 
 import { getAllFingerprintsIds } from "@/api/person";
 import { FingerprintCore, Fingerprint } from "@/utils/interfaces";
-import { TouchPulgarIcon, TouchIndiceIcon, TouchRegisterIcon } from "@/components/common";
+import { TouchPulgarIcon, TouchIndiceIcon } from "@/components";
+import { ButtonRegister, SpinnerLoading } from "@/components/common";
 import { captureOneFingerprint, captureTwoFingerprints } from "@/api/biometric";
 import { postFingerprints } from "@/api/person";
 import { usePerson } from "@/utils/context/PersonContext";
@@ -18,9 +17,10 @@ import { usePerson } from "@/utils/context/PersonContext";
 interface Props {
   onSelectFinger: (fingerName: string | undefined) => void;
   onRefreshFingerprints: () => Promise<void>;
+  isDisabled?: boolean;
 }
 
-export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Props) => {
+export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprints, isDisabled }: Props) => {
   const { person } = usePerson();
   const personId = person.id;
 
@@ -57,7 +57,7 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
 
       return;
     } catch (error) {
-      console.error("Error al obtener usuarios del ldap:", error);
+      console.error("Error al obtener tipos de huellas:", error);
     } finally {
       setLoading(false);
       onOpen();
@@ -108,7 +108,22 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
         createFingerprint(rightFingerName, derecha.wsq, derecha.quality),
       ].filter(Boolean) as Fingerprint[];
 
-      const response = await postFingerprints(personId, fingerprints);
+      const personFingerprints: any = [];
+      const wsqFingerprints: any = [];
+
+      fingerprints.forEach((fingerprint) => {
+        personFingerprints.push({
+          fingerprintTypeId: fingerprint.fingerprintTypeId,
+          quality: fingerprint.quality,
+        });
+
+        wsqFingerprints.push({
+          fieldname: `file[${fingerprint.fingerprintTypeId}]`,
+          buffer: fingerprint.wsq,
+        });
+      });
+
+      const response = await postFingerprints(personId, { personFingerprints, wsqFingerprints });
 
       if (response.error) {
         addToast({
@@ -130,13 +145,13 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
         shouldShowTimeoutProgress: true,
       });
 
-      setLoadingSaved(false);
       await onRefreshFingerprints();
 
       return;
     } catch (e: any) {
       console.error(e);
     } finally {
+      setLoadingSaved(false);
       onSelectFinger(undefined);
     }
   };
@@ -167,15 +182,21 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
       setLoadingRegister(false);
       setLoadingSaved(true);
 
-      const dataFingerprints: Fingerprint[] = [
+      const personFingerprints: any[] = [
         {
           fingerprintTypeId,
-          wsq: data.wsq,
           quality: data.quality,
         },
       ];
 
-      const response = await postFingerprints(personId, dataFingerprints);
+      const wsqFingerprints: any[] = [
+        {
+          fieldname: `file[${fingerprintTypeId}]`,
+          buffer: data.wsq,
+        },
+      ];
+
+      const response = await postFingerprints(personId, { personFingerprints, wsqFingerprints });
 
       if (response.error) {
         addToast({
@@ -191,84 +212,49 @@ export const ModalFingerprints = ({ onSelectFinger, onRefreshFingerprints }: Pro
 
       addToast({
         title: "Aceptado",
-        description: "Huella registrada exitosamente",
+        description: response.message,
         color: "success",
         timeout: 2000,
         shouldShowTimeoutProgress: true,
       });
 
-      setLoadingSaved(false);
       await onRefreshFingerprints();
 
       return;
     } catch (e: any) {
       console.error(e);
     } finally {
+      setLoadingSaved(false);
       onSelectFinger(undefined);
     }
   };
 
   return (
     <>
-      {loading && (
-        <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <Spinner
-            classNames={{ label: "text-foreground mt-4" }}
-            color="success"
-            size="lg"
-            variant="spinner"
-          />
-        </div>
-      )}
-      {loadingSaved && (
-        <>
-          <div className="absolute top-[18%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center">
-              Guardando ...
-            </span>
-          </div>
-          <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <Spinner
-              classNames={{
-                label:
-                  "text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center",
-              }}
-              color="success"
-              label="Huella(s) capturada(s)"
-              size="lg"
-              variant="spinner"
-            />
-          </div>
-        </>
-      )}
-      {loadingRegister && (
-        <>
-          <div className="absolute top-[18%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <span className="text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center">
-              Registrando ...
-            </span>
-          </div>
-          <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <Spinner
-              classNames={{
-                label:
-                  "text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded min-w-[1000px] text-center",
-              }}
-              color="success"
-              label="Coloque el/los dedos seleccionado(s) en el sensor biométrico"
-              size="lg"
-              variant="spinner"
-            />
-          </div>
-        </>
-      )}
+      <SpinnerLoading
+        isTextSpinner
+        isTextTop
+        isLoading={loadingSaved}
+        labelSpinner="Huella(s) capturada(s)"
+        labelTop="Guardando ..."
+        topSpinner="top-[65%]"
+      />
 
-      <Tooltip content="Nueva huella">
-        <Button disabled={loadingSaved || loadingRegister} onPress={getFingerprints}>
-          REGISTRAR
-          <TouchRegisterIcon />
-        </Button>
-      </Tooltip>
+      <SpinnerLoading
+        isTextSpinner
+        isTextTop
+        isLoading={loadingRegister}
+        labelSpinner="Coloque el/los dedos seleccionado(s) en el sensor biométrico"
+        labelTop="Registrando ..."
+        topSpinner="top-[65%]"
+      />
+
+      <ButtonRegister
+        isDisabled={loadingSaved || loadingRegister || isDisabled}
+        isLoading={loading}
+        textTop="nueva huella"
+        onPress={getFingerprints}
+      />
 
       <Modal isDismissable={false} isOpen={isOpen} size="md" onClose={onClose}>
         <ModalContent>

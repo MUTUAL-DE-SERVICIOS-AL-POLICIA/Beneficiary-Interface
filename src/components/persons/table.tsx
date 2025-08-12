@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 
-import { PersonInfoIcon, SearchIcon } from "@/components/common";
+import { PersonInfoIcon, SearchIcon } from "@/components";
 import { Column } from "@/utils/interfaces";
 
 interface PropsTable {
@@ -25,6 +25,8 @@ interface PropsTable {
   total: number;
   headerColumns: Column[];
   startPage: number;
+  startRowsMay: number;
+  startRowsMen: number;
   getData: (
     rowsPerPage: number,
     page?: number,
@@ -35,12 +37,21 @@ interface PropsTable {
   error: boolean;
 }
 
-export const TableComponent = ({ headerColumns, data, total, startPage, getData, error }: PropsTable) => {
+export const TableComponent = ({
+  headerColumns,
+  data,
+  total,
+  startPage,
+  startRowsMay,
+  startRowsMen,
+  getData,
+  error,
+}: PropsTable) => {
   const router = useRouter();
 
   const [filterValue, setFilterValue] = useState<string>("");
   const [page, setPage] = useState(startPage);
-  const [startRowsPerPage, setStartRowsPerPage] = useState(15);
+  const [startRowsPerPage, setStartRowsPerPage] = useState(startRowsMay);
   const [rowsPerPage, setRowsPerPage] = useState(startRowsPerPage);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "id",
@@ -74,11 +85,11 @@ export const TableComponent = ({ headerColumns, data, total, startPage, getData,
       const width = window.innerWidth;
 
       if (width >= 1536) {
-        setRowsPerPage(15);
-        setStartRowsPerPage(15);
+        setRowsPerPage(startRowsMay);
+        setStartRowsPerPage(startRowsMay);
       } else {
-        setRowsPerPage(8);
-        setStartRowsPerPage(8);
+        setRowsPerPage(startRowsMen);
+        setStartRowsPerPage(startRowsMen);
       }
     };
 
@@ -150,7 +161,7 @@ export const TableComponent = ({ headerColumns, data, total, startPage, getData,
     };
 
     return (
-      <div className="py-2 px-2 flex justify-between items-center" data-testid="pagination">
+      <div className="flex justify-between items-center" data-testid="pagination">
         <Pagination
           showControls
           classNames={classNames}
@@ -183,12 +194,6 @@ export const TableComponent = ({ headerColumns, data, total, startPage, getData,
     setPage(1);
   }, []);
 
-  const onClear = useCallback(() => {
-    setFilterValue("");
-    setFiltered(data);
-    setRowsPerPage(10);
-  }, [data]);
-
   const topContent = useMemo(() => {
     const classNames = {
       base: "w-full sm:max-w-[44%]",
@@ -207,7 +212,7 @@ export const TableComponent = ({ headerColumns, data, total, startPage, getData,
             startContent={<SearchIcon />}
             value={filterValue}
             variant="bordered"
-            onClear={onClear}
+            onClear={onSearchChange}
             onValueChange={onSearchChange}
           />
         </div>
@@ -218,7 +223,7 @@ export const TableComponent = ({ headerColumns, data, total, startPage, getData,
           <label className="flex items-center text default-400 text-small">
             Filas por página:
             <select
-              className="text-default-700 text-small text-black dark:text-white"
+              className="text-default-700 text-small dark:text-white"
               disabled={isDisabled}
               value={rowsPerPage}
               onChange={onRowsPerPageChange}
@@ -263,7 +268,7 @@ export const TableComponent = ({ headerColumns, data, total, startPage, getData,
 
   const classNames = useMemo(
     () => ({
-      wrapper: ["max-h-[382px]", "max-w-3xl"],
+      wrapper: ["max-h-[490]", "max-w-3xl"],
       th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
       td: [
         "group-data-[first=true]:first:before:rounded-none",

@@ -12,7 +12,8 @@ import {
   DocumentsDataIcon,
   AffiliateDataIcon,
   BeneficiariesDataIcon,
-} from "@/components/common";
+  FileDossiersIcon,
+} from "@/components";
 
 interface Props {
   tabSidebar: TabSidebar[];
@@ -32,10 +33,10 @@ export const TabsSidebar = ({ tabSidebar }: Props) => {
 
   const verticalTabStyles = {
     tabList: "flex w-full",
-    cursor: "w-full bg-green-800",
-    tab: "w-full px-0 h-10 border-b border-gray-400",
+    cursor: "w-full bg-green-900",
+    tab: "w-full px-0 h-9 border-gray-400",
     tabContent:
-      "flex items-center justify-start gap-2 text-left text-black-700 w-full group-data-[selected=true]:text-green-800 group-data-[selected=true]:font-bold",
+      "flex items-center justify-start gap-2 text-left text-black-900 w-full group-data-[selected=true]:text-green-900 group-data-[selected=true]:font-bold group-data-[selected=true]:bg-green-100 group-data-[selected=true]:rounded-lg group-data-[selected=true]:text-lg",
   };
 
   const iconsMap: Record<string, React.ComponentType<any>> = {
@@ -45,39 +46,37 @@ export const TabsSidebar = ({ tabSidebar }: Props) => {
     DocumentsDataIcon,
     AffiliateDataIcon,
     BeneficiariesDataIcon,
+    FileDossiersIcon,
   };
 
   return (
-    <div className="flex w-full flex-col">
-      <Tabs
-        aria-label="Options"
-        className="w-full"
-        classNames={verticalTabStyles}
-        color="primary"
-        isVertical={true}
-        selectedKey={currentTab}
-        variant="underlined"
-        onSelectionChange={(key) => handleTabChange(String(key))}
-      >
-        {tabSidebar.map((tab) => {
-          const IconComponent = iconsMap[tab.icon];
+    <Tabs
+      aria-label="Options"
+      className="w-full"
+      classNames={verticalTabStyles}
+      isVertical={true}
+      selectedKey={currentTab}
+      variant="underlined"
+      onSelectionChange={(key) => handleTabChange(String(key))}
+    >
+      {tabSidebar.map((tab) => {
+        const IconComponent = iconsMap[tab.icon];
 
-          return (
-            <Tab
-              key={tab.key}
-              title={
-                <div className="flex justify-between items-center w-full">
-                  <div className="flex items-center space-x-2">
-                    {IconComponent && <IconComponent />}
-                    <span>{tab.name}</span>
-                  </div>
-                  <ChevronRightIcon className="text-xl" />
+        return (
+          <Tab
+            key={tab.key}
+            title={
+              <div className="flex justify-between items-center w-full">
+                <div className="flex items-center space-x-2">
+                  {IconComponent && <IconComponent />}
+                  <span>{tab.name}</span>
                 </div>
-              }
-            />
-          );
-        })}
-      </Tabs>
-    </div>
+                <ChevronRightIcon className="text-2xl" />
+              </div>
+            }
+          />
+        );
+      })}
+    </Tabs>
   );
 };

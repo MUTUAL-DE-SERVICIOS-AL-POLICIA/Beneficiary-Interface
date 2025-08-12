@@ -1,20 +1,21 @@
 "use client";
 import { addToast } from "@heroui/toast";
 import { useEffect, useState } from "react";
-import { Spinner } from "@heroui/spinner";
-import { Divider } from "@heroui/divider";
 
 import { Hands } from "./information";
-import { ModalFingerprints } from "./information/modalFingerprints";
+import { ModalRegisterFingerprints } from "./manage";
 
+import { HeaderManage } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
 import { getRegisteredFingerprints } from "@/api/person";
 import { Fingerprint } from "@/utils/interfaces";
+import { SpinnerLoading } from "@/components/common";
 
 export const Fingerprints = () => {
   const [selectedFinger, setSelectedFinger] = useState<string | undefined>(undefined);
   const [registeredFingerprints, setRegisteredFingerprints] = useState<Fingerprint[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const { person } = usePerson();
   const personId = person.id;
@@ -22,6 +23,10 @@ export const Fingerprints = () => {
   useEffect(() => {
     getFingerprints();
   }, []);
+
+  const switchEdit = () => {
+    setIsEdit(!isEdit);
+  };
 
   const getFingerprints = async () => {
     setLoading(true);
@@ -48,22 +53,25 @@ export const Fingerprints = () => {
   };
 
   return (
-    <>
-      {loading && (
-        <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-          <Spinner color="success" size="lg" variant="spinner" />
-        </div>
-      )}
-      <div className="m-3 space-y-3 ">
-        <div className="flex justify-end items-center">
-          <ModalFingerprints onRefreshFingerprints={getFingerprints} onSelectFinger={setSelectedFinger} />
-        </div>
-        <Divider className="bg-gray-400 w-full" />
-        <div className="flex justify-center" />
-        <div className="flex justify-center items-center">
-          <Hands fingerprints={[...registeredFingerprints]} selectedOption={selectedFinger} />
-        </div>
+    <div className="relative h-full w-full">
+      <SpinnerLoading isLoading={loading} />
+
+      <HeaderManage
+        toRegister
+        componentRegister={
+          <ModalRegisterFingerprints
+            isDisabled={isEdit}
+            onRefreshFingerprints={getFingerprints}
+            onSelectFinger={setSelectedFinger}
+          />
+        }
+        isEdit={isEdit}
+        switchEdit={switchEdit}
+      />
+
+      <div className="flex justify-center items-center p-2">
+        <Hands fingerprints={[...registeredFingerprints]} selectedOption={selectedFinger} />
       </div>
-    </>
+    </div>
   );
 };

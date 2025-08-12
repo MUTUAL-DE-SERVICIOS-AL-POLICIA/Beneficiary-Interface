@@ -20,6 +20,7 @@ export const Sidebar = ({ user, features }: Props) => {
   const police = [
     { name: "DATOS POLICIALES", key: "policeData", icon: "PoliceDataIcon" },
     { name: "DOCUMENTOS", key: "documents", icon: "DocumentsDataIcon" },
+    { name: "EXPEDIENTES", key: "fileDossiers", icon: "FileDossiersIcon" },
   ];
 
   const beneficiaries = [{ name: "BENEFICIARIOS", key: "beneficiaries", icon: "BeneficiariesDataIcon" }];

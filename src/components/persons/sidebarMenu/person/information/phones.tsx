@@ -1,10 +1,10 @@
 import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/drawer";
 import { useDisclosure } from "@heroui/modal";
+import { Tooltip } from "@heroui/tooltip";
 
-import { ContactsPhoneIcon, ContactsCellPhoneIcon } from "@/components/common/icons";
 import { InputCustom } from "@/components/common";
+import { ContactsCellPhoneIcon, ContactsPhoneIcon } from "@/components/icons";
 
 interface PhoneDisplayProps {
   label: string;
