@@ -2,39 +2,11 @@
 
 import { apiClient } from "@/utils/services";
 import { ResponseData } from "@/utils/interfaces";
-export const getAffiliateFileDossiers = async (): Promise<ResponseData> => {
-  try {
-    const response = await apiClient.GET(`affiliates/fileDossiers`);
-    const data = await response.json();
 
-    if (!response.ok) {
-      return {
-        error: true,
-        message: "Ocurrió un error",
-        data: response.statusText,
-      };
-    }
-
-    return {
-      error: false,
-      message: "Tipos de expedientes obtenido exitosamente",
-      data,
-    };
-  } catch (e: any) {
-    console.error(e);
-
-    return {
-      error: true,
-      message: "Error al obtener los tipos expedientes del afiliado",
-      statusDocuments: false,
-      affiliateDocuments: [],
-    };
-  }
-};
 
 export const getAffiliateShowFileDossiers = async (affiliateId: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`affiliates/${affiliateId}/showFileDossiers`);
+    const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/showFileDossiers`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -64,7 +36,7 @@ export const getAffiliateShowFileDossiers = async (affiliateId: string): Promise
 
 export const getAllFileDossiers = async (): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`affiliates/fileDossiers`);
+    const response = await apiClient.GET(`beneficiaries/fileDossiers`);
     const data = await response.json();
 
     if (!response.ok || !data.serviceStatus) {
@@ -99,7 +71,7 @@ export const postCreateUpdateFileDossier = async (
 ): Promise<ResponseData> => {
   try {
     const response = await apiClient.POST(
-      `affiliates/${affiliateId}/fileDossier/${fileDossierId}/createOrUpdateFileDossier`,
+      `beneficiaries/affiliates/${affiliateId}/fileDossier/${fileDossierId}/createOrUpdateFileDossier`,
       {
         initialName,
         totalChunks,
@@ -134,7 +106,7 @@ export const deleteFileDossier = async (
   fileDossierId: string,
 ): Promise<ResponseData> => {
   try {
-    const response = await apiClient.DELETE(`affiliates/${affiliateId}/fileDossiers/${fileDossierId}`);
+    const response = await apiClient.DELETE(`beneficiaries/affiliates/${affiliateId}/fileDossiers/${fileDossierId}`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -164,7 +136,7 @@ export const getViewFileDossier = async (
   fileDossierId: string,
 ): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`affiliates/${affiliateId}/fileDossiers/${fileDossierId}`);
+    const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/fileDossiers/${fileDossierId}`);
     const data = await response.blob();
 
     if (!response.ok) {

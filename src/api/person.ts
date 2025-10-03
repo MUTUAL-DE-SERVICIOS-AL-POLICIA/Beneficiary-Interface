@@ -11,7 +11,7 @@ export const getPersons = async (
   order?: string,
 ): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET("/persons", {
+    const response = await apiClient.GET("/beneficiaries/persons", {
       limit,
       page,
       ...(filter ? { filter } : {}),
@@ -60,7 +60,7 @@ export const getPersons = async (
 
 export const getPerson = async (uuid: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`persons/${uuid}/details`);
+    const response = await apiClient.GET(`beneficiaries/persons/${uuid}/details`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -89,7 +89,7 @@ export const getPerson = async (uuid: string): Promise<ResponseData> => {
 
 export const getRegisteredFingerprints = async (personId: number) => {
   try {
-    const response = await apiClient.GET(`persons/showPersonFingerprint/${personId}`);
+    const response = await apiClient.GET(`beneficiaries/persons/showPersonFingerprint/${personId}`);
     const { status } = response;
     const responseData = await response.json();
 
@@ -130,7 +130,7 @@ export const getRegisteredFingerprints = async (personId: number) => {
 
 export const getAllFingerprintsIds = async () => {
   try {
-    const response = await apiClient.GET(`persons/showListFingerprint`);
+    const response = await apiClient.GET(`beneficiaries/persons/showListFingerprint`);
     const { status } = response;
     const data = await response.json();
 
@@ -169,7 +169,7 @@ export const getAllFingerprintsIds = async () => {
 
 export const getAffiliates = async (id: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`persons/${id}/affiliates`);
+    const response = await apiClient.GET(`beneficiaries/persons/${id}/affiliates`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -197,7 +197,7 @@ export const getAffiliates = async (id: string): Promise<ResponseData> => {
 
 export const getBeneficiaries = async (id: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`persons/${id}/beneficiaries`);
+    const response = await apiClient.GET(`beneficiaries/persons/${id}/beneficiaries`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -232,7 +232,7 @@ export const postFingerprints = async (
   },
 ) => {
   try {
-    const response = await apiClient.POST(`persons/${personId}/createPersonFingerprint`, body);
+    const response = await apiClient.POST(`beneficiaries/persons/${personId}/createPersonFingerprint`, body);
     const data = await response.json();
 
     if (!response.ok) {
