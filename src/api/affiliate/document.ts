@@ -4,7 +4,7 @@ import { ResponseData } from "@/utils/interfaces";
 
 export const getDocuments = async (): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET("affiliates/documents");
+    const response = await apiClient.GET("beneficiaries/documents");
     const { data } = await response.json();
 
     if (!response.ok) {
@@ -38,7 +38,7 @@ export const createUpdateDocument = async (
 ): Promise<ResponseData> => {
   try {
     const response = await apiClient.POST(
-      `affiliates/${affiliateId}/document/${procedureId}/createOrUpdate`,
+      `beneficiaries/affiliates/${affiliateId}/document/${procedureId}/createOrUpdate`,
       body,
       true,
     );
@@ -66,7 +66,7 @@ export const createUpdateDocument = async (
 
 export const getAffiliateDocuments = async (affiliateId: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`affiliates/${affiliateId}/documents`);
+    const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/documents`);
     const data = await response.json();
 
     if (!response.ok) {
@@ -96,7 +96,7 @@ export const getAffiliateDocuments = async (affiliateId: string): Promise<Respon
 
 export const getViewDocument = async (affiliateId: string, documentId: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`affiliates/${affiliateId}/documents/${documentId}`);
+    const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/documents/${documentId}`);
     const data = await response.blob();
 
     if (!response.ok) {

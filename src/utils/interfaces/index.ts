@@ -43,7 +43,7 @@ export interface Person {
   accountNumber: string | null;
   sigepStatus: string | null;
   idPersonalSenasir: number | null;
-  dateLastContribution: Date | string | null;
+  dateLastContribution: Date | string | null; //Eliminar
   createdAt: Date | string | null;
   updatedAt: Date | string | null;
   deletedAt: Date | string | null;
