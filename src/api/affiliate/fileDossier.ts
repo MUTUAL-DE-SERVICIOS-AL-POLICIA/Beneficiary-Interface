@@ -3,7 +3,6 @@
 import { apiClient } from "@/utils/services";
 import { ResponseData } from "@/utils/interfaces";
 
-
 export const getAffiliateShowFileDossiers = async (affiliateId: string): Promise<ResponseData> => {
   try {
     const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/showFileDossiers`);
@@ -34,22 +33,22 @@ export const getAffiliateShowFileDossiers = async (affiliateId: string): Promise
   }
 };
 
-export const getAllFileDossiers = async (): Promise<ResponseData> => {
+export const getAllFileDossiers = async (affiliateId: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`beneficiaries/fileDossiers`);
+    const response = await apiClient.GET(`beneficiaries/affiliates/createFileDossier/${affiliateId}`);
     const data = await response.json();
 
-    if (!response.ok || !data.serviceStatus) {
+    if (!response.ok) {
       return {
         error: true,
-        message: `Ocurrió un error al obtener los expedientes del afiliado, service: ${data.serviceStatus}`,
+        message: `Ocurrió un error al obtener los expedientes del afiliado`,
         data: [],
       };
     }
 
     return {
-      error: false,
-      message: "Expedientes obtenidos exitosamente",
+      error: data.error,
+      message: data.message,
       data: data.data,
     };
   } catch (e: any) {
@@ -63,7 +62,7 @@ export const getAllFileDossiers = async (): Promise<ResponseData> => {
   }
 };
 
-export const postCreateUpdateFileDossier = async (
+export const createFileDossier = async (
   affiliateId: string,
   fileDossierId: string,
   initialName: string,
@@ -71,12 +70,54 @@ export const postCreateUpdateFileDossier = async (
 ): Promise<ResponseData> => {
   try {
     const response = await apiClient.POST(
-      `beneficiaries/affiliates/${affiliateId}/fileDossier/${fileDossierId}/createOrUpdateFileDossier`,
+      `beneficiaries/affiliates/${affiliateId}/fileDossier/${fileDossierId}`,
       {
         initialName,
         totalChunks,
       },
     );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Ocurrió un error al crear el expediente",
+        data: response.statusText,
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch (e: any) {
+    console.error(e);
+
+    return {
+      error: true,
+      message: "Error al crear el expediente",
+      data: e.message,
+    };
+  }
+};
+
+export const updateFileDossier = async (
+  affiliateId: string,
+  fileDossierId: string,
+  initialName: string,
+  totalChunks: number,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.PATCH(
+      `beneficiaries/affiliates/${affiliateId}/fileDossier/${fileDossierId}`,
+      {
+        initialName,
+        totalChunks,
+      },
+    );
+
+    const data = await response.json();
 
     if (!response.ok) {
       return {
@@ -87,8 +128,8 @@ export const postCreateUpdateFileDossier = async (
     }
 
     return {
-      error: false,
-      message: "Expediente creado o actualizado correctamente",
+      error: data.error,
+      message: data.message,
     };
   } catch (e: any) {
     console.error(e);
@@ -106,7 +147,9 @@ export const deleteFileDossier = async (
   fileDossierId: string,
 ): Promise<ResponseData> => {
   try {
-    const response = await apiClient.DELETE(`beneficiaries/affiliates/${affiliateId}/fileDossiers/${fileDossierId}`);
+    const response = await apiClient.DELETE(
+      `beneficiaries/affiliates/${affiliateId}/fileDossiers/${fileDossierId}`,
+    );
     const data = await response.json();
 
     if (!response.ok) {
@@ -136,7 +179,9 @@ export const getViewFileDossier = async (
   fileDossierId: string,
 ): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/fileDossiers/${fileDossierId}`);
+    const response = await apiClient.GET(
+      `beneficiaries/affiliates/${affiliateId}/fileDossiers/${fileDossierId}`,
+    );
     const data = await response.blob();
 
     if (!response.ok) {
