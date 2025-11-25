@@ -7,6 +7,7 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
   try {
     const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}`);
     const data = await response.json();
+
     if (!response.ok) {
       return {
         error: true,
