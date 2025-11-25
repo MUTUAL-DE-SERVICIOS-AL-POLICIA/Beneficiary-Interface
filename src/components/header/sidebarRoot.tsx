@@ -20,7 +20,7 @@ export const SidebarRoot = () => {
 
   return (
     <aside
-      className={`text-black transition-all duration-300 h-full border-r border-gray-200 dark:border-gray-700 flex flex-col ${
+      className={`text-black transition-all duration-300 h-full border-r border-gray-200 dark:border-gray-500 flex flex-col ${
         collapsed ? "w-14 items-center" : "w-60"
       }`}
     >
