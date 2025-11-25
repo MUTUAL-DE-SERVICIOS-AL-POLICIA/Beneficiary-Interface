@@ -2,22 +2,22 @@
 import { apiClient } from "@/utils/services";
 import { ResponseData } from "@/utils/interfaces";
 
-export const getDocuments = async (): Promise<ResponseData> => {
+export const getDocuments = async (affiliateId: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET("beneficiaries/documents");
+    const response = await apiClient.GET(`beneficiaries/affiliates/createDocument/${affiliateId}`);
     const { data } = await response.json();
 
     if (!response.ok) {
       return {
         error: true,
-        message: "Ocurrido un error al obtener los documentos",
+        message: "Ocurrió un error al obtener los datos necesarios para crear documentos",
         data,
       };
     }
 
     return {
       error: false,
-      message: "Documentos obtenidos exitosamente",
+      message: "Datos para creación de documentos obtenidos exitosamente",
       data,
     };
   } catch (e: any) {
@@ -31,35 +31,72 @@ export const getDocuments = async (): Promise<ResponseData> => {
   }
 };
 
-export const createUpdateDocument = async (
+export const createAffiliateDocument = async (
   affiliateId: string,
   procedureId: number,
   body: any,
 ): Promise<ResponseData> => {
   try {
     const response = await apiClient.POST(
-      `beneficiaries/affiliates/${affiliateId}/document/${procedureId}/createOrUpdate`,
+      `beneficiaries/affiliates/${affiliateId}/document/${procedureId}`,
       body,
       true,
     );
 
+    const data = await response.json();
+
     if (!response.ok) {
       return {
         error: true,
-        message: "Error al crear o actualizar un documento",
+        message: "Error al crear el documento",
       };
     }
 
     return {
-      error: false,
-      message: "Documento creado o actualizado correctamente",
+      error: data.error,
+      message: data.message,
     };
   } catch (e: any) {
     console.error(e);
 
     return {
       error: true,
-      message: "Error al crear o actualizar el documento",
+      message: "Error al crear el documento",
+    };
+  }
+};
+
+export const updateAffiliateDocument = async (
+  affiliateId: string,
+  procedureId: number,
+  body: any,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.PATCH(
+      `beneficiaries/affiliates/${affiliateId}/document/${procedureId}`,
+      body,
+      true,
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Error al actualizar el documento",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch (e: any) {
+    console.error(e);
+
+    return {
+      error: true,
+      message: "Error al actualizar el documento",
     };
   }
 };
@@ -119,6 +156,38 @@ export const getViewDocument = async (affiliateId: string, documentId: string): 
       error: true,
       message: "Error al obtener el expediente",
       data: e.message,
+    };
+  }
+};
+
+export const deleteDocument = async (
+  affiliateId: string,
+  procedureDocumentId: string,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.DELETE(
+      `beneficiaries/affiliates/${affiliateId}/documents/${procedureDocumentId}`,
+    );
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Ocurrido un error al eliminar el expediente",
+        data: response.statusText,
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch (e: any) {
+    console.error(e);
+
+    return {
+      error: true,
+      message: "Error al crear o actualizar el expediente",
     };
   }
 };
