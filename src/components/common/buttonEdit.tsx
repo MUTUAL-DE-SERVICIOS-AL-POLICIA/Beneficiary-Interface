@@ -1,22 +1,28 @@
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 
-import { EditIcon, CancelIcon } from "@/components";
+import { EditIcon } from "@/components";
 
-export interface Props {
+interface Props {
   onPress?: () => void;
-  isEdit?: boolean;
+  isDisabled?: boolean;
+  isLoading?: boolean;
 }
 
-export const ButtonEdit = ({ onPress = () => {}, isEdit = false }: Props) => {
+export const ButtonEdit = ({ onPress = () => {}, isDisabled = false, isLoading = false }: Props) => {
   return (
-    <Tooltip content={isEdit ? "desactivar modo edición" : "activar modo edición"}>
+    <Tooltip content="Editar">
       <Button
-        className={isEdit ? "bg-red-600 text-white" : ""}
-        endContent={isEdit ? <CancelIcon /> : <EditIcon />}
+        isIconOnly
+        color="primary"
+        isDisabled={isDisabled}
+        isLoading={isLoading}
+        radius="lg"
+        size="sm"
+        variant="flat"
         onPress={onPress}
       >
-        {isEdit ? "CANCELAR" : "EDITAR"}
+        <EditIcon />
       </Button>
     </Tooltip>
   );
