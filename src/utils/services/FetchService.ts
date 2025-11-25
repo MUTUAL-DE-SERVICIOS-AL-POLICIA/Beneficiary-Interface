@@ -51,6 +51,21 @@ export class FetchService extends APIConnection {
 
     return this.handleRequest(endpoint, requestConfig);
   }
+
+  async PATCH(endpoint: string, body: any, isFormData: boolean = false): Promise<any> {
+    const headers = isFormData ? null : "application/json";
+
+    const requestConfig = this.addInterceptors(
+      {
+        method: "PATCH",
+        credentials: "include",
+        body: isFormData ? body : JSON.stringify(body),
+      },
+      headers,
+    );
+
+    return this.handleRequest(endpoint, requestConfig);
+  }
   async DELETE(endpoint: string): Promise<any> {
     const requestConfig = this.addInterceptors({
       method: "DELETE",
