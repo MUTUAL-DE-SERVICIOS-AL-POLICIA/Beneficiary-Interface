@@ -13,78 +13,75 @@ import {
 } from "@heroui/table";
 import { addToast } from "@heroui/toast";
 import { Tooltip } from "@heroui/tooltip";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
+import { getPersons } from "@/api/person";
 import { PersonInfoIcon, SearchIcon } from "@/components";
 import { Column } from "@/utils/interfaces";
 
 interface PropsTable {
-  data: any;
-  total: number;
   headerColumns: Column[];
   startPage: number;
   startRowsMay: number;
   startRowsMen: number;
-  getData: (
-    rowsPerPage: number,
-    page?: number,
-    searchValue?: string | undefined,
-    orderBy?: string | undefined,
-    order?: string | undefined,
-  ) => Promise<any>;
-  error: boolean;
 }
 
-export const TableComponent = ({
-  headerColumns,
-  data,
-  total,
-  startPage,
-  startRowsMay,
-  startRowsMen,
-  getData,
-  error,
-}: PropsTable) => {
+export const TableComponent = ({ headerColumns, startPage, startRowsMay, startRowsMen }: PropsTable) => {
   const router = useRouter();
+  const pathname = usePathname();
 
-  const [filterValue, setFilterValue] = useState<string>("");
+  const [filterValue, setFilterValue] = useState("");
   const [page, setPage] = useState(startPage);
+  const [rowsPerPage, setRowsPerPage] = useState(
+    typeof window !== "undefined" && window.innerWidth >= 1536 ? startRowsMay : startRowsMen,
+  );
   const [startRowsPerPage, setStartRowsPerPage] = useState(startRowsMay);
-  const [rowsPerPage, setRowsPerPage] = useState(startRowsPerPage);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "id",
     direction: "ascending",
   });
-  const [filtered, setFiltered] = useState<Item[]>(data);
-  const [all, setAll] = useState<number>(Number.isFinite(total) ? total : 0);
-
-  type Item = (typeof data)[0];
-
-  const hasSearchFilter = Boolean(filterValue);
-  const pages = Math.ceil(all / rowsPerPage);
+  const [filtered, setFiltered] = useState<any[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
 
   const [debouncedFilterValue] = useDebounce(filterValue, 200);
+  const hasSearchFilter = Boolean(filterValue);
+  const totalPages = Math.ceil(totalItems / rowsPerPage);
+
+  const fetchData = useCallback(
+    async (options?: { page?: number; rows?: number; filter?: string }) => {
+      const p = options?.page ?? page;
+      const rpp = options?.rows ?? rowsPerPage;
+      const filter = options?.filter ?? (hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined);
+
+      const { error, persons, total } = await getPersons(
+        rpp,
+        p,
+        filter,
+        sortDescriptor.column.toString(),
+        sortDescriptor.direction === "ascending" ? "ASC" : "DESC",
+      );
+
+      if (error) {
+        addToast({
+          title: "Error",
+          description: "No se pudieron obtener los datos",
+          color: "danger",
+          timeout: 3500,
+          shouldShowTimeoutProgress: true,
+        });
+      }
+
+      setFiltered(persons);
+      setTotalItems(total || 0);
+    },
+    [debouncedFilterValue, page, rowsPerPage, sortDescriptor, hasSearchFilter],
+  );
 
   useEffect(() => {
-    if (error) {
-      addToast({
-        title: "Ocurrió un error",
-        description: "Error al obtener los datos",
-        color: "danger",
-        timeout: 2000,
-        shouldShowTimeoutProgress: true,
-      });
-    }
-
-    return;
-  }, [error]);
-  useEffect(() => {
-    const updateRowsPerPage = () => {
-      const width = window.innerWidth;
-
-      if (width >= 1536) {
+    const handleResize = () => {
+      if (window.innerWidth >= 1536) {
         setRowsPerPage(startRowsMay);
         setStartRowsPerPage(startRowsMay);
       } else {
@@ -93,226 +90,112 @@ export const TableComponent = ({
       }
     };
 
-    updateRowsPerPage();
-    window.addEventListener("resize", updateRowsPerPage);
+    handleResize();
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", updateRowsPerPage);
-  }, []);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [startRowsMay, startRowsMen]);
+
   useEffect(() => {
-    const fetchFilteredItems = async () => {
-      try {
-        const { persons, total } = await getData(
-          rowsPerPage,
-          page,
-          hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined,
-          sortDescriptor.column.toString(),
-          sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
-        );
+    fetchData();
+  }, [fetchData]);
 
-        setFiltered(persons);
-        setAll(Number.isFinite(total) ? total : 0);
-      } catch {
-        addToast({
-          title: "Ocurrió un error",
-          description: "Error al obtener los datos",
-          color: "danger",
-          timeout: 2000,
-          shouldShowTimeoutProgress: true,
-        });
-
-        return;
-      }
-    };
-
-    fetchFilteredItems();
-  }, [debouncedFilterValue, rowsPerPage, sortDescriptor]);
-
-  const handlePageChange = async (newPage: number) => {
-    try {
-      const searchValue = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
-      const { persons } = await getData(
-        rowsPerPage,
-        newPage,
-        searchValue,
-        sortDescriptor.column.toString(),
-        sortDescriptor.direction.toString() == "ascending" ? "ASC" : "DESC",
-      );
-
-      setFiltered(persons);
-      setPage(newPage);
-    } catch {
-      addToast({
-        title: "Ocurrió un error",
-        description: "Error al cambiar de página",
-        color: "danger",
-        timeout: 2000,
-        shouldShowTimeoutProgress: true,
-      });
-
-      return;
-    }
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
-  const bottomContent = useMemo(() => {
-    const classNames = {
-      wrapper: "gap-1",
-      cursor: "bg-foreground text-background font-bold w-15 text-small px-1 py-0",
-      item: "w-15 px-1 text-small",
-    };
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newRows = Number(e.target.value);
 
-    return (
-      <div className="flex justify-between items-center" data-testid="pagination">
-        <Pagination
-          showControls
-          classNames={classNames}
-          color="default"
-          page={page}
-          total={pages}
-          variant="light"
-          onChange={handlePageChange}
-        />
-      </div>
-    );
-  }, [page, pages, filterValue, rowsPerPage, sortDescriptor]);
-
-  const onRowsPerPageChange = useCallback(async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(newRows);
     setPage(1);
-    const newRowsPerPage = Number(e.target.value);
+  };
 
-    setRowsPerPage(Number(newRowsPerPage));
-    const { persons } = await getData(newRowsPerPage);
-
-    setFiltered(persons);
-  }, []);
-
-  const onSearchChange = useCallback((value?: string) => {
-    if (value) {
-      setFilterValue(value);
-    } else {
-      setFilterValue("");
-    }
+  const handleSearchChange = (value: string) => {
+    setFilterValue(value || "");
     setPage(1);
-  }, []);
+  };
 
-  const topContent = useMemo(() => {
-    const classNames = {
-      base: "w-full sm:max-w-[44%]",
-      inputWrapper: "border-1",
-    };
-    const isDisabled = all < rowsPerPage;
-
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 item-end">
-          <Input
-            isClearable
-            classNames={classNames}
-            placeholder="Buscar por nombres, apellidos o carnet de identidad"
-            size="sm"
-            startContent={<SearchIcon />}
-            value={filterValue}
-            variant="bordered"
-            onClear={onSearchChange}
-            onValueChange={onSearchChange}
-          />
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-700 text text-small">
-            Total: <b>{all}</b>
-          </span>
-          <label className="flex items-center text default-400 text-small">
-            Filas por página:
-            <select
-              className="text-default-700 text-small dark:text-white"
-              disabled={isDisabled}
-              value={rowsPerPage}
-              onChange={onRowsPerPageChange}
+  const renderCell = (item: any, columnKey: any) => {
+    if (columnKey === "actions") {
+      return (
+        <div className="flex justify-center gap-2">
+          <Tooltip content="Ver" placement="right">
+            <Button
+              isIconOnly
+              size="sm"
+              variant="bordered"
+              onPress={() => router.push(`${pathname}/${item.uuidColumn}`)}
             >
-              <option value={startRowsPerPage}>{startRowsPerPage}</option>
-              <option value={Math.ceil((startRowsPerPage * 2) / 10) * 10}>
-                {Math.ceil((startRowsPerPage * 2) / 10) * 10}
-              </option>
-              <option value={Math.ceil((startRowsPerPage * 3) / 10) * 10}>
-                {Math.ceil((startRowsPerPage * 3) / 10) * 10}
-              </option>
-            </select>
-          </label>
+              <PersonInfoIcon />
+            </Button>
+          </Tooltip>
         </div>
-      </div>
-    );
-  }, [filterValue, all, rowsPerPage]);
-
-  const renderCell = useCallback((item: Item, columnKey: any) => {
-    const cellValue = item[columnKey];
-
-    switch (columnKey) {
-      case "actions":
-        return (
-          <div className="relative flex justify-center gap-2">
-            <Tooltip content="ver" placement="right">
-              <Button
-                isIconOnly
-                size="sm"
-                variant="bordered"
-                onPress={() => router.push(`/persons/${item.uuidColumn}`)}
-              >
-                <PersonInfoIcon />
-              </Button>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return cellValue;
+      );
     }
-  }, []);
 
-  const classNames = useMemo(
-    () => ({
-      wrapper: ["max-h-[490]", "max-w-3xl"],
-      th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
-      td: [
-        "group-data-[first=true]:first:before:rounded-none",
-        "group-data-[first=true]:last:before:rounded-none",
-        "group-data-[middle=true]:before:rounded-none",
-        "group-data-[last=true]:first:before:rounded-none",
-        "group-data-[last=true]:last:before:rounded-none",
-      ],
-    }),
-    [],
-  );
+    return item[columnKey as keyof any];
+  };
 
   return (
     <Table
       isCompact
       removeWrapper
       aria-label="Table of content"
-      bottomContent={bottomContent}
-      bottomContentPlacement="outside"
-      classNames={classNames}
-      data-testid="persons-table"
+      bottomContent={<Pagination showControls page={page} total={totalPages} onChange={handlePageChange} />}
       selectionMode="single"
       shadow="lg"
       sortDescriptor={sortDescriptor}
-      topContent={topContent}
-      topContentPlacement="outside"
+      topContent={
+        <div className="flex flex-col gap-4">
+          <Input
+            isClearable
+            placeholder="Buscar por Carnet de Identidad, Nombres o Apellidos"
+            startContent={<SearchIcon />}
+            value={filterValue}
+            onClear={() => handleSearchChange("")}
+            onValueChange={handleSearchChange}
+          />
+          <div className="flex justify-between items-center">
+            <span>
+              Total: <b>{totalItems}</b>
+            </span>
+            <label className="flex items-center gap-2">
+              Filas por página:
+              <select
+                className="text-default-700 text-small dark:text-white"
+                value={rowsPerPage}
+                onChange={handleRowsPerPageChange}
+              >
+                <option value={startRowsPerPage}>{startRowsPerPage}</option>
+                <option value={Math.ceil((startRowsPerPage * 2) / 10) * 10}>
+                  {Math.ceil((startRowsPerPage * 2) / 10) * 10}
+                </option>
+                <option value={Math.ceil((startRowsPerPage * 3) / 10) * 10}>
+                  {Math.ceil((startRowsPerPage * 3) / 10) * 10}
+                </option>
+              </select>
+            </label>
+          </div>
+        </div>
+      }
       onSortChange={setSortDescriptor}
     >
       <TableHeader columns={headerColumns}>
         {(column: Column) => (
           <TableColumn
             key={column.key}
-            align={column.key == "identityCard" ? "end" : "start"}
+            align={column.key === "identityCard" ? "end" : "start"}
             allowsSorting={column.sortable}
-            className="text-default-900 font-semibold"
           >
             {column.name}
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"Sin datos"} items={[...filtered]}>
+      <TableBody emptyContent="Sin datos" items={filtered}>
         {(item: Column) => (
           <TableRow key={item.id}>
-            {(columnKey) => <TableCell className="text-default-600">{renderCell(item, columnKey)}</TableCell>}
+            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
           </TableRow>
         )}
       </TableBody>

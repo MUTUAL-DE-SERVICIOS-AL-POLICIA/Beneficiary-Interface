@@ -18,33 +18,21 @@ export const getPersons = async (
       ...(orderBy ? { orderBy } : {}),
       ...(order ? { order } : {}),
     });
-    const { status }: { status: number } = response;
-    const responseData = await response.json();
+    const data = await response.json();
 
-    if (status == 200) {
-      return {
-        error: false,
-        message: "Beneficiarios obtenidos exitosamente",
-        persons: responseData.persons,
-        total: responseData.total,
-      };
-    }
-    if (status >= 400) {
-      const { message }: { message: string } = responseData;
-
+    if (!response.ok) {
       return {
         error: true,
-        message: message,
-        persons: [],
-        total: 0,
+        message: "Ocurrió un error",
+        data: response.statusText,
       };
     }
 
     return {
-      error: true,
-      message: "Ocurrió un error",
-      persons: [],
-      total: 0,
+      error: false,
+      message: data.message,
+      persons: data.persons,
+      total: data.total,
     };
   } catch (e: any) {
     console.error(e);
@@ -82,6 +70,35 @@ export const getPerson = async (uuid: string): Promise<ResponseData> => {
     return {
       error: true,
       message: "Error al obtener datos de la persona",
+      data: e.message,
+    };
+  }
+};
+
+export const getPersonRecords = async (personId: string): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.GET(`beneficiaries/persons/records/${personId}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Ocurrió un error al obtener el historial de modificaciones",
+        data: response.statusText,
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+      data: data.data,
+    };
+  } catch (e: any) {
+    console.error(e);
+
+    return {
+      error: true,
+      message: "Error al obtener historial de modificaciones",
       data: e.message,
     };
   }
@@ -254,6 +271,33 @@ export const postFingerprints = async (
       error: true,
       message: "Error al obtener datos de la persona",
       data: e.message,
+    };
+  }
+};
+
+export const searchPerson = async (value: string, type: string) => {
+  try {
+    const response = await apiClient.GET(`beneficiaries/persons/search/${value}/${type}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Ocurrió un error al buscar a la persona",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+      data: data.data,
+    };
+  } catch (e: any) {
+    console.error(e);
+
+    return {
+      error: true,
+      message: "Error al buscar a la persona",
     };
   }
 };

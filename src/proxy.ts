@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-export const middleware = async () => {
+export const proxy = async () => {
   const cookieStore = await cookies();
   const cookie = cookieStore.get("msp");
   const token = cookie?.value;

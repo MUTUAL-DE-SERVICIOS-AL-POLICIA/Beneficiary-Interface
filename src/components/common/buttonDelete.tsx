@@ -1,7 +1,7 @@
 import { Button } from "@heroui/button";
 import { Tooltip } from "@heroui/tooltip";
 
-import { EditIcon } from "@/components";
+import { GarbageIcon } from "@/components";
 
 interface Props {
   onPress?: () => void;
@@ -9,12 +9,12 @@ interface Props {
   isLoading?: boolean;
 }
 
-export const ButtonEdit = ({ onPress = () => {}, isDisabled = false, isLoading = false }: Props) => {
+export const ButtonDelete = ({ onPress = () => {}, isDisabled = false, isLoading = false }: Props) => {
   return (
-    <Tooltip content="Editar">
+    <Tooltip content="Eliminar">
       <Button
         isIconOnly
-        color="primary"
+        color="danger"
         isDisabled={isDisabled}
         isLoading={isLoading}
         radius="lg"
@@ -22,7 +22,7 @@ export const ButtonEdit = ({ onPress = () => {}, isDisabled = false, isLoading =
         variant="flat"
         onPress={onPress}
       >
-        <EditIcon />
+        <GarbageIcon />
       </Button>
     </Tooltip>
   );

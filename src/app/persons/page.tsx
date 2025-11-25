@@ -1,6 +1,5 @@
 import { Card } from "@heroui/card";
 
-import { getPersons } from "@/api/person";
 import { TableComponent } from "@/components/persons";
 
 interface Column {
@@ -9,8 +8,8 @@ interface Column {
   name: string;
   sortable?: boolean;
 }
+
 export default async function Persons() {
-  const { error, persons, total } = await getPersons(10, 1, "", "id");
   const personTableHeaders: Column[] = [
     { id: 1, name: "PRIMER NOMBRE", key: "firstName", sortable: true },
     { id: 2, name: "SEGUNDO NOMBRE", key: "secondName", sortable: true },
@@ -22,17 +21,15 @@ export default async function Persons() {
   ];
 
   return (
-    <Card className="flex-1 rounded-small border-default-100 dark:border-default-200 p-2 h-full w-full overflow-y-auto">
-      <TableComponent
-        data={persons}
-        error={error}
-        getData={getPersons}
-        headerColumns={personTableHeaders}
-        startPage={1}
-        startRowsMay={14}
-        startRowsMen={7}
-        total={total}
-      />
-    </Card>
+    <section className="flex justify-center md:flex-row flex-wrap gap-1 h-[calc(100vh-90px)]">
+      <Card className="flex-1 rounded-small border-default-100 dark:border-default-200 p-2 h-full w-full overflow-y-auto">
+        <TableComponent
+          headerColumns={personTableHeaders}
+          startPage={1}
+          startRowsMay={14}
+          startRowsMen={10}
+        />
+      </Card>
+    </section>
   );
 }

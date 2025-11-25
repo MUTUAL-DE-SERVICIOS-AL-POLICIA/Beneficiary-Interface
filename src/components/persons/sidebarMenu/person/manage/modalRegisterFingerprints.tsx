@@ -1,26 +1,33 @@
 "use client";
-import React, { useState } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
 import { Button } from "@heroui/button";
-import { addToast } from "@heroui/toast";
-import { Listbox, ListboxItem } from "@heroui/listbox";
 import { Divider } from "@heroui/divider";
+import { Listbox, ListboxItem } from "@heroui/listbox";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { addToast } from "@heroui/toast";
+import { useState } from "react";
 
-import { getAllFingerprintsIds } from "@/api/person";
-import { FingerprintCore, Fingerprint } from "@/utils/interfaces";
-import { TouchPulgarIcon, TouchIndiceIcon } from "@/components";
-import { ButtonRegister, SpinnerLoading } from "@/components/common";
 import { captureOneFingerprint, captureTwoFingerprints } from "@/api/biometric";
 import { postFingerprints } from "@/api/person";
+import { TouchIndiceIcon, TouchPulgarIcon } from "@/components";
+import { SpinnerLoading } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
+import { Fingerprint, FingerprintCore } from "@/utils/interfaces";
 
 interface Props {
   onSelectFinger: (fingerName: string | undefined) => void;
   onRefreshFingerprints: () => Promise<void>;
-  isDisabled?: boolean;
+  isOpen?: boolean;
+  onClose: () => void;
+  dataRegister?: any[];
 }
 
-export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprints, isDisabled }: Props) => {
+export const ModalRegisterFingerprints = ({
+  onSelectFinger,
+  onRefreshFingerprints,
+  isOpen,
+  onClose,
+  dataRegister = [],
+}: Props) => {
   const { person } = usePerson();
   const personId = person.id;
 
@@ -29,47 +36,15 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
     { id: "Indices", name: "Índice izquierdo e Indice derecho" },
   ];
 
-  const [loading, setLoading] = useState(false);
   const [loadingRegister, setLoadingRegister] = useState(false);
   const [loadingSaved, setLoadingSaved] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [fingerprints, setFingerprints] = useState<FingerprintCore[]>([]);
-
-  const getFingerprints = async () => {
-    setLoading(true);
-    try {
-      const { error, message, data } = await getAllFingerprintsIds();
-
-      if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 2000,
-          shouldShowTimeoutProgress: true,
-        });
-        setFingerprints([]);
-
-        return;
-      }
-
-      setFingerprints(data);
-
-      return;
-    } catch (error) {
-      console.error("Error al obtener tipos de huellas:", error);
-    } finally {
-      setLoading(false);
-      onOpen();
-    }
-  };
 
   const createFingerprint = (
     fingerTypeName: string,
     wsq: string,
     quality: number,
   ): Fingerprint | undefined => {
-    const finger: any = fingerprints.find((finger: any) => finger.name.includes(fingerTypeName));
+    const finger: any = dataRegister?.find((finger: any) => finger.name.includes(fingerTypeName));
 
     return finger ? { fingerprintTypeId: finger.id, wsq, quality } : undefined;
   };
@@ -87,7 +62,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
           title: "Ocurrió un error al capturar las dos huellas",
           description: message,
           color: "warning",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
         setLoadingRegister(false);
@@ -103,7 +78,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
       const leftFingerName = isThumb ? "Pulgar Izquierdo" : "Índice Izquierdo";
       const rightFingerName = isThumb ? "Pulgar Derecho" : "Índice Derecho";
 
-      const fingerprints: Fingerprint[] = [
+      const dataRegister: Fingerprint[] = [
         createFingerprint(leftFingerName, izquierda.wsq, izquierda.quality),
         createFingerprint(rightFingerName, derecha.wsq, derecha.quality),
       ].filter(Boolean) as Fingerprint[];
@@ -111,7 +86,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
       const personFingerprints: any = [];
       const wsqFingerprints: any = [];
 
-      fingerprints.forEach((fingerprint) => {
+      dataRegister.forEach((fingerprint) => {
         personFingerprints.push({
           fingerprintTypeId: fingerprint.fingerprintTypeId,
           quality: fingerprint.quality,
@@ -130,7 +105,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
           title: "Ocurrido un error al guardar las dos huellas",
           description: response.message,
           color: "danger",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
 
@@ -141,7 +116,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
         title: "Aceptado",
         description: response.message,
         color: "success",
-        timeout: 2000,
+        timeout: 3500,
         shouldShowTimeoutProgress: true,
       });
 
@@ -171,7 +146,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
           title: "Ocurrió un error en la captura",
           description: message,
           color: "warning",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
         setLoadingRegister(false);
@@ -203,7 +178,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
           title: "Ocurrió un error al guardar la huella",
           description: response.message,
           color: "danger",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
 
@@ -214,7 +189,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
         title: "Aceptado",
         description: response.message,
         color: "success",
-        timeout: 2000,
+        timeout: 3500,
         shouldShowTimeoutProgress: true,
       });
 
@@ -246,14 +221,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
         isLoading={loadingRegister}
         labelSpinner="Coloque el/los dedos seleccionado(s) en el sensor biométrico"
         labelTop="Registrando ..."
-        topSpinner="top-[65%]"
-      />
-
-      <ButtonRegister
-        isDisabled={loadingSaved || loadingRegister || isDisabled}
-        isLoading={loading}
-        textTop="nueva huella"
-        onPress={getFingerprints}
+        topSpinner="top-[82%]"
       />
 
       <Modal isDismissable={false} isOpen={isOpen} size="md" onClose={onClose}>
@@ -309,7 +277,7 @@ export const ModalRegisterFingerprints = ({ onSelectFinger, onRefreshFingerprint
                     }}
                     onAction={(key) => handleOneFingerSelect(String(key))}
                   >
-                    {fingerprints.map((fingerprint) => {
+                    {dataRegister.map((fingerprint) => {
                       const isIndice = fingerprint.name.includes("Índice");
 
                       return (

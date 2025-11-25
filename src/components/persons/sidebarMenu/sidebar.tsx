@@ -32,7 +32,7 @@ export const Sidebar = ({ user, features }: Props) => {
       <CardHeader className="justify-center">
         <UserInfo isCopy isPolice={features.isPolice} user={user} />
       </CardHeader>
-      <Divider />
+      <Divider className="bg-gray-400 w-full" />
       <CardBody>
         <TabsSidebar tabSidebar={person} />
 
