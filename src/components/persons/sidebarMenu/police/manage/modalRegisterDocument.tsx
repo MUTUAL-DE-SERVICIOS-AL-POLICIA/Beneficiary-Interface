@@ -1,56 +1,39 @@
-import { Button } from "@heroui/button";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/modal";
-import { useState } from "react";
-import { addToast } from "@heroui/toast";
-import { Input } from "@heroui/input";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { Button } from "@heroui/button";
 import { Form } from "@heroui/form";
+import { Input } from "@heroui/input";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { addToast } from "@heroui/toast";
+import { useState } from "react";
 
-import { Document as DocumentInterface } from "@/utils/interfaces";
+import { createAffiliateDocument, updateAffiliateDocument } from "@/api/affiliate";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getDocuments, createUpdateDocument } from "@/api/affiliate";
-import { ButtonRegister } from "@/components/common";
+import { AffiliateDocument, Document as DocumentInterface } from "@/utils/interfaces";
 
 interface Props {
   onRefreshDocuments: () => Promise<void>;
-  isDisabled?: boolean;
+  isOpen?: boolean;
+  onClose: () => void;
+  isUpdate?: boolean;
+  affiliateDocument?: AffiliateDocument;
+  dataRegister?: any;
 }
 
-export function ModalRegisterDocument({ onRefreshDocuments, isDisabled }: Props) {
-  const [loading, setLoading] = useState(false);
+export function ModalRegisterDocument({
+  onRefreshDocuments,
+  isOpen,
+  onClose,
+  isUpdate = false,
+  affiliateDocument = undefined,
+  dataRegister = {
+    allData: [],
+    disableData: [],
+  },
+}: Props) {
   const [loadingSave, setLoadingSave] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [documents, setDocuments] = useState<any>([]);
   const { affiliateId } = usePerson();
   const [documentId, setDocumentId] = useState<any>(null);
-  const getAllDocuments = async () => {
-    setLoading(true);
-    try {
-      const { error, message, data } = await getDocuments();
 
-      if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 2000,
-          shouldShowTimeoutProgress: true,
-        });
-        setDocuments([]);
-
-        return;
-      }
-
-      setDocuments(data);
-
-      return;
-    } catch (error) {
-      console.error("Error al obtener los tipos de expedientes:", error);
-    } finally {
-      setLoading(false);
-      onOpen();
-    }
-  };
   const onSubmit = async (e: any) => {
     setLoadingSave(true);
     e.preventDefault();
@@ -63,7 +46,7 @@ export function ModalRegisterDocument({ onRefreshDocuments, isDisabled }: Props)
           title: "Ocurrió un error",
           description: "Archivo inválido",
           color: "danger",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
 
@@ -72,16 +55,31 @@ export function ModalRegisterDocument({ onRefreshDocuments, isDisabled }: Props)
 
       const formData = new FormData();
 
-      formData.append(`file[${documentId}]`, file);
+      let dataResponse: any = {};
+      let message = "";
+      let error = false;
 
-      const { error, message } = await createUpdateDocument(affiliateId, documentId, formData);
+      if (isUpdate && affiliateDocument) {
+        formData.append(`file[${affiliateDocument.procedureDocumentId}]`, file);
+        dataResponse = await updateAffiliateDocument(
+          affiliateId,
+          affiliateDocument.procedureDocumentId,
+          formData,
+        );
+      } else {
+        formData.append(`file[${documentId}]`, file);
+        dataResponse = await createAffiliateDocument(affiliateId, documentId, formData);
+      }
+
+      message = dataResponse.message;
+      error = dataResponse.error;
 
       if (error) {
         addToast({
           title: "Ocurrió un problema",
           description: message,
           color: "warning",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
 
@@ -92,7 +90,7 @@ export function ModalRegisterDocument({ onRefreshDocuments, isDisabled }: Props)
         title: "Aceptado",
         description: message,
         color: "success",
-        timeout: 2000,
+        timeout: 3500,
         shouldShowTimeoutProgress: true,
       });
       onRefreshDocuments();
@@ -109,12 +107,6 @@ export function ModalRegisterDocument({ onRefreshDocuments, isDisabled }: Props)
 
   return (
     <>
-      <ButtonRegister
-        isDisabled={isDisabled}
-        isLoading={loading}
-        textTop="crear/actualizar"
-        onPress={getAllDocuments}
-      />
       <Modal
         hideCloseButton
         isDismissable={false}
@@ -127,29 +119,49 @@ export function ModalRegisterDocument({ onRefreshDocuments, isDisabled }: Props)
           <ModalContent>
             {(onClose) => (
               <>
-                <ModalHeader className="flex flex-col">SELECCIONE DOCUMENTO</ModalHeader>
+                {isUpdate && affiliateDocument ? (
+                  <>
+                    <ModalHeader className="flex flex-col">ACTUALIZAR DOCUMENTO</ModalHeader>
+                  </>
+                ) : (
+                  <ModalHeader className="flex flex-col">SELECCIONE DOCUMENTO</ModalHeader>
+                )}
+
                 <ModalBody>
-                  <Autocomplete
-                    isRequired
-                    className="w-full"
-                    defaultItems={documents}
-                    label="Buscar documento"
-                    labelPlacement="inside"
-                    variant="bordered"
-                    onSelectionChange={setDocumentId}
-                  >
-                    {(document: DocumentInterface) => (
-                      <AutocompleteItem
-                        key={document.id}
-                        textValue={`(${document.shortened}): ${document.name}`}
-                      >
-                        <div className="text-small truncate">
-                          <span className="font-semibold">({document.shortened}): </span>
-                          <span>{document.name}</span>
-                        </div>
-                      </AutocompleteItem>
-                    )}
-                  </Autocomplete>
+                  {!isUpdate ? (
+                    <Autocomplete
+                      isRequired
+                      className="w-full"
+                      defaultItems={dataRegister.allData}
+                      disabledKeys={dataRegister.disableData}
+                      label="Buscar documento"
+                      labelPlacement="inside"
+                      variant="bordered"
+                      onSelectionChange={setDocumentId}
+                    >
+                      {(document: DocumentInterface) => (
+                        <AutocompleteItem
+                          key={document.id}
+                          textValue={`(${document.shortened}): ${document.name}`}
+                        >
+                          <div className="text-small truncate">
+                            <span className="font-semibold">({document.shortened}): </span>
+                            <span>{document.name}</span>
+                          </div>
+                        </AutocompleteItem>
+                      )}
+                    </Autocomplete>
+                  ) : (
+                    <p>
+                      {affiliateDocument && (
+                        <>
+                          <b>Nombre:</b> {affiliateDocument.name}
+                          <br />
+                          <b>Código:</b> {affiliateDocument.shortened}
+                        </>
+                      )}
+                    </p>
+                  )}
                   <Input isRequired name="documentPdf" type="file" />
                 </ModalBody>
                 <ModalFooter>

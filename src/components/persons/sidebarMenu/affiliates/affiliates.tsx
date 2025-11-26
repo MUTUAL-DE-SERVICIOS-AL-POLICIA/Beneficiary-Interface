@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Card } from "@heroui/card";
-import { useRouter } from "next/navigation";
 import { Spinner } from "@heroui/spinner";
 import { addToast } from "@heroui/toast";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { getAffiliates } from "@/api/person";
+import { UserInfo } from "@/components/persons/sidebarMenu";
 import { usePerson } from "@/utils/context/PersonContext";
 import { basicPersonInfo } from "@/utils/types";
-import { UserInfo } from "@/components/persons/sidebarMenu";
 
 export const Affiliates = () => {
   const router = useRouter();
@@ -32,7 +32,7 @@ export const Affiliates = () => {
           title: "Ocurrió un error",
           description: message,
           color: "danger",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
 
@@ -43,7 +43,7 @@ export const Affiliates = () => {
 
       return;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ export const Affiliates = () => {
             <Card
               key={index}
               isPressable
-              className="w-full border-small rounded-small border-default-200 dark:border-default-200 flex justify-center items-center"
+              className="w-full border-small rounded-small border-default-200 dark:border-default-400 flex justify-center items-center"
               onPress={() => {
                 router.push(`/persons/${item.uuidColumn}`);
               }}

@@ -6,7 +6,6 @@ import { Providers } from "./providers";
 
 import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
-import { BreadcrumbsState } from "@/components/common";
 import { SidebarRoot } from "@/components/header/sidebarRoot";
 import { getUserCookie } from "@/utils/helpers/cookie";
 import { getDeployEnvironment } from "@/utils/env";
@@ -43,10 +42,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
             <Navbar computerToolName={computerToolName} environment={environment} user={data} />
             <div className="flex flex-1 overflow-x-hidden">
               <SidebarRoot />
-              <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-neutral-950">
-                <BreadcrumbsState />
-                {children}
-              </main>
+              <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-neutral-950">{children}</main>
             </div>
             {/* <footer className="bg-red-600 text-white text-center py-2 text-sm">
               <span className="uppercase text-sm font-semibold">Versión de pruebas</span>

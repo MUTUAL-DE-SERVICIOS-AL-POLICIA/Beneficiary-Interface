@@ -1,12 +1,11 @@
 "use client";
 
-import { Button } from "@heroui/button";
 import { Card, CardBody } from "@heroui/card";
 import { useState } from "react";
 
-import { ModalAlert } from ".";
+import { ModalAlert } from "./modalAlert";
 
-import { GarbageIcon } from "@/components";
+import { ButtonEdit, ButtonDelete } from "@/components/common";
 
 interface Props {
   textHeader?: string;
@@ -20,10 +19,13 @@ interface Props {
   isLoading?: boolean;
   onPress?: () => void;
   onDelete?: boolean;
-  removeData?: (data: any) => void;
+  onPressDelete?: (data: any) => void;
+  onEdit?: boolean;
+  onPressEdit?: () => void;
   height?: string;
   sizeTextBody?: "text-sm" | "text-md" | "text-lg" | "text-xl";
 }
+
 export const CardActions = ({
   textHeader,
   textBody,
@@ -36,7 +38,9 @@ export const CardActions = ({
   isLoading = false,
   onPress = () => {},
   onDelete = false,
-  removeData = () => {},
+  onPressDelete = () => {},
+  onEdit = false,
+  onPressEdit = () => {},
   height = "min-h-[auto]",
   sizeTextBody = "text-sm",
 }: Props) => {
@@ -45,46 +49,35 @@ export const CardActions = ({
   return (
     <>
       <Card
-        className={`group border-small rounded-small border-default-200 dark:border-default-200 ${height}`}
+        className={`group border-small rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
         isPressable={!isEdit && activeId !== dataId}
         onPress={onPress}
       >
-        <CardBody className="flex items-start gap-y-2">
-          <div>
-            <span className="text-sm font-bold">{textHeader}</span>
-            <div className="absolute top-2 right-2 flex gap-1">
+        <CardBody className="flex flex-col gap-2 relative">
+          <div className="flex justify-between items-start flex-wrap gap-2">
+            <span className="text-sm font-bold break-words">{textHeader}</span>
+
+            <div className="flex items-center gap-1 shrink-0 min-h-[32px]">
               <span
-                className={`text-xs font-semibold transition-opacity duration-200
-                    ${
-                      activeId === dataId
-                        ? isLoading
-                          ? "text-blue-600 opacity-100"
-                          : "text-green-600 opacity-100"
-                        : "text-yellow-600 opacity-0 group-hover:opacity-100"
-                    }
-                  `}
+                className={`text-xs font-semibold transition-opacity duration-200 whitespace-nowrap
+                  ${
+                    activeId === dataId
+                      ? isLoading
+                        ? "text-blue-600 opacity-100"
+                        : "text-green-600 opacity-100"
+                      : "text-yellow-600 opacity-0 group-hover:opacity-100"
+                  }
+                `}
               >
                 {activeId === dataId ? (isLoading ? textLoading : textActive) : !isEdit ? textHover : ""}
               </span>
-              {onDelete && isEdit && (
-                <Button
-                  isIconOnly
-                  className="text-tiny text-white"
-                  color="danger"
-                  radius="lg"
-                  size="sm"
-                  variant="flat"
-                  onPress={() => {
-                    setOpenModalAlert(true);
-                  }}
-                >
-                  <GarbageIcon />
-                </Button>
-              )}
+
+              {onEdit && isEdit && <ButtonEdit onPress={onPressEdit} />}
+              {onDelete && isEdit && <ButtonDelete onPress={() => setOpenModalAlert(true)} />}
             </div>
           </div>
           <div>
-            <p className={`${sizeTextBody}`}>{textBody}</p>
+            <p className={`${sizeTextBody} break-words`}>{textBody}</p>
           </div>
         </CardBody>
       </Card>
@@ -93,13 +86,11 @@ export const CardActions = ({
         cancelText="Cancelar"
         confirmText="Sí, eliminar"
         isOpen={openModalAlert}
-        message={`¿Esta seguro que desea eliminar ${textHeader}?`}
+        message={`¿Está seguro que desea eliminar ${textHeader}?`}
         title={`Eliminar ${textHeader}`}
-        onClose={() => {
-          setOpenModalAlert(false);
-        }}
+        onClose={() => setOpenModalAlert(false)}
         onConfirm={() => {
-          removeData(dataId);
+          onPressDelete(dataId);
           setOpenModalAlert(false);
         }}
       />

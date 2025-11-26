@@ -12,6 +12,7 @@ export abstract class APIConnection {
 
   abstract GET(url: string, options?: any): Promise<any>;
   abstract POST(url: string, body: any, options?: any): Promise<any>;
+  abstract PATCH(url: string, body: any, options?: any): Promise<any>;
   abstract PUT(url: string, body: any, options?: any): Promise<any>;
   abstract DELETE(url: string, options?: any): Promise<any>;
 

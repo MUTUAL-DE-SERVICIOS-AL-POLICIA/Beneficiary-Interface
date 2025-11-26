@@ -1,60 +1,43 @@
 import { Button } from "@heroui/button";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, useDisclosure } from "@heroui/modal";
-import { useState } from "react";
-import { addToast } from "@heroui/toast";
-import { Input } from "@heroui/input";
-import { Select, SelectItem } from "@heroui/select";
 import { Form } from "@heroui/form";
-import { Selection } from "@heroui/table";
+import { Input } from "@heroui/input";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Progress } from "@heroui/progress";
+import { Select, SelectItem } from "@heroui/select";
+import { Selection } from "@heroui/table";
+import { addToast } from "@heroui/toast";
+import { useState } from "react";
 
-import { FileDossier as FileDossierInterface } from "@/utils/interfaces";
-import { usePerson } from "@/utils/context/PersonContext";
-import { getAllFileDossiers, postCreateUpdateFileDossier } from "@/api/affiliate";
+import { createFileDossier, updateFileDossier } from "@/api/affiliate";
 import { postUploadChunk } from "@/api/common";
-import { ButtonRegister } from "@/components/common";
+import { usePerson } from "@/utils/context/PersonContext";
+import { AffiliateFileDossier, FileDossier as FileDossierInterface } from "@/utils/interfaces";
 
 interface ModalProps {
   onRefreshFileDossiers: () => Promise<void>;
-  isDisabled?: boolean;
+  isOpen?: boolean;
+  onClose: () => void;
+  isUpdate?: boolean;
+  affiliateFileDossier?: AffiliateFileDossier;
+  dataRegister?: any;
 }
 
-export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: ModalProps) {
-  const [loading, setLoading] = useState(false);
+export function ModalRegisterFileDossier({
+  onRefreshFileDossiers,
+  isOpen,
+  onClose,
+  isUpdate = false,
+  affiliateFileDossier = undefined,
+  dataRegister = {
+    allData: [],
+    disableData: [],
+  },
+}: ModalProps) {
   const [loadingSave, setLoadingSave] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [fileDossiers, setFileDossiers] = useState<any>([]);
   const { affiliateId } = usePerson();
   const [fileDossierId, setFileDossierId] = useState<Selection>(new Set([]));
   const [progress, setProgress] = useState(0);
-  const getFileDossiers = async () => {
-    setLoading(true);
-    try {
-      const { error, message, data } = await getAllFileDossiers();
 
-      if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 2000,
-          shouldShowTimeoutProgress: true,
-        });
-        setFileDossiers([]);
-
-        return;
-      }
-
-      setFileDossiers(data);
-
-      return;
-    } catch (error) {
-      console.error("Error al obtener los tipos de expedientes:", error);
-    } finally {
-      setLoading(false);
-      onOpen();
-    }
-  };
   const onSubmit = async (e: any) => {
     setLoadingSave(true);
     e.preventDefault();
@@ -67,7 +50,7 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: 
           title: "Ocurrió un error",
           description: "Archivo inválido",
           color: "danger",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
 
@@ -76,7 +59,10 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: 
 
       const CHUNK_SIZE = 5 * 1024 * 1024;
       const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-      const fileId = String(Array.from(fileDossierId)[0]);
+      const fileId =
+        isUpdate && affiliateFileDossier
+          ? affiliateFileDossier.fileDossierId.toString()
+          : String(Array.from(fileDossierId)[0]);
       const initialName = `fileDossier-${affiliateId}-${fileId}`;
 
       for (let i = 0; i < totalChunks; i++) {
@@ -96,7 +82,7 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: 
             title: "Ocurrió un error al subir chunk: " + (i + 1) + " del expediente",
             description: response.message,
             color: "danger",
-            timeout: 2000,
+            timeout: 3500,
             shouldShowTimeoutProgress: true,
           });
 
@@ -108,19 +94,20 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: 
         setProgress(progress);
       }
 
-      const { error, message } = await postCreateUpdateFileDossier(
-        affiliateId,
-        fileId,
-        initialName,
-        totalChunks,
-      );
+      let dataResponse: any = {};
 
-      if (error) {
+      if (isUpdate && affiliateFileDossier) {
+        dataResponse = await updateFileDossier(affiliateId, fileId, initialName, totalChunks);
+      } else {
+        dataResponse = await createFileDossier(affiliateId, fileId, initialName, totalChunks);
+      }
+
+      if (dataResponse.error) {
         addToast({
           title: "Ocurrió un problema",
-          description: message,
+          description: dataResponse.message,
           color: "warning",
-          timeout: 2000,
+          timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
 
@@ -129,9 +116,9 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: 
 
       addToast({
         title: "Aceptado",
-        description: message,
+        description: dataResponse.message,
         color: "success",
-        timeout: 2000,
+        timeout: 3500,
         shouldShowTimeoutProgress: true,
       });
       onRefreshFileDossiers();
@@ -149,18 +136,12 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: 
 
   return (
     <>
-      <ButtonRegister
-        isDisabled={isDisabled}
-        isLoading={loading}
-        textTop="crear/actualizar"
-        onPress={getFileDossiers}
-      />
       <Modal
         hideCloseButton
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         isOpen={isOpen}
-        size="md"
+        size="3xl"
         onClose={onClose}
       >
         <Form onSubmit={onSubmit}>
@@ -183,19 +164,38 @@ export function ModalRegisterFileDossier({ onRefreshFileDossiers, isDisabled }: 
                   </>
                 ) : (
                   <>
-                    <ModalHeader className="flex flex-col">SELECCIONE EXPEDIENTE</ModalHeader>
+                    {isUpdate && affiliateFileDossier ? (
+                      <>
+                        <ModalHeader className="flex flex-col">ACTUALIZAR EXPEDIENTE</ModalHeader>
+                      </>
+                    ) : (
+                      <ModalHeader className="flex flex-col">SELECCIONE EXPEDIENTE</ModalHeader>
+                    )}
                     <ModalBody>
-                      <Select
-                        isRequired
-                        items={fileDossiers}
-                        label="Expedientes"
-                        placeholder="Seleccione un expediente"
-                        onSelectionChange={setFileDossierId}
-                      >
-                        {(fileDossier: FileDossierInterface) => (
-                          <SelectItem key={fileDossier.id}>{fileDossier.name}</SelectItem>
-                        )}
-                      </Select>
+                      {!isUpdate ? (
+                        <Select
+                          isRequired
+                          disabledKeys={dataRegister.disableData}
+                          items={dataRegister.allData}
+                          label="Expedientes"
+                          placeholder="Seleccione un expediente"
+                          onSelectionChange={setFileDossierId}
+                        >
+                          {(fileDossier: FileDossierInterface) => (
+                            <SelectItem key={fileDossier.id}>{fileDossier.name}</SelectItem>
+                          )}
+                        </Select>
+                      ) : (
+                        <p>
+                          {affiliateFileDossier && (
+                            <>
+                              <b>Nombre:</b> {affiliateFileDossier.name}
+                              <br />
+                              <b>Código:</b> {affiliateFileDossier.shortened}
+                            </>
+                          )}
+                        </p>
+                      )}
                       <Input isRequired name="fileDossierPdf" type="file" />
                     </ModalBody>
                     <ModalFooter>

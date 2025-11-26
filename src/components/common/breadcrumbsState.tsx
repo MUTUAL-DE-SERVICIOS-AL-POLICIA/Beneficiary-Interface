@@ -5,8 +5,6 @@ import { Breadcrumbs, BreadcrumbItem } from "@heroui/breadcrumbs";
 
 import { subtitle } from "./primitives";
 
-import { urlLogin } from "@/utils/services";
-
 export const BreadcrumbsState = () => {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
@@ -26,11 +24,7 @@ export const BreadcrumbsState = () => {
   });
 
   return (
-    <Breadcrumbs className={subtitle() + "w-full m-2"} underline="hover">
-      <BreadcrumbItem key="roles">
-        <Link href={urlLogin}>Inicio</Link>
-      </BreadcrumbItem>
-
+    <Breadcrumbs className={subtitle() + ""} underline="hover">
       {breadcrumbs.map((crumb, index) => {
         const isCurrent = index === breadcrumbs.length - 1;
 
