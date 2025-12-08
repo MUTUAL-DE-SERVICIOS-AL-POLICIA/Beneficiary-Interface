@@ -1,4 +1,4 @@
-import { Address, Death, Financial, Basic } from "./information";
+import { Address, Basic, Death, Financial } from "./information";
 
 import { usePerson } from "@/utils/context/PersonContext";
 

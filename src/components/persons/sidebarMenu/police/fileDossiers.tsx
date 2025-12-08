@@ -42,9 +42,9 @@ export const FileDossiers = () => {
   const [isUpdateFileDossier, setIsUpdateFileDossier] = useState(false);
   const [isDeleteFileDossier, setIsDeleteFileDossier] = useState(false);
 
-  const permissionToCreate = ["lbautista", "alaure", "csandoval", "aherrera"];
-  const permissionToUpdate = ["lbautista", "alaure", "csandoval", "aherrera"];
-  const permissionToDelete = ["nmamani", "gromero", "lbautista", "alaure", "csandoval", "aherrera"];
+  const permissionToCreate = ["nmamani", "gromero", "lbautista"];
+  const permissionToUpdate = ["nmamani", "gromero", "lbautista"];
+  const permissionToDelete = ["nmamani", "gromero", "lbautista"];
 
   useEffect(() => {
     getFileDossiersAffiliate();
