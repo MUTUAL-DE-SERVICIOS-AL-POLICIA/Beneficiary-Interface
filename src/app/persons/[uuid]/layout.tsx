@@ -50,7 +50,7 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
           <Sidebar features={data.features} user={basicInfo} />
         </Card>
 
-        <Card className="flex-1 border border-default-200 dark:border-default-600 rounded-medium p-3 min-w-[650px] h-full">
+        <Card className="card-no-outline flex-1 border border-default-200 dark:border-default-600 rounded-medium p-3 min-w-[650px] h-full">
           {children}
         </Card>
       </section>
