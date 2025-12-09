@@ -28,7 +28,6 @@ export const SpinnerLoading = ({
   topTextBottom = "top-[65%]",
 }: Props) => {
   if (!isLoading) return null;
-
   const sharedClass = "absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50";
   const textStyle =
     "text-2xl font-semibold text-default-900 bg-white dark:bg-black rounded-sm min-w-[1000px] text-center";

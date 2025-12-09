@@ -30,4 +30,7 @@ export {
   EditIcon,
   ExpandIcon,
   CollapseIcon,
+  HistoryIcon,
+  TimeIcon,
+  HomeIcon,
 } from "./icons";

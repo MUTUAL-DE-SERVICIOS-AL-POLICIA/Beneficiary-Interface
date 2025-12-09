@@ -24,7 +24,7 @@ export const UserInfo = ({ user, isPolice, isCopy = false }: Props) => {
           {user?.fullName}
         </h4>
         <div className="flex items-center gap-1">
-          <p className="font-semibold text-default-800 text-small"> C.I. </p>
+          <p className="font-semibold text-default-800 text-small">C.I.</p>
           <p className="text-default-600 text-small">{user?.identityCard}</p>
           {isCopy && <CopyButton placement="right" text={user?.identityCard} />}
         </div>
