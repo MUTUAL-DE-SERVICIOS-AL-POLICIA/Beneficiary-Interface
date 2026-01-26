@@ -42,9 +42,9 @@ export const Documents = () => {
   const [isUpdateDocument, setIsUpdateDocument] = useState(false);
   const [isDeleteDocument, setIsDeleteDocument] = useState(false);
 
-  const permissionToCreate = ["lbautista", "alaure", "csandoval"];
-  const permissionToUpdate = ["lbautista", "alaure", "csandoval"];
-  const permissionToDelete = ["nmamani", "gromero", "lbautista", "alaure", "csandoval"];
+  const permissionToCreate = ["mcondori", "csandoval"];
+  const permissionToUpdate = ["mcondori", "csandoval"];
+  const permissionToDelete = ["nmamani", "gromero", "mcondori", "csandoval"];
 
   useEffect(() => {
     getDocumentsAffiliate();
