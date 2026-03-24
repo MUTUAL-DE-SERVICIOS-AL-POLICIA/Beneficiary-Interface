@@ -1,30 +1,31 @@
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { login } from "./api/auth/login";
 
-export const proxy = async () => {
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get("msp");
-  const token = cookie?.value;
+export async function proxy(req: NextRequest) {
+  const sid = req.cookies.get("sid")?.value;
+  const pathname = req.nextUrl.pathname;
+  const search = req.nextUrl.search;
 
-  const host = process.env.NEXT_PUBLIC_SERVER_FRONTEND || "";
-  const port = process.env.LOGIN_FRONTEND_PORT || "3001";
-  const url = "http://" + host + ":" + port + "/login";
-
-  try {
-    if (!token) {
-      return NextResponse.redirect(url);
+  if (pathname === "/") {
+    if (!sid) {
+      const urlLogin = await login("/persons");
+      return NextResponse.redirect(urlLogin);
     }
 
-    return NextResponse.next();
-  } catch (e) {
-    console.error("Error verificando token en middleware", e);
-
-    return NextResponse.redirect(url);
+    const u = req.nextUrl.clone();
+    u.pathname = "/persons";
+    u.search = "";
+    return NextResponse.redirect(u);
   }
-};
+
+  if (!sid) {
+    const urlLogin = await login(pathname + search);
+    return NextResponse.redirect(urlLogin);
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    "/((?!_next/|favicon.ico|static/|images/|fonts/|api/|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.svg|.*\\.webp|.*\\.gif|.*\\.ico).*)",
-  ],
+  matcher: ["/((?!api/auth/|_next/|favicon.ico).*)"],
 };
