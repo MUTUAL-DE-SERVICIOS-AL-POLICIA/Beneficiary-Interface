@@ -17,7 +17,7 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getUserCookie } from "@/utils/helpers/cookie";
+import { getProfileCookie } from "@/utils/helpers/cookie";
 
 export const Documents = () => {
   const { affiliateId } = usePerson();
@@ -52,7 +52,7 @@ export const Documents = () => {
   }, []);
 
   const getPermissions = async () => {
-    const { data } = await getUserCookie();
+    const { data } = await getProfileCookie();
     const { username } = data;
 
     permissionToCreate.includes(username) ? setIsCreateDocument(true) : setIsCreateDocument(false);
