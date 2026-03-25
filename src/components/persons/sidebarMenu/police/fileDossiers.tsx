@@ -20,7 +20,8 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getProfileCookie } from "@/utils/helpers/cookie";
+import { usePermissions } from "@/utils/context/PermissionsContext";
+import { useServerAction } from "@/utils/hooks/useServerAction";
 import { AffiliateFileDossier } from "@/utils/interfaces";
 
 export const FileDossiers = () => {
@@ -38,27 +39,15 @@ export const FileDossiers = () => {
   const [dataRegister, setDataRegister] = useState<any>(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const [fileDossierEdit, setFileDossierEdit] = useState<AffiliateFileDossier>();
-  const [isCreateFileDossier, setIsCreateFileDossier] = useState(false);
-  const [isUpdateFileDossier, setIsUpdateFileDossier] = useState(false);
-  const [isDeleteFileDossier, setIsDeleteFileDossier] = useState(false);
-
-  const permissionToCreate = ["nmamani", "gromero", "lbautista"];
-  const permissionToUpdate = ["nmamani", "gromero", "lbautista"];
-  const permissionToDelete = ["nmamani", "gromero", "lbautista"];
+  // keycloak: write   → nmamani, gromero, lbautista, jcuenca
+  // keycloak: update  → nmamani, gromero, lbautista, jcuenca
+  // keycloak: delete  → nmamani, gromero, lbautista, jcuenca
+  const { can } = usePermissions();
+  const run = useServerAction();
 
   useEffect(() => {
     getFileDossiersAffiliate();
-    getPermissions();
   }, []);
-
-  const getPermissions = async () => {
-    const { data } = await getProfileCookie();
-    const { username } = data;
-
-    permissionToCreate.includes(username) ? setIsCreateFileDossier(true) : setIsCreateFileDossier(false);
-    permissionToUpdate.includes(username) ? setIsUpdateFileDossier(true) : setIsUpdateFileDossier(false);
-    permissionToDelete.includes(username) ? setIsDeleteFileDossier(true) : setIsDeleteFileDossier(false);
-  };
 
   const switchEdit = () => {
     setIsEdit(!isEdit);
@@ -102,7 +91,7 @@ export const FileDossiers = () => {
 
   const removeFileDossier = async (fileDossierId: number) => {
     try {
-      const { error, message } = await deleteFileDossier(affiliateId, String(fileDossierId));
+      const { error, message } = await run(deleteFileDossier(affiliateId, String(fileDossierId)));
 
       if (error) {
         addToast({
@@ -134,7 +123,7 @@ export const FileDossiers = () => {
     try {
       setLoadingDocument(true);
       setActiveFileDossierId(fileDossierId);
-      const { error, message, data } = await getViewFileDossier(affiliateId, String(fileDossierId));
+      const { error, message, data } = await run(getViewFileDossier(affiliateId, String(fileDossierId)));
 
       if (error) {
         addToast({
@@ -188,7 +177,7 @@ export const FileDossiers = () => {
   const handleOpenModal = async () => {
     try {
       setLoadingAllFileDossiers(true);
-      const { error, message, data } = await getAllFileDossiers(affiliateId);
+      const { error, message, data } = await run(getAllFileDossiers(affiliateId));
 
       if (error) {
         addToast({
@@ -221,8 +210,8 @@ export const FileDossiers = () => {
           isEdit={isEdit}
           isLoading={loadingAllFileDossiers}
           switchEdit={switchEdit}
-          toEdit={isUpdateFileDossier || isDeleteFileDossier}
-          toRegister={isCreateFileDossier}
+          toEdit={can("affiliates.file_dossiers", "update") || can("affiliates.file_dossiers", "delete")}
+          toRegister={can("affiliates.file_dossiers", "write")}
           onPressRegister={handleOpenModal}
         />
 
@@ -242,8 +231,8 @@ export const FileDossiers = () => {
                   textHeader={`${key + 1}. ${fileDossier.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete={isDeleteFileDossier}
-                  onEdit={isUpdateFileDossier}
+                  onDelete={can("affiliates.file_dossiers", "delete")}
+                  onEdit={can("affiliates.file_dossiers", "update")}
                   onPress={() => viewTransition(fileDossier.fileDossierId)}
                   onPressDelete={() => removeFileDossier(fileDossier.fileDossierId)}
                   onPressEdit={() => editFileDossier(fileDossier)}

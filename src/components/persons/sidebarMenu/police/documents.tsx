@@ -17,7 +17,8 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getProfileCookie } from "@/utils/helpers/cookie";
+import { usePermissions } from "@/utils/context/PermissionsContext";
+import { useServerAction } from "@/utils/hooks/useServerAction";
 
 export const Documents = () => {
   const { affiliateId } = usePerson();
@@ -38,27 +39,15 @@ export const Documents = () => {
   const sizePdf = isExpanded ? "w-[100%]" : "w-[48%] border-l pl-2";
   const sizeColumn = isExpanded ? "w-0" : "w-[52%]";
 
-  const [isCreateDocument, setIsCreateDocument] = useState(false);
-  const [isUpdateDocument, setIsUpdateDocument] = useState(false);
-  const [isDeleteDocument, setIsDeleteDocument] = useState(false);
-
-  const permissionToCreate = ["mcondori", "csandoval"];
-  const permissionToUpdate = ["mcondori", "csandoval"];
-  const permissionToDelete = ["nmamani", "gromero", "mcondori", "csandoval"];
+  // keycloak: write   → mcondori, csandoval, jcuenca
+  // keycloak: update  → mcondori, csandoval, jcuenca
+  // keycloak: delete  → nmamani, gromero, mcondori, csandoval, jcuenca
+  const { can } = usePermissions();
+  const run = useServerAction();
 
   useEffect(() => {
     getDocumentsAffiliate();
-    getPermissions();
   }, []);
-
-  const getPermissions = async () => {
-    const { data } = await getProfileCookie();
-    const { username } = data;
-
-    permissionToCreate.includes(username) ? setIsCreateDocument(true) : setIsCreateDocument(false);
-    permissionToUpdate.includes(username) ? setIsUpdateDocument(true) : setIsUpdateDocument(false);
-    permissionToDelete.includes(username) ? setIsDeleteDocument(true) : setIsDeleteDocument(false);
-  };
 
   const getDocumentsAffiliate = useCallback(async () => {
     try {
@@ -85,7 +74,7 @@ export const Documents = () => {
 
   const removeDocument = async (procedureDocumentId: number) => {
     try {
-      const { error, message } = await deleteDocument(affiliateId, String(procedureDocumentId));
+      const { error, message } = await run(deleteDocument(affiliateId, String(procedureDocumentId)));
 
       if (error) {
         addToast({
@@ -118,7 +107,7 @@ export const Documents = () => {
       setLoadingDocument(true);
       setActiveDocumentId(documentId);
 
-      const { error, message, data } = await getViewDocument(affiliateId, String(documentId));
+      const { error, message, data } = await run(getViewDocument(affiliateId, String(documentId)));
 
       if (error) {
         addToast({
@@ -163,7 +152,7 @@ export const Documents = () => {
       setDocumentEdit(undefined);
       setIsUpdate(false);
       setLoadingAllDocument(true);
-      const { error, message, data } = await getDocuments(affiliateId);
+      const { error, message, data } = await run(getDocuments(affiliateId));
 
       if (error) {
         addToast({
@@ -196,8 +185,8 @@ export const Documents = () => {
           isEdit={isEdit}
           isLoading={loadingAllDocument}
           switchEdit={() => setIsEdit((prev) => !prev)}
-          toEdit={isUpdateDocument || isDeleteDocument}
-          toRegister={isCreateDocument}
+          toEdit={can("affiliates.documents", "update") || can("affiliates.documents", "delete")}
+          toRegister={can("affiliates.documents", "write")}
           onPressRegister={handleOpenModal}
         />
 
@@ -218,8 +207,8 @@ export const Documents = () => {
                   textHeader={`${key + 1}. ${doc.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete={isDeleteDocument}
-                  onEdit={isUpdateDocument}
+                  onDelete={can("affiliates.documents", "delete")}
+                  onEdit={can("affiliates.documents", "update")}
                   onPress={() => viewTransition(doc.procedureDocumentId)}
                   onPressDelete={() => removeDocument(doc.procedureDocumentId)}
                   onPressEdit={() => editDocument(doc)}
