@@ -81,6 +81,9 @@ export abstract class APIConnection {
     const contentType = response.headers.get("content-type") || "";
 
     if (!response.ok) {
+      if (response.status === 403 && typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("permission-denied"));
+      }
       if (contentType.includes("application/json")) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
