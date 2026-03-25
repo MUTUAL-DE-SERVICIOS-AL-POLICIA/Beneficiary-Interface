@@ -10,27 +10,31 @@ import {
   Affiliates,
   FileDossiers,
 } from "@/components/persons/sidebarMenu";
+import { usePermissions } from "@/utils/context/PermissionsContext";
+
+const NO_PERMISSION = <p className="text-sm text-default-400 p-4">Sin permiso para acceder a esta sección.</p>;
 
 export default function Page() {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get("feature") ?? "personalData";
+  const { can } = usePermissions();
 
   const renderContent = () => {
     switch (currentTab) {
       case "fingerprints":
-        return <Fingerprints />;
+        return can("persons.fingerprints", "read") ? <Fingerprints /> : NO_PERMISSION;
       case "policeData":
-        return <PoliceData />;
+        return can("affiliates", "read") ? <PoliceData /> : NO_PERMISSION;
       case "documents":
-        return <Documents />;
+        return can("affiliates.documents", "read") ? <Documents /> : NO_PERMISSION;
       case "fileDossiers":
-        return <FileDossiers />;
+        return can("affiliates.file_dossiers", "read") ? <FileDossiers /> : NO_PERMISSION;
       case "beneficiaries":
-        return <Beneficiaries />;
+        return can("persons", "read") ? <Beneficiaries /> : NO_PERMISSION;
       case "affiliates":
-        return <Affiliates />;
+        return can("persons.affiliates", "read") ? <Affiliates /> : NO_PERMISSION;
       default:
-        return <PersonalData />;
+        return can("persons", "read") ? <PersonalData /> : NO_PERMISSION;
     }
   };
 

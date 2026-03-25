@@ -27,7 +27,6 @@ export default async function Layout({
       redirect(await login("/persons"));
     }
   }
-
   return (
     <PermissionsProvider permissions={permissions}>
       <div className="ml-2 mr-2 my-2">{children}</div>
