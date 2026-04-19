@@ -8,7 +8,7 @@ export async function proxy(req: NextRequest) {
 
   if (pathname === "/") {
     if (!sid) {
-      const urlLogin = await login("/persons");
+      const urlLogin = await login("/apphub");
       return NextResponse.redirect(urlLogin);
     }
 
