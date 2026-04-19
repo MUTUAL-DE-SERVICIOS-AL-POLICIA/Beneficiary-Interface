@@ -42,6 +42,21 @@ export const Documents = () => {
   // keycloak: write   → mcondori, csandoval, jcuenca
   // keycloak: update  → mcondori, csandoval, jcuenca
   // keycloak: delete  → nmamani, gromero, mcondori, csandoval, jcuenca
+
+  /*
+
+  nmamani(), gromero ambos usuarios pertenecen a la Unidad de Gestión Documental y Archivo
+
+
+
+  mcondori Técnico de Atención al Afiliado
+  pertenece a la Unidad de Otorgación del Fondo de Retiro
+
+  csandoval Tecnico de Atención al afiliado
+  pertenece a la Unidad de Otorgación del Complemento Económico
+
+
+   */
   const { can } = usePermissions();
   const run = useServerAction();
 

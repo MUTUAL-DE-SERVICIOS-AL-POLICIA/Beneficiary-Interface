@@ -42,6 +42,13 @@ export const FileDossiers = () => {
   // keycloak: write   → nmamani, gromero, lbautista, jcuenca
   // keycloak: update  → nmamani, gromero, lbautista, jcuenca
   // keycloak: delete  → nmamani, gromero, lbautista, jcuenca
+
+  /*
+  nmamani es Profesional de Archivo y Gestión Documental de Beneficios Económicos
+  gromero es TECNICO IV - ARCHIVO Y GESTION DOCUMENTAL DE BENEFICIOS ECONOMICOS
+  
+  ambos usuarios pertenecen a la Unidad de Gestión Documental y Archivo
+   */
   const { can } = usePermissions();
   const run = useServerAction();
 
