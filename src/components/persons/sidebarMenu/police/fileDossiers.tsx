@@ -20,7 +20,7 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getUserCookie } from "@/utils/helpers/cookie";
+import { getAccessCookie } from "@/utils/helpers/cookie";
 import { AffiliateFileDossier } from "@/utils/interfaces";
 
 export const FileDossiers = () => {
@@ -42,22 +42,16 @@ export const FileDossiers = () => {
   const [isUpdateFileDossier, setIsUpdateFileDossier] = useState(false);
   const [isDeleteFileDossier, setIsDeleteFileDossier] = useState(false);
 
-  const permissionToCreate = ["nmamani", "gromero", "lbautista"];
-  const permissionToUpdate = ["nmamani", "gromero", "lbautista"];
-  const permissionToDelete = ["nmamani", "gromero", "lbautista"];
-
   useEffect(() => {
     getFileDossiersAffiliate();
     getPermissions();
   }, []);
 
   const getPermissions = async () => {
-    const { data } = await getUserCookie();
-    const { username } = data;
-
-    permissionToCreate.includes(username) ? setIsCreateFileDossier(true) : setIsCreateFileDossier(false);
-    permissionToUpdate.includes(username) ? setIsUpdateFileDossier(true) : setIsUpdateFileDossier(false);
-    permissionToDelete.includes(username) ? setIsDeleteFileDossier(true) : setIsDeleteFileDossier(false);
+    const { data } = await getAccessCookie();
+    data.includes('isCreateFileDossier') ? setIsCreateFileDossier(true) : setIsCreateFileDossier(false);
+    data.includes('isUpdateFileDossier') ? setIsUpdateFileDossier(true) : setIsUpdateFileDossier(false);
+    data.includes('isDeleteFileDossier') ? setIsDeleteFileDossier(true) : setIsDeleteFileDossier(false);
   };
 
   const switchEdit = () => {

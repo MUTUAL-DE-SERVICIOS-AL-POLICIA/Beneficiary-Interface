@@ -38,3 +38,27 @@ export async function getUserCookie(): Promise<ResponseData> {
     };
   }
 }
+
+export async function getAccessCookie(): Promise<ResponseData> {
+  try {
+    const cookie = await getCookie("access");
+
+    if (!cookie) {
+      return {
+        error: true,
+        message: "No se encontró la cookie 'access'",
+      };
+    }
+
+    return {
+      error: false,
+      message: "Cookie 'access' obtenida exitosamente",
+      data: JSON.parse(cookie),
+    };
+  } catch (error) {
+    return {
+      error: true,
+      message: "Error al obtener la cookie 'access': " + error,
+    };
+  }
+}
