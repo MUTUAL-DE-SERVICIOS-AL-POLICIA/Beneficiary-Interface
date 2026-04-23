@@ -4,7 +4,7 @@ import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "
 
 import { UserSession, ThemeSwitch, Search } from "@/components/common";
 import { Logo } from "@/components/icons";
-import { urlLogin } from "@/utils/services";
+import { hubFrontend } from "@/utils/env";
 import { User } from "@/utils/interfaces";
 import { logout } from "@/api/auth";
 import { searchPerson } from "@/api/person";
@@ -25,7 +25,7 @@ export const Navbar = ({ user, environment, computerToolName }: Props) => {
       <NavbarContent className="hidden sm:flex" justify="start">
         <NavbarBrand className="gap-7">
           <Tooltip content="Ir inicio" placement="bottom">
-            <Link className="flex justify-start items-center gap-1" href={`${urlLogin}/apphub`}>
+            <Link className="flex justify-start items-center gap-1" href={`${hubFrontend.url}/apphub`}>
               <Logo height={105} width={105} />
             </Link>
           </Tooltip>
@@ -46,7 +46,7 @@ export const Navbar = ({ user, environment, computerToolName }: Props) => {
           <ThemeSwitch />
           <UserSession
             name={user?.name}
-            urlLogin={`${urlLogin}/login`}
+            urlLogin={`${hubFrontend.url}/login`}
             username={user?.username}
             onLogout={logout}
           />

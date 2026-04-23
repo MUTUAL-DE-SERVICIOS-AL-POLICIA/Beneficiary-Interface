@@ -7,7 +7,7 @@ import { Providers } from "./providers";
 import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
 import { SidebarRoot } from "@/components/header/sidebarRoot";
-import { getUserCookie } from "@/utils/helpers/cookie";
+import { getProfileCookie } from "@/utils/helpers/cookie";
 import { getDeployEnvironment } from "@/utils/env";
 
 export const metadata: Metadata = {
@@ -29,7 +29,8 @@ export const viewport: Viewport = {
 };
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-  const { data } = await getUserCookie();
+  const { data } = await getProfileCookie();
+  console.log('Profile Data: ', data);
   const environment = getDeployEnvironment();
   const computerToolName = "HERRAMIENTA TECNOLÓGICA BENEFICIARIOS";
 
