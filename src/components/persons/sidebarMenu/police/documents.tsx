@@ -17,7 +17,7 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getUserCookie } from "@/utils/helpers/cookie";
+import { getAccessCookie } from "@/utils/helpers/cookie";
 
 export const Documents = () => {
   const { affiliateId } = usePerson();
@@ -42,22 +42,16 @@ export const Documents = () => {
   const [isUpdateDocument, setIsUpdateDocument] = useState(false);
   const [isDeleteDocument, setIsDeleteDocument] = useState(false);
 
-  const permissionToCreate = ["mcondori", "csandoval"];
-  const permissionToUpdate = ["mcondori", "csandoval"];
-  const permissionToDelete = ["nmamani", "gromero", "mcondori", "csandoval"];
-
   useEffect(() => {
     getDocumentsAffiliate();
     getPermissions();
   }, []);
 
   const getPermissions = async () => {
-    const { data } = await getUserCookie();
-    const { username } = data;
-
-    permissionToCreate.includes(username) ? setIsCreateDocument(true) : setIsCreateDocument(false);
-    permissionToUpdate.includes(username) ? setIsUpdateDocument(true) : setIsUpdateDocument(false);
-    permissionToDelete.includes(username) ? setIsDeleteDocument(true) : setIsDeleteDocument(false);
+    const { data } = await getAccessCookie();
+    data.includes('isCreateDocument') ? setIsCreateDocument(true) : setIsCreateDocument(false);
+    data.includes('isUpdateDocument') ? setIsUpdateDocument(true) : setIsUpdateDocument(false);
+    data.includes('isDeleteDocument') ? setIsDeleteDocument(true) : setIsDeleteDocument(false);
   };
 
   const getDocumentsAffiliate = useCallback(async () => {
@@ -226,7 +220,7 @@ export const Documents = () => {
                 />
               ))
             ) : (
-              <EmptyContent text="NO EXISTEN EXPEDIENTES REGISTRADOS" />
+              <EmptyContent text="NO EXISTEN DOCUMENTOS REGISTRADOS" />
             )}
           </div>
 
