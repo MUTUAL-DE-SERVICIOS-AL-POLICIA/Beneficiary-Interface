@@ -1,3 +1,4 @@
+"use client";
 import { CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 
@@ -5,6 +6,7 @@ import { UserInfo, TabsSidebar } from "./";
 
 import { basicPersonInfo } from "@/utils/types";
 import { Features } from "@/utils/interfaces";
+import { usePermissions } from "@/utils/context/PermissionsContext";
 
 interface Props {
   user: basicPersonInfo;
@@ -12,15 +14,25 @@ interface Props {
 }
 
 export const Sidebar = ({ user, features }: Props) => {
+  const { can } = usePermissions();
+
   const person = [
     { name: "DATOS PERSONALES", key: "personalData", icon: "PersonalDataIcon" },
-    { name: "HUELLAS DACTILARES", key: "fingerprints", icon: "TouchIcon" },
+    ...(can("persons.fingerprints", "read")
+      ? [{ name: "HUELLAS DACTILARES", key: "fingerprints", icon: "TouchIcon" }]
+      : []),
   ];
 
   const police = [
-    { name: "DATOS POLICIALES", key: "policeData", icon: "PoliceDataIcon" },
-    { name: "DOCUMENTOS", key: "documents", icon: "DocumentsDataIcon" },
-    { name: "EXPEDIENTES", key: "fileDossiers", icon: "FileDossiersIcon" },
+    ...(can("affiliates", "read")
+      ? [{ name: "DATOS POLICIALES", key: "policeData", icon: "PoliceDataIcon" }]
+      : []),
+    ...(can("affiliates.documents", "read")
+      ? [{ name: "DOCUMENTOS", key: "documents", icon: "DocumentsDataIcon" }]
+      : []),
+    ...(can("affiliates.file_dossiers", "read")
+      ? [{ name: "EXPEDIENTES", key: "fileDossiers", icon: "FileDossiersIcon" }]
+      : []),
   ];
 
   const beneficiaries = [{ name: "BENEFICIARIOS", key: "beneficiaries", icon: "BeneficiariesDataIcon" }];
@@ -36,7 +48,7 @@ export const Sidebar = ({ user, features }: Props) => {
       <CardBody>
         <TabsSidebar tabSidebar={person} />
 
-        {features.isPolice && (
+        {features.isPolice && police.length > 0 && (
           <>
             <TabsSidebar tabSidebar={police} />
           </>

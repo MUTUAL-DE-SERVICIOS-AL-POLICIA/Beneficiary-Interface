@@ -9,18 +9,15 @@ export class FetchService extends APIConnection {
     endpoint: string,
     params?: Record<string, string>,
     contentType: string = "application/json",
-  ): Promise<any> {
+  ) {
     let url = endpoint;
-
     if (params) {
       const queryParams = new URLSearchParams(params).toString();
-
       url += `?${queryParams}`;
     }
-    const requestConfig = this.addInterceptors(
+    const requestConfig = await this.addInterceptors(
       {
         method: "GET",
-        credentials: "include",
       },
       contentType,
     );
@@ -28,50 +25,41 @@ export class FetchService extends APIConnection {
     return this.handleRequest(url, requestConfig);
   }
 
-  async POST(endpoint: string, body: any, isFormData: boolean = false): Promise<any> {
+  async POST(endpoint: string, body: any, isFormData = false) {
     const headers = isFormData ? null : "application/json";
-    const requestConfig = this.addInterceptors(
+    const requestConfig = await this.addInterceptors(
       {
         method: "POST",
-        credentials: "include",
         body: isFormData ? body : JSON.stringify(body),
       },
       headers,
     );
-
     return this.handleRequest(endpoint, requestConfig);
   }
 
-  async PUT(endpoint: string, body: any): Promise<any> {
-    const requestConfig = this.addInterceptors({
+  async PUT(endpoint: string, body: any) {
+    const requestConfig = await this.addInterceptors({
       method: "PUT",
-      credentials: "include",
       body: JSON.stringify(body),
-    });
-
+    },
+    "application/json",);
     return this.handleRequest(endpoint, requestConfig);
   }
 
-  async PATCH(endpoint: string, body: any, isFormData: boolean = false): Promise<any> {
+  async PATCH(endpoint: string, body: any, isFormData: boolean = false) {
     const headers = isFormData ? null : "application/json";
 
-    const requestConfig = this.addInterceptors(
+    const requestConfig = await this.addInterceptors(
       {
         method: "PATCH",
-        credentials: "include",
         body: isFormData ? body : JSON.stringify(body),
       },
       headers,
     );
-
     return this.handleRequest(endpoint, requestConfig);
   }
-  async DELETE(endpoint: string): Promise<any> {
-    const requestConfig = this.addInterceptors({
-      method: "DELETE",
-      credentials: "include",
-    });
-
+  async DELETE(endpoint: string) {
+    const requestConfig = await this.addInterceptors({ method: "DELETE" }, "application/json");
     return this.handleRequest(endpoint, requestConfig);
   }
 }

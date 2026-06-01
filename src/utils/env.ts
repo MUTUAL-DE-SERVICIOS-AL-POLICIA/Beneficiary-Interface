@@ -5,3 +5,24 @@ export function getDeployEnvironment(): "dev" | "prod" | "test" {
 
   return "prod";
 }
+
+export const backend = {
+  host: process.env.NEXT_PUBLIC_BACKEND_HOST || "localhost",
+  port: process.env.NEXT_PUBLIC_BACKEND_PORT || "3000",
+  url: `http://${process.env.NEXT_PUBLIC_BACKEND_HOST || "localhost"}:${process.env.NEXT_PUBLIC_BACKEND_PORT || "3000"}`,
+};
+
+
+export const frontend = {
+  host: process.env.NEXT_PUBLIC_BENEFICIARY_FRONTEND_HOST || "localhost",
+  port: process.env.NEXT_PUBLIC_BENEFICIARY_FRONTEND_PORT || "3002",
+  url: `http://${process.env.NEXT_PUBLIC_BENEFICIARY_FRONTEND_HOST || "localhost"}:${process.env.NEXT_PUBLIC_BENEFICIARY_FRONTEND_PORT || "3002"}`,
+  clientId: process.env.NEXT_PUBLIC_BENEFICIARY_CLIENT_ID || "beneficiary-interface",
+};
+
+export const hubFrontend = {
+  host: process.env.NEXT_PUBLIC_HUB_FRONTEND_HOST || "localhost",
+  port: process.env.NEXT_PUBLIC_HUB_FRONTEND_PORT || "3001",
+  url: `http://${process.env.NEXT_PUBLIC_HUB_FRONTEND_HOST || "localhost"}:${process.env.NEXT_PUBLIC_HUB_FRONTEND_PORT || "3001"}`,
+  clientId: process.env.NEXT_PUBLIC_HUB_CLIENT_ID || "hub-interfaces",
+};

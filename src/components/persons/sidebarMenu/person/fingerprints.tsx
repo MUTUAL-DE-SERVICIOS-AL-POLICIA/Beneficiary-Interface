@@ -9,6 +9,8 @@ import { ModalRegisterFingerprints } from "./manage";
 import { getAllFingerprintsIds, getRegisteredFingerprints } from "@/api/person";
 import { HeaderManage, SpinnerLoading } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
+import { usePermissions } from "@/utils/context/PermissionsContext";
+import { useServerAction } from "@/utils/hooks/useServerAction";
 import { Fingerprint } from "@/utils/interfaces";
 
 export const Fingerprints = () => {
@@ -21,6 +23,8 @@ export const Fingerprints = () => {
   const [dataRegister, setDataRegister] = useState<any[]>([]);
 
   const { person } = usePerson();
+  const { can } = usePermissions();
+  const run = useServerAction();
   const personId = person.id;
 
   useEffect(() => {
@@ -34,7 +38,7 @@ export const Fingerprints = () => {
   const getFingerprints = async () => {
     setLoading(true);
     try {
-      const { error, message, fingerprintsRegistered } = await getRegisteredFingerprints(personId);
+      const { error, message, fingerprintsRegistered } = await run(getRegisteredFingerprints(personId));
 
       if (error) {
         addToast({
@@ -44,10 +48,9 @@ export const Fingerprints = () => {
           timeout: 3500,
           shouldShowTimeoutProgress: true,
         });
+        return;
       }
       setRegisteredFingerprints(fingerprintsRegistered);
-
-      return;
     } catch (error) {
       console.error(error);
     } finally {
@@ -58,7 +61,7 @@ export const Fingerprints = () => {
   const handleOPenModal = async () => {
     try {
       setAllFingerprints(true);
-      const { error, message, data } = await getAllFingerprintsIds();
+      const { error, message, data } = await run(getAllFingerprintsIds());
 
       if (error) {
         addToast({
@@ -88,7 +91,7 @@ export const Fingerprints = () => {
         <SpinnerLoading isLoading={loading} />
 
         <HeaderManage
-          toRegister
+          toRegister={can("persons.fingerprints", "write")}
           isEdit={isEdit}
           isLoading={loadingAllFingerprints}
           switchEdit={switchEdit}

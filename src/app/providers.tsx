@@ -6,7 +6,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { ToastProvider } from "@heroui/toast";
+import { ToastProvider, addToast } from "@heroui/toast";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -72,6 +72,21 @@ export function useSidebar() {
 
 export function Providers({ children, themeProps, initialSidebarCollapsed }: ProvidersProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    const handler = () => {
+      addToast({
+        title: "Sin permiso",
+        description: "Ya no tienes acceso a esta acción.",
+        color: "warning",
+        timeout: 3000,
+        shouldShowTimeoutProgress: true,
+      });
+      router.refresh();
+    };
+    window.addEventListener("permission-denied", handler);
+    return () => window.removeEventListener("permission-denied", handler);
+  }, [router]);
 
   return (
     <HeroUIProvider navigate={router.push}>

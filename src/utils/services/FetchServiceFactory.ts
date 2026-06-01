@@ -1,9 +1,8 @@
 import { APIConnection } from "./APIConnection";
 import { APIConnectionFactory } from "./APIConnectionFactory";
 import { FetchService } from "./FetchService";
-
-import { checkIp } from "@/utils/helpers/ip";
-
+import { frontend, backend} from "../env";
+import { checkIp } from "../helpers/ip";
 export class FetchServiceFactory extends APIConnectionFactory {
   private baseUrl: string;
 
@@ -17,12 +16,16 @@ export class FetchServiceFactory extends APIConnectionFactory {
   }
 }
 
-const host = process.env.NEXT_PUBLIC_BACKEND_HOST || "localhost";
-const port = process.env.NEXT_PUBLIC_BACKEND_PORT || 3000;
-const baseUrl = `http://${host}:${port}/api/`;
-const factory = new FetchServiceFactory(baseUrl);
-
+const baseUrlBackend = backend.url+"/api/";
+const baseUrlFrontend = frontend.url;
+const factory = new FetchServiceFactory(baseUrlBackend);
+const factoryFront = new FetchServiceFactory(baseUrlFrontend);
 export const apiClient = factory.createAPIConnection();
+
+export const apiServerFrontend = factoryFront.createAPIConnection();
+export const urlLogin = frontend.url;
+export const urlHubFront = frontend.url;
+
 
 export const apiClientBiometric = async () => {
   const ip = await checkIp();
@@ -33,8 +36,3 @@ export const apiClientBiometric = async () => {
 
   return biometricFactory.createAPIConnection();
 };
-
-const hostLogin = process.env.NEXT_PUBLIC_SERVER_FRONTEND || "localhost";
-const portLogin = process.env.LOGIN_FRONTEND_PORT || 3001;
-
-export const urlLogin = `http://${hostLogin}:${portLogin}`;
