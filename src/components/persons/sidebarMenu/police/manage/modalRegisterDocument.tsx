@@ -137,7 +137,7 @@ export function ModalRegisterDocument({
                       label="Buscar documento"
                       labelPlacement="inside"
                       variant="bordered"
-                      onSelectionChange={setDocumentId}
+                      onChange={setDocumentId}
                     >
                       {(document: DocumentInterface) => (
                         <AutocompleteItem
