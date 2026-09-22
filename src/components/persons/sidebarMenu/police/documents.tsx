@@ -17,7 +17,6 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getAccessCookie } from "@/utils/helpers/cookie";
 
 export const Documents = () => {
   const { affiliateId } = usePerson();
@@ -38,22 +37,9 @@ export const Documents = () => {
   const sizePdf = isExpanded ? "w-[100%]" : "w-[48%] border-l pl-2";
   const sizeColumn = isExpanded ? "w-0" : "w-[52%]";
 
-  const [isCreateDocument, setIsCreateDocument] = useState(false);
-  const [isUpdateDocument, setIsUpdateDocument] = useState(false);
-  const [isDeleteDocument, setIsDeleteDocument] = useState(false);
-
   useEffect(() => {
     getDocumentsAffiliate();
-    getPermissions();
   }, []);
-
-  const getPermissions = async () => {
-    const { data } = await getAccessCookie();
-
-    data.includes("isCreateDocument") ? setIsCreateDocument(true) : setIsCreateDocument(false);
-    data.includes("isUpdateDocument") ? setIsUpdateDocument(true) : setIsUpdateDocument(false);
-    data.includes("isDeleteDocument") ? setIsDeleteDocument(true) : setIsDeleteDocument(false);
-  };
 
   const getDocumentsAffiliate = useCallback(async () => {
     try {
@@ -66,8 +52,7 @@ export const Documents = () => {
       if (Array.isArray(data)) return setDocuments([]);
 
       setDocuments(data.documentsAffiliate ?? []);
-    } catch (error) {
-      console.error(error);
+    } catch {
       addToast({
         title: "Error",
         description: "No se pudieron cargar los documentos.",
@@ -103,9 +88,7 @@ export const Documents = () => {
       });
 
       return;
-    } catch (error) {
-      console.error("Error al eliminar expediente:", error);
-    }
+    } catch {}
   };
 
   const viewTransition = async (documentId: number) => {
@@ -125,8 +108,7 @@ export const Documents = () => {
         return;
       }
       setPdfBlob(data);
-    } catch (error) {
-      console.error("Error al obtener el expediente:", error);
+    } catch {
     } finally {
       setLoadingDocument(false);
     }
@@ -175,8 +157,7 @@ export const Documents = () => {
 
       setDataRegister(data);
       onOpen();
-    } catch (error) {
-      console.error("Error al obtener los tipos de expedientes:", error);
+    } catch {
     } finally {
       setLoadingAllDocument(false);
     }
@@ -191,8 +172,8 @@ export const Documents = () => {
           isEdit={isEdit}
           isLoading={loadingAllDocument}
           switchEdit={() => setIsEdit((prev) => !prev)}
-          toEdit={isUpdateDocument || isDeleteDocument}
-          toRegister={isCreateDocument}
+          toEdit
+          toRegister
           onPressRegister={handleOpenModal}
         />
 
@@ -213,8 +194,8 @@ export const Documents = () => {
                   textHeader={`${key + 1}. ${doc.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete={isDeleteDocument}
-                  onEdit={isUpdateDocument}
+                  onDelete
+                  onEdit
                   onPress={() => viewTransition(doc.procedureDocumentId)}
                   onPressDelete={() => removeDocument(doc.procedureDocumentId)}
                   onPressEdit={() => editDocument(doc)}

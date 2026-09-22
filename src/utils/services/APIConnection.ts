@@ -1,4 +1,3 @@
-import { getCookie } from "@/utils/helpers/cookie";
 export abstract class APIConnection {
   protected baseUrl: string;
 
@@ -23,7 +22,6 @@ export abstract class APIConnection {
     const headers: any = requestConfig.headers || {};
 
     if (!(headers instanceof Headers)) {
-      headers["credentials"] = "include";
       if (contentType) {
         headers["Content-Type"] = contentType;
       }
@@ -35,29 +33,9 @@ export abstract class APIConnection {
   }
 
   protected async handleRequest(endpoint: string, requestConfig: RequestInit): Promise<any> {
-    const cookie = await getCookie("msp");
-
-    if (cookie) {
-      if (!requestConfig.headers) {
-        requestConfig.headers = {};
-      }
-      if (requestConfig.headers instanceof Headers) {
-        requestConfig.headers.append("Authorization", `Bearer ${cookie}`);
-      } else {
-        (requestConfig.headers as Record<string, string>)["Authorization"] = `Bearer ${cookie}`;
-      }
-    }
     const url = this.buildUrl(endpoint);
     const response = await fetch(url, requestConfig);
     const contentType = response.headers.get("content-type") || "";
-
-    if (!response.ok) {
-      if (contentType.includes("application/json")) {
-        const errorData = await response.json();
-
-        throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
-      }
-    }
 
     return response;
   }

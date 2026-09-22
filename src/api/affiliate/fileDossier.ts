@@ -1,6 +1,8 @@
 "use server";
 
-import { apiClient } from "@/utils/services";
+import { webActionError } from "@/utils/auth/server-action-error";
+
+import { apiClient } from "@/utils/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getAffiliateShowFileDossiers = async (affiliateId: string): Promise<ResponseData> => {
@@ -22,7 +24,9 @@ export const getAffiliateShowFileDossiers = async (affiliateId: string): Promise
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -52,7 +56,9 @@ export const getAllFileDossiers = async (affiliateId: string): Promise<ResponseD
       data: data.data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -92,12 +98,13 @@ export const createFileDossier = async (
       message: data.message,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al crear el expediente",
-      data: e.message,
     };
   }
 };
@@ -132,12 +139,13 @@ export const updateFileDossier = async (
       message: data.message,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al crear o actualizar el expediente",
-      data: e.message,
     };
   }
 };
@@ -165,7 +173,9 @@ export const deleteFileDossier = async (
       message: data.message,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -179,7 +189,7 @@ export const getViewFileDossier = async (
   fileDossierId: string,
 ): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(
+    const response = await apiClient.GET_BLOB(
       `beneficiaries/affiliates/${affiliateId}/fileDossiers/${fileDossierId}`,
     );
     const data = await response.blob();
@@ -198,12 +208,13 @@ export const getViewFileDossier = async (
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al obtener el expediente",
-      data: e.message,
     };
   }
 };

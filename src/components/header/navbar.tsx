@@ -4,17 +4,15 @@ import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "
 
 import { UserSession, ThemeSwitch, Search } from "@/components/common";
 import { Logo } from "@/components/icons";
-import { urlLogin } from "@/utils/services";
-import { User } from "@/utils/interfaces";
-import { logout } from "@/api/auth";
 import { searchPerson } from "@/api/person";
 interface Props {
-  user: User;
+  user: { name: string; username: string };
   environment: string;
   computerToolName: string;
+  hubUrl: string;
 }
 
-export const Navbar = ({ user, environment, computerToolName }: Props) => {
+export const Navbar = ({ user, environment, computerToolName, hubUrl }: Props) => {
   return (
     <NextUINavbar
       isBordered
@@ -25,7 +23,7 @@ export const Navbar = ({ user, environment, computerToolName }: Props) => {
       <NavbarContent className="hidden sm:flex" justify="start">
         <NavbarBrand className="gap-7">
           <Tooltip content="Ir inicio" placement="bottom">
-            <Link className="flex justify-start items-center gap-1" href={`${urlLogin}/apphub`}>
+            <Link className="flex justify-start items-center gap-1" href={hubUrl}>
               <Logo height={105} width={105} />
             </Link>
           </Tooltip>
@@ -44,12 +42,7 @@ export const Navbar = ({ user, environment, computerToolName }: Props) => {
         <NavbarItem className="hidden sm:flex gap-2">
           <Search searchPerson={searchPerson} />
           <ThemeSwitch />
-          <UserSession
-            name={user?.name}
-            urlLogin={`${urlLogin}/login`}
-            username={user?.username}
-            onLogout={logout}
-          />
+          <UserSession hubUrl={hubUrl} name={user?.name} username={user?.username} />
         </NavbarItem>
       </NavbarContent>
     </NextUINavbar>

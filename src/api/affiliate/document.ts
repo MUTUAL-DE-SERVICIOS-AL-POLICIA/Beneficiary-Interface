@@ -1,5 +1,7 @@
 "use server";
-import { apiClient } from "@/utils/services";
+
+import { webActionError } from "@/utils/auth/server-action-error";
+import { apiClient } from "@/utils/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getDocuments = async (affiliateId: string): Promise<ResponseData> => {
@@ -21,7 +23,9 @@ export const getDocuments = async (affiliateId: string): Promise<ResponseData> =
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -57,7 +61,9 @@ export const createAffiliateDocument = async (
       message: data.message,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -92,7 +98,9 @@ export const updateAffiliateDocument = async (
       message: data.message,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -120,7 +128,9 @@ export const getAffiliateDocuments = async (affiliateId: string): Promise<Respon
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -133,7 +143,9 @@ export const getAffiliateDocuments = async (affiliateId: string): Promise<Respon
 
 export const getViewDocument = async (affiliateId: string, documentId: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/documents/${documentId}`);
+    const response = await apiClient.GET_BLOB(
+      `beneficiaries/affiliates/${affiliateId}/documents/${documentId}`,
+    );
     const data = await response.blob();
 
     if (!response.ok) {
@@ -150,12 +162,13 @@ export const getViewDocument = async (affiliateId: string, documentId: string): 
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al obtener el expediente",
-      data: e.message,
     };
   }
 };
@@ -183,7 +196,9 @@ export const deleteDocument = async (
       message: data.message,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,

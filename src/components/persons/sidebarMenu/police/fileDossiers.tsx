@@ -20,7 +20,6 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { getAccessCookie } from "@/utils/helpers/cookie";
 import { AffiliateFileDossier } from "@/utils/interfaces";
 
 export const FileDossiers = () => {
@@ -38,22 +37,9 @@ export const FileDossiers = () => {
   const [dataRegister, setDataRegister] = useState<any>(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const [fileDossierEdit, setFileDossierEdit] = useState<AffiliateFileDossier>();
-  const [isCreateFileDossier, setIsCreateFileDossier] = useState(false);
-  const [isUpdateFileDossier, setIsUpdateFileDossier] = useState(false);
-  const [isDeleteFileDossier, setIsDeleteFileDossier] = useState(false);
-
   useEffect(() => {
     getFileDossiersAffiliate();
-    getPermissions();
   }, []);
-
-  const getPermissions = async () => {
-    const { data } = await getAccessCookie();
-
-    data.includes("isCreateFileDossier") ? setIsCreateFileDossier(true) : setIsCreateFileDossier(false);
-    data.includes("isUpdateFileDossier") ? setIsUpdateFileDossier(true) : setIsUpdateFileDossier(false);
-    data.includes("isDeleteFileDossier") ? setIsDeleteFileDossier(true) : setIsDeleteFileDossier(false);
-  };
 
   const switchEdit = () => {
     setIsEdit(!isEdit);
@@ -88,8 +74,7 @@ export const FileDossiers = () => {
       }
 
       return;
-    } catch (error) {
-      console.error(error);
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -120,9 +105,7 @@ export const FileDossiers = () => {
       });
 
       return;
-    } catch (error) {
-      console.error("Error al eliminar expediente:", error);
-    }
+    } catch {}
   };
 
   const viewTransition = async (fileDossierId: number) => {
@@ -144,8 +127,7 @@ export const FileDossiers = () => {
       }
 
       setPdfBlob(data);
-    } catch (error) {
-      console.error("Error al obtener el expediente:", error);
+    } catch {
     } finally {
       setLoadingDocument(false);
     }
@@ -200,8 +182,7 @@ export const FileDossiers = () => {
 
       setDataRegister(data);
       onOpen();
-    } catch (error) {
-      console.error("Error al obtener los tipos de expedientes:", error);
+    } catch {
     } finally {
       setLoadingAllFileDossiers(false);
     }
@@ -216,8 +197,8 @@ export const FileDossiers = () => {
           isEdit={isEdit}
           isLoading={loadingAllFileDossiers}
           switchEdit={switchEdit}
-          toEdit={isUpdateFileDossier || isDeleteFileDossier}
-          toRegister={isCreateFileDossier}
+          toEdit
+          toRegister
           onPressRegister={handleOpenModal}
         />
 
@@ -237,8 +218,8 @@ export const FileDossiers = () => {
                   textHeader={`${key + 1}. ${fileDossier.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete={isDeleteFileDossier}
-                  onEdit={isUpdateFileDossier}
+                  onDelete
+                  onEdit
                   onPress={() => viewTransition(fileDossier.fileDossierId)}
                   onPressDelete={() => removeFileDossier(fileDossier.fileDossierId)}
                   onPressEdit={() => editFileDossier(fileDossier)}

@@ -1,25 +1,17 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export const proxy = async () => {
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get("msp");
-  const token = cookie?.value;
+import { hubPublicUrl } from "@/utils/auth/urls";
 
-  const host = process.env.NEXT_PUBLIC_FRONTEND_HOST || "";
-  const port = process.env.NEXT_PUBLIC_LOGIN_FRONTEND_PORT || "3001";
-  const url = "http://" + host + ":" + port + "/login";
-
+export const proxy = (request: NextRequest) => {
   try {
-    if (!token) {
-      return NextResponse.redirect(url);
+    if (!request.cookies.get("sid")?.value) {
+      return NextResponse.redirect(hubPublicUrl("/apphub"));
     }
 
     return NextResponse.next();
-  } catch (e) {
-    console.error("Error verificando token en middleware", e);
-
-    return NextResponse.redirect(url);
+  } catch {
+    return new NextResponse("Servicio temporalmente no disponible", { status: 503 });
   }
 };
 

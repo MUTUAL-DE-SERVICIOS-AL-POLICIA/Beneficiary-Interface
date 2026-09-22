@@ -1,15 +1,19 @@
 "use server";
 
-import { apiClient } from "@/utils/services";
+import { webActionError } from "@/utils/auth/server-action-error";
+
+import { apiClient } from "@/utils/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";
-export const postUploadChunk = async (body: any): Promise<ResponseData> => {
+export type UploadChunkVariant = "create" | "update";
+
+export const postUploadChunk = async (body: FormData, variant: UploadChunkVariant): Promise<ResponseData> => {
   try {
-    const response = await apiClient.POST(`common/uploadChunk`, body, true);
+    const response = await apiClient.POST(`common/uploadChunk/file-dossier/${variant}`, body, true);
 
     if (!response.ok) {
       return {
         error: true,
-        message: "Ocurrido un error subir el chunk: " + body.numberChunk + " del archivo",
+        message: "Ocurrió un error al subir una parte del archivo",
         data: response.statusText,
       };
     }
@@ -19,7 +23,9 @@ export const postUploadChunk = async (body: any): Promise<ResponseData> => {
       message: "Chunk del archivo creado o actualizado correctamente",
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,

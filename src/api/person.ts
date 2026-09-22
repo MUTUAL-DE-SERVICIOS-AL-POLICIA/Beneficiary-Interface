@@ -1,6 +1,8 @@
 "use server";
 
-import { apiClient } from "@/utils/services";
+import { webActionError } from "@/utils/auth/server-action-error";
+
+import { apiClient } from "@/utils/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getPersons = async (
@@ -35,7 +37,9 @@ export const getPersons = async (
       total: data.total,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -65,12 +69,13 @@ export const getPerson = async (uuid: string): Promise<ResponseData> => {
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al obtener datos de la persona",
-      data: e.message,
     };
   }
 };
@@ -94,12 +99,13 @@ export const getPersonRecords = async (personId: string): Promise<ResponseData> 
       data: data.data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al obtener historial de modificaciones",
-      data: e.message,
     };
   }
 };
@@ -135,7 +141,9 @@ export const getRegisteredFingerprints = async (personId: number) => {
       fingerprintsRegistered: [],
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -174,7 +182,9 @@ export const getAllFingerprintsIds = async () => {
       data: [],
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
@@ -202,12 +212,13 @@ export const getAffiliates = async (id: string): Promise<ResponseData> => {
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al obtener afiliados",
-      data: e.message,
     };
   }
 };
@@ -231,12 +242,13 @@ export const getBeneficiaries = async (id: string): Promise<ResponseData> => {
       data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al obtener beneficiarios",
-      data: e.message,
     };
   }
 };
@@ -265,12 +277,13 @@ export const postFingerprints = async (
       message: data.message || "Huella(s) registradas exitosamente",
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
       message: "Error al obtener datos de la persona",
-      data: e.message,
     };
   }
 };
@@ -293,7 +306,9 @@ export const searchPerson = async (value: string, type: string) => {
       data: data.data,
     };
   } catch (e: any) {
-    console.error(e);
+    const webError = webActionError(e);
+
+    if (webError) return webError;
 
     return {
       error: true,
