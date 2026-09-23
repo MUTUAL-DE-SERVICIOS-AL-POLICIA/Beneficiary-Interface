@@ -27,7 +27,7 @@ export function gatewayInternalUrl(): URL {
   return configuredHttpOrigin("GATEWAY_INTERNAL_URL");
 }
 
-export function hubPublicUrl(pathname: "/apphub" | "/api/auth/session/invalid"): URL {
+export function hubPublicUrl(pathname: "/apphub" | "/api/auth/session/invalid" | "/api/auth/logout"): URL {
   const url = configuredHttpOrigin("HUB_PUBLIC_ORIGIN");
 
   url.pathname = pathname;

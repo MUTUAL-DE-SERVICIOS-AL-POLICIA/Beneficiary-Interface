@@ -8,8 +8,9 @@ interface Props {
   username: string;
   name: string;
   hubUrl: string;
+  logoutUrl: string;
 }
-export const UserSession = ({ username, name, hubUrl }: Props) => {
+export const UserSession = ({ username, name, hubUrl, logoutUrl }: Props) => {
   return (
     <Dropdown placement="bottom-start">
       <DropdownTrigger>
@@ -31,6 +32,9 @@ export const UserSession = ({ username, name, hubUrl }: Props) => {
         </DropdownItem>
         <DropdownItem key="hub" href={hubUrl}>
           <p>Volver al Hub</p>
+        </DropdownItem>
+        <DropdownItem key="logout" color="danger" href={logoutUrl}>
+          Cerrar Sesión
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

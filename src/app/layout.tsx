@@ -55,6 +55,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     username: identity?.preferredUsername ?? identity?.sub ?? "Usuario",
   };
   const hubUrl = hubPublicUrl("/apphub").toString();
+  const logoutUrl = hubPublicUrl("/api/auth/logout").toString();
 
   return (
     <html suppressHydrationWarning lang="en">
@@ -66,6 +67,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
               computerToolName={computerToolName}
               environment={environment}
               hubUrl={hubUrl}
+              logoutUrl={logoutUrl}
               user={user}
             />
             <div className="flex flex-1 overflow-x-hidden">

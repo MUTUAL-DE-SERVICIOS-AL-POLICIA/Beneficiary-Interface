@@ -10,9 +10,10 @@ interface Props {
   environment: string;
   computerToolName: string;
   hubUrl: string;
+  logoutUrl: string;
 }
 
-export const Navbar = ({ user, environment, computerToolName, hubUrl }: Props) => {
+export const Navbar = ({ user, environment, computerToolName, hubUrl, logoutUrl }: Props) => {
   return (
     <NextUINavbar
       isBordered
@@ -42,7 +43,7 @@ export const Navbar = ({ user, environment, computerToolName, hubUrl }: Props) =
         <NavbarItem className="hidden sm:flex gap-2">
           <Search searchPerson={searchPerson} />
           <ThemeSwitch />
-          <UserSession hubUrl={hubUrl} name={user?.name} username={user?.username} />
+          <UserSession hubUrl={hubUrl} logoutUrl={logoutUrl} name={user?.name} username={user?.username} />
         </NavbarItem>
       </NavbarContent>
     </NextUINavbar>
