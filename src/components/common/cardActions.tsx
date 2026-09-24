@@ -17,6 +17,7 @@ interface Props {
   activeId?: string;
   dataId?: string;
   isLoading?: boolean;
+  isViewable?: boolean;
   onPress?: () => void;
   onDelete?: boolean;
   onPressDelete?: (data: any) => void;
@@ -36,6 +37,7 @@ export const CardActions = ({
   activeId = "0",
   dataId,
   isLoading = false,
+  isViewable = true,
   onPress = () => {},
   onDelete = false,
   onPressDelete = () => {},
@@ -50,7 +52,7 @@ export const CardActions = ({
     <>
       <Card
         className={`group border-small rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
-        isPressable={!isEdit && activeId !== dataId}
+        isPressable={isViewable && !isEdit && activeId !== dataId}
         onPress={onPress}
       >
         <CardBody className="flex flex-col gap-2 relative">
@@ -69,7 +71,13 @@ export const CardActions = ({
                   }
                 `}
               >
-                {activeId === dataId ? (isLoading ? textLoading : textActive) : !isEdit ? textHover : ""}
+                {activeId === dataId
+                  ? isLoading
+                    ? textLoading
+                    : textActive
+                  : !isEdit && isViewable
+                    ? textHover
+                    : ""}
               </span>
 
               {onEdit && isEdit && <ButtonEdit onPress={onPressEdit} />}

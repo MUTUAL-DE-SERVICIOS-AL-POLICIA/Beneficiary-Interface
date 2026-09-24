@@ -5,76 +5,56 @@ import { cache } from "react";
 import { apiClient } from "@/utils/services/GatewayServerClient";
 import { GatewayRequestError } from "@/utils/services/GatewayRequestError";
 
-export interface BeneficiaryIdentity {
-  sub: string;
-  preferredUsername?: string;
-  name?: string;
-  givenName?: string;
-  familyName?: string;
-  email?: string;
+export interface WebPermission {
+  resource: string;
+  scopes: string[];
 }
 
 export interface BeneficiaryContext {
   authenticated: true;
   currentTool: "beneficiary";
   currentClient: "beneficiary-interface";
-  identity: BeneficiaryIdentity;
+  identity: {
+    sub: string;
+    preferredUsername?: string;
+    name?: string;
+    givenName?: string;
+    familyName?: string;
+    email?: string;
+  };
   realmRoles: string[];
   clientRoles: string[];
   groups: string[];
+  permissions: WebPermission[];
   contextExpiresAt: number;
+  permissionsExpiresAt: number;
   sessionExpiresAt: number;
   sessionAbsoluteExpiresAt: number;
 }
 
-function plainRecord(value: unknown): Record<string, unknown> {
+function invalid(): never {
+  throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
+}
+
+function record(value: unknown): Record<string, unknown> {
   if (
     !value ||
     typeof value !== "object" ||
     Array.isArray(value) ||
     Object.getPrototypeOf(value) !== Object.prototype
-  ) {
-    throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-  }
+  )
+    invalid();
   return value as Record<string, unknown>;
 }
 
-function exactKeys(record: Record<string, unknown>, allowed: readonly string[]): void {
-  if (Object.keys(record).some((key) => !allowed.includes(key))) {
-    throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-  }
-}
-
-function requiredString(value: unknown): string {
-  if (typeof value !== "string" || !value.trim()) throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-  return value;
-}
-
-function optionalString(value: unknown): string | undefined {
-  return value === undefined ? undefined : requiredString(value);
-}
-
-function stringList(value: unknown): string[] {
-  if (
-    !Array.isArray(value) ||
-    value.some((item) => typeof item !== "string" || !item.trim()) ||
-    new Set(value).size !== value.length
-  ) {
-    throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-  }
-  return [...value];
-}
-
-function futureEpoch(value: unknown): number {
-  if (!Number.isSafeInteger(value) || (value as number) <= Date.now()) {
-    throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-  }
+function future(value: unknown): number {
+  if (!Number.isSafeInteger(value) || (value as number) <= Date.now()) invalid();
   return value as number;
 }
 
-function parseContext(value: unknown): BeneficiaryContext {
-  const source = plainRecord(value);
-  exactKeys(source, [
+function parse(value: unknown): BeneficiaryContext {
+  const source = record(value);
+  const keys = [
     "authenticated",
     "currentTool",
     "currentClient",
@@ -82,54 +62,95 @@ function parseContext(value: unknown): BeneficiaryContext {
     "realmRoles",
     "clientRoles",
     "groups",
+    "permissions",
     "contextExpiresAt",
+    "permissionsExpiresAt",
     "sessionExpiresAt",
     "sessionAbsoluteExpiresAt",
-  ]);
-
+  ];
   if (
+    Object.keys(source).length !== keys.length ||
+    Object.keys(source).some((key) => !keys.includes(key)) ||
     source.authenticated !== true ||
     source.currentTool !== "beneficiary" ||
-    source.currentClient !== "beneficiary-interface"
-  ) {
-    throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-  }
+    source.currentClient !== "beneficiary-interface" ||
+    !Array.isArray(source.permissions)
+  )
+    invalid();
 
-  const identity = plainRecord(source.identity);
-  exactKeys(identity, ["sub", "preferredUsername", "name", "givenName", "familyName", "email"]);
+  const identity = record(source.identity);
+  const identityKeys = ["sub", "preferredUsername", "name", "givenName", "familyName", "email"];
+  if (
+    Object.keys(identity).some((key) => !identityKeys.includes(key)) ||
+    typeof identity.sub !== "string" ||
+    !identity.sub.trim() ||
+    identityKeys
+      .slice(1)
+      .some(
+        (key) =>
+          identity[key] !== undefined &&
+          (typeof identity[key] !== "string" || !(identity[key] as string).trim()),
+      )
+  )
+    invalid();
+  const stringList = (value: unknown): string[] => {
+    if (
+      !Array.isArray(value) ||
+      value.some((item) => typeof item !== "string") ||
+      new Set(value).size !== value.length
+    )
+      invalid();
+    return [...value] as string[];
+  };
+  const realmRoles = stringList(source.realmRoles);
+  const clientRoles = stringList(source.clientRoles);
+  const groups = stringList(source.groups);
 
-  const contextExpiresAt = futureEpoch(source.contextExpiresAt);
-  const sessionExpiresAt = futureEpoch(source.sessionExpiresAt);
-  const sessionAbsoluteExpiresAt = futureEpoch(source.sessionAbsoluteExpiresAt);
-
-  if (sessionExpiresAt > sessionAbsoluteExpiresAt) {
-    throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-  }
+  const permissions = source.permissions.map((candidate) => {
+    const item = record(candidate);
+    if (
+      Object.keys(item).length !== 2 ||
+      !Object.prototype.hasOwnProperty.call(item, "resource") ||
+      !Object.prototype.hasOwnProperty.call(item, "scopes") ||
+      typeof item.resource !== "string" ||
+      !item.resource ||
+      !Array.isArray(item.scopes) ||
+      item.scopes.some((scope) => typeof scope !== "string" || !scope) ||
+      new Set(item.scopes).size !== item.scopes.length
+    )
+      invalid();
+    return { resource: item.resource, scopes: [...item.scopes] as string[] };
+  });
+  const contextExpiresAt = future(source.contextExpiresAt);
+  const permissionsExpiresAt = future(source.permissionsExpiresAt);
+  const sessionExpiresAt = future(source.sessionExpiresAt);
+  const sessionAbsoluteExpiresAt = future(source.sessionAbsoluteExpiresAt);
+  if (
+    permissionsExpiresAt > contextExpiresAt ||
+    contextExpiresAt > sessionExpiresAt ||
+    sessionExpiresAt > sessionAbsoluteExpiresAt
+  )
+    invalid();
 
   return {
     authenticated: true,
     currentTool: "beneficiary",
     currentClient: "beneficiary-interface",
-    identity: {
-      sub: requiredString(identity.sub),
-      preferredUsername: optionalString(identity.preferredUsername),
-      name: optionalString(identity.name),
-      givenName: optionalString(identity.givenName),
-      familyName: optionalString(identity.familyName),
-      email: optionalString(identity.email),
-    },
-    realmRoles: stringList(source.realmRoles),
-    clientRoles: stringList(source.clientRoles),
-    groups: stringList(source.groups),
+    identity: identity as BeneficiaryContext["identity"],
+    realmRoles,
+    clientRoles,
+    groups,
+    permissions,
     contextExpiresAt,
+    permissionsExpiresAt,
     sessionExpiresAt,
     sessionAbsoluteExpiresAt,
   };
 }
 
-export const getBeneficiaryContext = cache(async (): Promise<BeneficiaryContext> => {
-  const response = await apiClient.POST_CONTEXT("auth/client/context", { tool: "beneficiary" });
-  const payload: unknown = await response.json();
-
-  return parseContext(payload);
+export const getBeneficiaryContext = cache(async () => {
+  const response = await apiClient.POST_CONTEXT("auth/client/context", {
+    tool: "beneficiary",
+  });
+  return parse(await response.json());
 });

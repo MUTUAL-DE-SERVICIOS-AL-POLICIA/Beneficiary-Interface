@@ -17,8 +17,14 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
+import { usePermissions } from "@/utils/auth/permission-context";
 
 export const Documents = () => {
+  const { can } = usePermissions();
+  const canWrite = can("affiliates.documents", "write");
+  const canUpdate = can("affiliates.documents", "update");
+  const canDelete = can("affiliates.documents", "delete");
+  const canDownload = can("affiliates.documents", "download");
   const { affiliateId } = usePerson();
 
   const [documents, setDocuments] = useState<AffiliateDocument[]>([]);
@@ -172,8 +178,8 @@ export const Documents = () => {
           isEdit={isEdit}
           isLoading={loadingAllDocument}
           switchEdit={() => setIsEdit((prev) => !prev)}
-          toEdit
-          toRegister
+          toEdit={canUpdate || canDelete}
+          toRegister={canWrite}
           onPressRegister={handleOpenModal}
         />
 
@@ -188,14 +194,15 @@ export const Documents = () => {
                   height="min-h-[120px]"
                   isEdit={isEdit}
                   isLoading={loadingDocument}
+                  isViewable={canDownload}
                   sizeTextBody="text-sm"
                   textActive="VISUALIZANDO"
                   textBody={`${doc.name}`}
                   textHeader={`${key + 1}. ${doc.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete
-                  onEdit
+                  onDelete={canDelete}
+                  onEdit={canUpdate}
                   onPress={() => viewTransition(doc.procedureDocumentId)}
                   onPressDelete={() => removeDocument(doc.procedureDocumentId)}
                   onPressEdit={() => editDocument(doc)}

@@ -10,8 +10,10 @@ import { getAllFingerprintsIds, getRegisteredFingerprints } from "@/api/person";
 import { HeaderManage, SpinnerLoading } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
 import { Fingerprint } from "@/utils/interfaces";
+import { usePermissions } from "@/utils/auth/permission-context";
 
 export const Fingerprints = () => {
+  const { can } = usePermissions();
   const [selectedFinger, setSelectedFinger] = useState<string | undefined>(undefined);
   const [registeredFingerprints, setRegisteredFingerprints] = useState<Fingerprint[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -88,7 +90,7 @@ export const Fingerprints = () => {
         <SpinnerLoading isLoading={loading} />
 
         <HeaderManage
-          toRegister
+          toRegister={can("persons.fingerprints", "write")}
           isEdit={isEdit}
           isLoading={loadingAllFingerprints}
           switchEdit={switchEdit}

@@ -8,11 +8,11 @@ import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
 import { SidebarRoot } from "@/components/header/sidebarRoot";
 import { getDeployEnvironment } from "@/utils/env";
-import { getBeneficiaryContext } from "@/utils/auth/context";
 import { GatewayRequestError, isAccessDeniedCode } from "@/utils/services/GatewayRequestError";
 import { redirect } from "next/navigation";
 import { hubPublicUrl, invalidSessionUrl } from "@/utils/auth/urls";
 import { AlertServer } from "@/components/common";
+import { getBeneficiaryContext, WebPermission } from "@/utils/auth/context";
 
 export const metadata: Metadata = {
   title: {
@@ -35,11 +35,13 @@ export const viewport: Viewport = {
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const environment = getDeployEnvironment();
   const computerToolName = "HERRAMIENTA TECNOLÓGICA BENEFICIARIOS";
-  let context;
+  let sessionSnapshot;
+  let permissions: WebPermission[] = [];
   let sessionError: GatewayRequestError | undefined;
 
   try {
-    context = await getBeneficiaryContext();
+    sessionSnapshot = await getBeneficiaryContext();
+    ({ permissions } = sessionSnapshot);
   } catch (error) {
     if (error instanceof GatewayRequestError) {
       if (error.code === "SESSION_INVALID") redirect(invalidSessionUrl().toString());
@@ -49,7 +51,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     }
   }
 
-  const identity = context?.identity;
+  const identity = sessionSnapshot?.identity;
   const user = {
     name: identity?.name ?? identity?.preferredUsername ?? "Usuario",
     username: identity?.preferredUsername ?? identity?.sub ?? "Usuario",
@@ -61,7 +63,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     <html suppressHydrationWarning lang="en">
       <head />
       <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+        <Providers permissions={permissions} themeProps={{ attribute: "class", defaultTheme: "light" }}>
           <div className="flex flex-col h-screen">
             <Navbar
               computerToolName={computerToolName}

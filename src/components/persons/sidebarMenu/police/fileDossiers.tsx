@@ -21,8 +21,14 @@ import {
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
 import { AffiliateFileDossier } from "@/utils/interfaces";
+import { usePermissions } from "@/utils/auth/permission-context";
 
 export const FileDossiers = () => {
+  const { can } = usePermissions();
+  const canWrite = can("affiliates.file_dossiers", "write");
+  const canUpdate = can("affiliates.file_dossiers", "update");
+  const canDelete = can("affiliates.file_dossiers", "delete");
+  const canDownload = can("affiliates.file_dossiers", "download");
   const [fileDossiers, setFileDossiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingAllFileDossiers, setLoadingAllFileDossiers] = useState(false);
@@ -197,8 +203,8 @@ export const FileDossiers = () => {
           isEdit={isEdit}
           isLoading={loadingAllFileDossiers}
           switchEdit={switchEdit}
-          toEdit
-          toRegister
+          toEdit={canUpdate || canDelete}
+          toRegister={canWrite}
           onPressRegister={handleOpenModal}
         />
 
@@ -212,14 +218,15 @@ export const FileDossiers = () => {
                   dataId={String(fileDossier.fileDossierId)}
                   isEdit={isEdit}
                   isLoading={loadingDocument}
+                  isViewable={canDownload}
                   sizeTextBody="text-xl"
                   textActive="VISUALIZANDO"
                   textBody={`${fileDossier.name}`}
                   textHeader={`${key + 1}. ${fileDossier.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete
-                  onEdit
+                  onDelete={canDelete}
+                  onEdit={canUpdate}
                   onPress={() => viewTransition(fileDossier.fileDossierId)}
                   onPressDelete={() => removeFileDossier(fileDossier.fileDossierId)}
                   onPressEdit={() => editFileDossier(fileDossier)}

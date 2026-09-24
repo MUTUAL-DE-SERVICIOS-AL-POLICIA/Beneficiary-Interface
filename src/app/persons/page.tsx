@@ -1,6 +1,9 @@
 import { Card } from "@heroui/card";
 
 import { TableComponent } from "@/components/persons";
+import { AlertServer } from "@/components/common";
+import { getBeneficiaryContext } from "@/utils/auth/context";
+import { hubPublicUrl } from "@/utils/auth/urls";
 
 interface Column {
   id: number;
@@ -10,6 +13,19 @@ interface Column {
 }
 
 export default async function Persons() {
+  const { permissions } = await getBeneficiaryContext();
+  const canReadPersons = permissions.some(
+    (permission) => permission.resource === "persons" && permission.scopes.includes("read"),
+  );
+  if (!canReadPersons) {
+    return (
+      <AlertServer
+        color="warning"
+        description="No tiene permiso para consultar personas."
+        href={hubPublicUrl("/apphub").toString()}
+      />
+    );
+  }
   const personTableHeaders: Column[] = [
     { id: 1, name: "PRIMER NOMBRE", key: "firstName", sortable: true },
     { id: 2, name: "SEGUNDO NOMBRE", key: "secondName", sortable: true },

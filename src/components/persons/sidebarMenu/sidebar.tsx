@@ -1,3 +1,5 @@
+"use client";
+
 import { CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 
@@ -5,6 +7,7 @@ import { UserInfo, TabsSidebar } from "./";
 
 import { basicPersonInfo } from "@/utils/types";
 import { Features } from "@/utils/interfaces";
+import { usePermissions } from "@/utils/auth/permission-context";
 
 interface Props {
   user: basicPersonInfo;
@@ -12,20 +15,29 @@ interface Props {
 }
 
 export const Sidebar = ({ user, features }: Props) => {
+  const { can } = usePermissions();
   const person = [
     { name: "DATOS PERSONALES", key: "personalData", icon: "PersonalDataIcon" },
     { name: "HUELLAS DACTILARES", key: "fingerprints", icon: "TouchIcon" },
-  ];
+  ].filter((item) => item.key !== "fingerprints" || can("persons.fingerprints", "read"));
 
   const police = [
     { name: "DATOS POLICIALES", key: "policeData", icon: "PoliceDataIcon" },
     { name: "DOCUMENTOS", key: "documents", icon: "DocumentsDataIcon" },
     { name: "EXPEDIENTES", key: "fileDossiers", icon: "FileDossiersIcon" },
-  ];
+  ].filter((item) => {
+    if (item.key === "documents") return can("affiliates.documents", "read");
+    if (item.key === "fileDossiers") return can("affiliates.file_dossiers", "read");
+    return true;
+  });
 
-  const beneficiaries = [{ name: "BENEFICIARIOS", key: "beneficiaries", icon: "BeneficiariesDataIcon" }];
+  const beneficiaries = can("persons.affiliates", "read")
+    ? [{ name: "BENEFICIARIOS", key: "beneficiaries", icon: "BeneficiariesDataIcon" }]
+    : [];
 
-  const affiliates = [{ name: "AFILIADOS", key: "affiliates", icon: "AffiliateDataIcon" }];
+  const affiliates = can("affiliates", "read")
+    ? [{ name: "AFILIADOS", key: "affiliates", icon: "AffiliateDataIcon" }]
+    : [];
 
   return (
     <>
