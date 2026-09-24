@@ -6,7 +6,7 @@ import { UserSession, ThemeSwitch, Search } from "@/components/common";
 import { Logo } from "@/components/icons";
 import { searchPerson } from "@/api/person";
 interface Props {
-  user: { name: string; username: string };
+  user: { name: string; username: string; email?: string; groups: string[]; clientRoles: string[] };
   environment: string;
   computerToolName: string;
   hubUrl: string;
@@ -43,7 +43,14 @@ export const Navbar = ({ user, environment, computerToolName, hubUrl, logoutUrl 
         <NavbarItem className="hidden sm:flex gap-2">
           <Search searchPerson={searchPerson} />
           <ThemeSwitch />
-          <UserSession hubUrl={hubUrl} logoutUrl={logoutUrl} name={user?.name} username={user?.username} />
+          <UserSession
+            clientRoles={user.clientRoles}
+            email={user.email}
+            groups={user.groups}
+            logoutUrl={logoutUrl}
+            name={user.name}
+            username={user.username}
+          />
         </NavbarItem>
       </NavbarContent>
     </NextUINavbar>

@@ -55,6 +55,9 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const user = {
     name: identity?.name ?? identity?.preferredUsername ?? "Usuario",
     username: identity?.preferredUsername ?? identity?.sub ?? "Usuario",
+    email: identity?.email,
+    groups: sessionSnapshot?.groups ?? [],
+    clientRoles: sessionSnapshot?.clientRoles ?? [],
   };
   const hubUrl = hubPublicUrl("/apphub").toString();
   const logoutUrl = hubPublicUrl("/api/auth/logout").toString();
