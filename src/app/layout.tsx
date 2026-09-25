@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icono_muserpol.svg",
   },
+  other: {
+    google: "notranslate",
+  },
 };
 
 export const viewport: Viewport = {
@@ -64,7 +67,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const logoutUrl = hubPublicUrl("/api/auth/logout").toString();
 
   return (
-    <html suppressHydrationWarning lang="en">
+    <html suppressHydrationWarning className="notranslate" lang="es" translate="no">
       <head />
       <body className={clsx("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <Providers permissions={permissions} themeProps={{ attribute: "class", defaultTheme: "light" }}>
