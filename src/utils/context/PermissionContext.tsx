@@ -2,10 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo } from "react";
 
-export interface UiPermission {
-  resource: string;
-  scopes: readonly string[];
-}
+import type { ResourcePermission } from "@/utils/interfaces";
 
 interface PermissionContextValue {
   can: (resource: string, scope: string) => boolean;
@@ -18,7 +15,7 @@ export function PermissionProvider({
   permissions,
 }: {
   children: React.ReactNode;
-  permissions: readonly UiPermission[];
+  permissions: readonly ResourcePermission[];
 }) {
   const index = useMemo(
     () => new Map(permissions.map((item) => [item.resource, new Set(item.scopes)])),

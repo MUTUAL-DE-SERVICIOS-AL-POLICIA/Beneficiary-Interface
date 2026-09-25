@@ -21,7 +21,7 @@ import {
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
 import { AffiliateFileDossier } from "@/utils/interfaces";
-import { usePermissions } from "@/utils/auth/permission-context";
+import { usePermissions } from "@/utils/context/PermissionContext";
 
 export const FileDossiers = () => {
   const { can } = usePermissions();

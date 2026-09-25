@@ -10,7 +10,7 @@ import { getAllFingerprintsIds, getRegisteredFingerprints } from "@/api/person";
 import { HeaderManage, SpinnerLoading } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
 import { Fingerprint } from "@/utils/interfaces";
-import { usePermissions } from "@/utils/auth/permission-context";
+import { usePermissions } from "@/utils/context/PermissionContext";
 
 export const Fingerprints = () => {
   const { can } = usePermissions();

@@ -17,7 +17,7 @@ import {
   ViewerPdf,
 } from "@/components/common";
 import { usePerson } from "@/utils/context/PersonContext";
-import { usePermissions } from "@/utils/auth/permission-context";
+import { usePermissions } from "@/utils/context/PermissionContext";
 
 export const Documents = () => {
   const { can } = usePermissions();

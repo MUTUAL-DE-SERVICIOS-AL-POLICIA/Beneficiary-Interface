@@ -4,36 +4,20 @@ import { cache } from "react";
 
 import { apiClient } from "@/utils/services/GatewayServerClient";
 import { GatewayRequestError } from "@/utils/services/GatewayRequestError";
+import { UserContext } from "@/utils/interfaces";
 
-export interface WebPermission {
-  resource: string;
-  scopes: string[];
-}
-
-export interface BeneficiaryContext {
-  authenticated: true;
-  currentTool: "beneficiary";
-  currentClient: "beneficiary-interface";
-  identity: {
-    sub: string;
-    preferredUsername?: string;
-    name?: string;
-    givenName?: string;
-    familyName?: string;
-    email?: string;
-  };
-  realmRoles: string[];
-  clientRoles: string[];
-  groups: string[];
-  permissions: WebPermission[];
-  contextExpiresAt: number;
-  permissionsExpiresAt: number;
-  sessionExpiresAt: number;
-  sessionAbsoluteExpiresAt: number;
-}
+const TOOL_KEY_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const TECHNICAL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 
 function invalid(): never {
   throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
+}
+
+function configuredToolKey(): string {
+  const value = process.env.AUTH_TOOL_KEY;
+
+  if (!value || !TOOL_KEY_PATTERN.test(value)) invalid();
+  return value;
 }
 
 function record(value: unknown): Record<string, unknown> {
@@ -52,7 +36,7 @@ function future(value: unknown): number {
   return value as number;
 }
 
-function parse(value: unknown): BeneficiaryContext {
+function parse(value: unknown, expectedTool: string): UserContext {
   const source = record(value);
   const keys = [
     "authenticated",
@@ -72,8 +56,9 @@ function parse(value: unknown): BeneficiaryContext {
     Object.keys(source).length !== keys.length ||
     Object.keys(source).some((key) => !keys.includes(key)) ||
     source.authenticated !== true ||
-    source.currentTool !== "beneficiary" ||
-    source.currentClient !== "beneficiary-interface" ||
+    source.currentTool !== expectedTool ||
+    typeof source.currentClient !== "string" ||
+    !TECHNICAL_ID_PATTERN.test(source.currentClient) ||
     !Array.isArray(source.permissions)
   )
     invalid();
@@ -134,9 +119,9 @@ function parse(value: unknown): BeneficiaryContext {
 
   return {
     authenticated: true,
-    currentTool: "beneficiary",
-    currentClient: "beneficiary-interface",
-    identity: identity as BeneficiaryContext["identity"],
+    currentTool: expectedTool,
+    currentClient: source.currentClient,
+    identity: identity as UserContext["identity"],
     realmRoles,
     clientRoles,
     groups,
@@ -148,9 +133,9 @@ function parse(value: unknown): BeneficiaryContext {
   };
 }
 
-export const getBeneficiaryContext = cache(async () => {
-  const response = await apiClient.POST_CONTEXT("auth/client/context", {
-    tool: "beneficiary",
-  });
-  return parse(await response.json());
+export const getUserContext = cache(async () => {
+  const tool = configuredToolKey();
+  const response = await apiClient.POST_CONTEXT("auth/client/context", { tool });
+
+  return parse(await response.json(), tool);
 });

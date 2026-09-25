@@ -7,13 +7,14 @@ import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ToastProvider } from "@heroui/toast";
-import { PermissionProvider, UiPermission } from "@/utils/auth/permission-context";
+import { PermissionProvider } from "@/utils/context/PermissionContext";
+import type { ResourcePermission } from "@/utils/interfaces";
 
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
   initialSidebarCollapsed?: boolean;
-  permissions?: readonly UiPermission[];
+  permissions?: readonly ResourcePermission[];
 }
 
 type SidebarContextType = {

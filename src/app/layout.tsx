@@ -10,9 +10,10 @@ import { SidebarRoot } from "@/components/header/sidebarRoot";
 import { getDeployEnvironment } from "@/utils/env";
 import { GatewayRequestError, isAccessDeniedCode } from "@/utils/services/GatewayRequestError";
 import { redirect } from "next/navigation";
-import { hubPublicUrl, invalidSessionUrl } from "@/utils/auth/urls";
+import { hubPublicUrl, invalidSessionUrl } from "@/utils/helpers/urls";
 import { AlertServer } from "@/components/common";
-import { getBeneficiaryContext, WebPermission } from "@/utils/auth/context";
+import { getUserContext } from "@/api/auth/context";
+import { ResourcePermission } from "@/utils/interfaces";
 
 export const metadata: Metadata = {
   title: {
@@ -36,11 +37,11 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const environment = getDeployEnvironment();
   const computerToolName = "HERRAMIENTA TECNOLÓGICA BENEFICIARIOS";
   let sessionSnapshot;
-  let permissions: WebPermission[] = [];
+  let permissions: readonly ResourcePermission[] = [];
   let sessionError: GatewayRequestError | undefined;
 
   try {
-    sessionSnapshot = await getBeneficiaryContext();
+    sessionSnapshot = await getUserContext();
     ({ permissions } = sessionSnapshot);
   } catch (error) {
     if (error instanceof GatewayRequestError) {

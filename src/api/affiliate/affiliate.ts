@@ -1,6 +1,6 @@
 "use server";
 
-import { webActionError } from "@/utils/auth/server-action-error";
+import { webActionError } from "@/utils/helpers/server-action-error";
 
 import { apiClient } from "@/utils/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";

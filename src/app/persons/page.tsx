@@ -2,8 +2,8 @@ import { Card } from "@heroui/card";
 
 import { TableComponent } from "@/components/persons";
 import { AlertServer } from "@/components/common";
-import { getBeneficiaryContext } from "@/utils/auth/context";
-import { hubPublicUrl } from "@/utils/auth/urls";
+import { getUserContext } from "@/api/auth/context";
+import { hubPublicUrl } from "@/utils/helpers/urls";
 
 interface Column {
   id: number;
@@ -13,7 +13,7 @@ interface Column {
 }
 
 export default async function Persons() {
-  const { permissions } = await getBeneficiaryContext();
+  const { permissions } = await getUserContext();
   const canReadPersons = permissions.some(
     (permission) => permission.resource === "persons" && permission.scopes.includes("read"),
   );

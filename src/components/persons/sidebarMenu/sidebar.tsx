@@ -7,7 +7,7 @@ import { UserInfo, TabsSidebar } from "./";
 
 import { basicPersonInfo } from "@/utils/types";
 import { Features } from "@/utils/interfaces";
-import { usePermissions } from "@/utils/auth/permission-context";
+import { usePermissions } from "@/utils/context/PermissionContext";
 
 interface Props {
   user: basicPersonInfo;

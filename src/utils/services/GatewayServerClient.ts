@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-import { gatewayInternalUrl } from "@/utils/auth/urls";
+import { gatewayInternalUrl } from "@/utils/helpers/urls";
 import { GatewayErrorCode, GatewayRequestError, isGatewayErrorCode } from "./GatewayRequestError";
 
 type ResponseProfile = "context" | "json" | "upload" | "blob";

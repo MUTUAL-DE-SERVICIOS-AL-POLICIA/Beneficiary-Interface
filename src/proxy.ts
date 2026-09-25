@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { hubPublicUrl } from "@/utils/auth/urls";
+import { hubPublicUrl } from "@/utils/helpers/urls";
 
 export const proxy = (request: NextRequest) => {
   try {

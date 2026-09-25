@@ -6,7 +6,13 @@ import { UserSession, ThemeSwitch, Search } from "@/components/common";
 import { Logo } from "@/components/icons";
 import { searchPerson } from "@/api/person";
 interface Props {
-  user: { name: string; username: string; email?: string; groups: string[]; clientRoles: string[] };
+  user: {
+    name: string;
+    username: string;
+    email?: string;
+    groups: readonly string[];
+    clientRoles: readonly string[];
+  };
   environment: string;
   computerToolName: string;
   hubUrl: string;
