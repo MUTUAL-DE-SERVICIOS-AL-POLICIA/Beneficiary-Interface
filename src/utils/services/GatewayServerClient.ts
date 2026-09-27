@@ -3,11 +3,13 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { gatewayInternalUrl } from "@/utils/helpers/urls";
+import { configuredToolKey } from "@/utils/helpers/auth-tool";
 import { GatewayErrorCode, GatewayRequestError, isGatewayErrorCode } from "./GatewayRequestError";
 
 type ResponseProfile = "context" | "json" | "upload" | "blob";
 
 const SID_PATTERN = /^[A-Za-z0-9_-]{43,128}$/;
+const WEB_TOOL_HEADER = "X-Muserpol-Tool";
 const PUBLIC_ERROR_MAX_BYTES = 64 * 1024;
 const CONTEXT_MAX_BYTES = 64 * 1024;
 // Persons lists and related JSON can legitimately exceed the context limit.
@@ -152,6 +154,7 @@ async function request(endpoint: string, init: RequestInit, profile: ResponsePro
   const headers = new Headers(init.headers);
 
   headers.set("Cookie", `sid=${sid}`);
+  headers.set(WEB_TOOL_HEADER, configuredToolKey());
 
   try {
     const response = await fetch(joinUrl(endpoint), {

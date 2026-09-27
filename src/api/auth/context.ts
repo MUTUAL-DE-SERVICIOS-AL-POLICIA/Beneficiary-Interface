@@ -2,22 +2,14 @@ import "server-only";
 
 import { cache } from "react";
 
-import { apiClient } from "@/utils/services/GatewayServerClient";
-import { GatewayRequestError } from "@/utils/services/GatewayRequestError";
+import { apiClient, GatewayRequestError } from "@/utils/services";
+import { configuredToolKey } from "@/utils/helpers/auth-tool";
 import { UserContext } from "@/utils/interfaces";
 
-const TOOL_KEY_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 const TECHNICAL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 
 function invalid(): never {
   throw new GatewayRequestError(502, "AUTH_UPSTREAM_ERROR");
-}
-
-function configuredToolKey(): string {
-  const value = process.env.AUTH_TOOL_KEY;
-
-  if (!value || !TOOL_KEY_PATTERN.test(value)) invalid();
-  return value;
 }
 
 function record(value: unknown): Record<string, unknown> {
