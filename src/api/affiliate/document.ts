@@ -1,7 +1,7 @@
 "use server";
 
 import { webActionError } from "@/utils/helpers/server-action-error";
-import { apiClient } from "@/utils/services";
+import { apiClient } from "@/utils/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getDocuments = async (affiliateId: string): Promise<ResponseData> => {
