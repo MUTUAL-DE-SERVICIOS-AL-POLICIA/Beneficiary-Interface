@@ -1,19 +1,19 @@
 "use client";
+import { Tabs } from "@heroui/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React from "react";
-import { Tabs, Tab } from "@heroui/tabs";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
-import { TabSidebar } from "@/utils/interfaces";
 import {
-  TouchIcon,
-  ChevronRightIcon,
-  PersonalDataIcon,
-  PoliceDataIcon,
-  DocumentsDataIcon,
   AffiliateDataIcon,
   BeneficiariesDataIcon,
+  ChevronRightIcon,
+  DocumentsDataIcon,
   FileDossiersIcon,
+  PersonalDataIcon,
+  PoliceDataIcon,
+  TouchIcon,
 } from "@/components";
+import { TabSidebar } from "@/utils/interfaces";
 
 interface Props {
   tabSidebar: TabSidebar[];
@@ -31,14 +31,6 @@ export const TabsSidebar = ({ tabSidebar }: Props) => {
     router.push(`${pathname}?${nameTab}=${key}`);
   };
 
-  const verticalTabStyles = {
-    tabList: "flex w-full",
-    cursor: "w-full bg-green-900",
-    tab: "w-full px-0 h-9 border-gray-400",
-    tabContent:
-      "flex items-center justify-start gap-2 text-left text-black-900 w-full group-data-[selected=true]:text-green-900 group-data-[selected=true]:font-bold group-data-[selected=true]:bg-green-100 group-data-[selected=true]:rounded-lg group-data-[selected=true]:text-lg",
-  };
-
   const iconsMap: Record<string, React.ComponentType<any>> = {
     TouchIcon,
     PersonalDataIcon,
@@ -53,30 +45,32 @@ export const TabsSidebar = ({ tabSidebar }: Props) => {
     <Tabs
       aria-label="Options"
       className="w-full"
-      classNames={verticalTabStyles}
-      isVertical={true}
+      orientation="vertical"
       selectedKey={currentTab}
-      variant="underlined"
+      variant="primary"
       onSelectionChange={(key) => handleTabChange(String(key))}
     >
-      {tabSidebar.map((tab) => {
-        const IconComponent = iconsMap[tab.icon];
+      <Tabs.List className="flex w-full">
+        {tabSidebar.map((tab) => {
+          const IconComponent = iconsMap[tab.icon];
 
-        return (
-          <Tab
-            key={tab.key}
-            title={
-              <div className="flex justify-between items-center w-full">
+          return (
+            <Tabs.Tab
+              key={tab.key}
+              className="group h-9 w-full border-gray-400 px-0 text-left data-[selected=true]:rounded-lg data-[selected=true]:bg-green-100 data-[selected=true]:text-lg data-[selected=true]:font-bold data-[selected=true]:text-green-900"
+              id={tab.key}
+            >
+              <div className="flex w-full items-center justify-between">
                 <div className="flex items-center space-x-2">
                   {IconComponent && <IconComponent />}
                   <span>{tab.name}</span>
                 </div>
                 <ChevronRightIcon className="text-2xl" />
               </div>
-            }
-          />
-        );
-      })}
+            </Tabs.Tab>
+          );
+        })}
+      </Tabs.List>
     </Tabs>
   );
 };

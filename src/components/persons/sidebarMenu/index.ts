@@ -8,4 +8,3 @@ export { FileDossiers } from "./police/fileDossiers";
 export { Sidebar } from "./sidebar";
 export { Options } from "./options";
 export { TabsSidebar } from "./tabsSidebar";
-export { UserInfo } from "./userInfo";

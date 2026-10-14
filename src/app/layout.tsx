@@ -1,4 +1,4 @@
-import "@/utils/styles/globals.css";
+import "@/utils/globals.css";
 import clsx from "clsx";
 import { Metadata, Viewport } from "next";
 
@@ -8,10 +8,10 @@ import { Navbar } from "@/components/header/navbar";
 import { fontSans } from "@/utils/fonts";
 import { SidebarRoot } from "@/components/header/sidebarRoot";
 import { getDeployEnvironment } from "@/utils/env";
-import { GatewayRequestError, isAccessDeniedCode } from "@/utils/services/GatewayRequestError";
+import { GatewayRequestError, isAccessDeniedCode } from "@/services/GatewayRequestError";
 import { redirect } from "next/navigation";
 import { hubPublicUrl, invalidSessionUrl } from "@/utils/helpers/urls";
-import { AlertServer } from "@/components/common";
+import { AlertServer } from "@/components";
 import { getUserContext } from "@/api/auth/context";
 import { ResourcePermission } from "@/utils/interfaces";
 

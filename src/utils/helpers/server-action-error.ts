@@ -4,7 +4,7 @@ import { unstable_rethrow } from "next/navigation";
 import { redirect } from "next/navigation";
 
 import { ResponseData } from "@/utils/interfaces";
-import { GatewayRequestError } from "@/utils/services/GatewayRequestError";
+import { GatewayRequestError } from "@/services/GatewayRequestError";
 import { invalidSessionUrl } from "./urls";
 
 export function webActionError(error: unknown): ResponseData | undefined {

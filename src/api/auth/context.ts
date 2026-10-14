@@ -2,8 +2,8 @@ import "server-only";
 
 import { cache } from "react";
 
-import { apiClient } from "@/utils/services/GatewayServerClient";
-import { GatewayRequestError } from "@/utils/services/GatewayRequestError";
+import { apiClient } from "@/services/GatewayServerClient";
+import { GatewayRequestError } from "@/services/GatewayRequestError";
 import { configuredToolKey } from "@/utils/helpers/auth-tool";
 import { UserContext } from "@/utils/interfaces";
 

@@ -1,8 +1,7 @@
 "use client";
 import type { AffiliateDocument } from "@/utils/interfaces";
 
-import { useDisclosure } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
+import { toast } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ModalRegisterDocument } from "./manage";
@@ -15,9 +14,9 @@ import {
   HeaderManage,
   SpinnerLoading,
   ViewerPdf,
-} from "@/components/common";
-import { usePerson } from "@/utils/context/PersonContext";
-import { usePermissions } from "@/utils/context/PermissionContext";
+} from "@/components";
+import { usePerson } from "@/context/PersonContext";
+import { usePermissions } from "@/context/PermissionContext";
 
 export const Documents = () => {
   const { can } = usePermissions();
@@ -36,18 +35,20 @@ export const Documents = () => {
   const [activeDocumentId, setActiveDocumentId] = useState<number | null>(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const [documentEdit, setDocumentEdit] = useState<AffiliateDocument>();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [dataRegister, setDataRegister] = useState<any>(null);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const sizePdf = isExpanded ? "w-[100%]" : "w-[48%] border-l pl-2";
   const sizeColumn = isExpanded ? "w-0" : "w-[52%]";
 
-  useEffect(() => {
-    getDocumentsAffiliate();
-  }, []);
+  // Función reutilizable para actualizar la lista manualmente (por ejemplo, desde el modal o al eliminar)
+  const refreshDocuments = useCallback(async () => {
+    if (!affiliateId) return;
 
-  const getDocumentsAffiliate = useCallback(async () => {
     try {
       setLoading(true);
       setPdfBlob(null);
@@ -55,15 +56,15 @@ export const Documents = () => {
       setIsEdit(false);
       const { data } = await getAffiliateDocuments(affiliateId);
 
-      if (Array.isArray(data)) return setDocuments([]);
+      if (Array.isArray(data)) {
+        setDocuments([]);
+
+        return;
+      }
 
       setDocuments(data.documentsAffiliate ?? []);
     } catch {
-      addToast({
-        title: "Error",
-        description: "No se pudieron cargar los documentos.",
-        color: "danger",
-      });
+      toast.danger("Error al obtener los documentos del afiliado");
     } finally {
       setLoading(false);
     }
@@ -74,27 +75,15 @@ export const Documents = () => {
       const { error, message } = await deleteDocument(affiliateId, String(procedureDocumentId));
 
       if (error) {
-        addToast({
-          title: "Ocurrido un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
 
         return;
       }
-      getDocumentsAffiliate();
-      addToast({
-        title: "Documento eliminado",
-        description: message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
-
-      return;
-    } catch {}
+      refreshDocuments();
+      toast.success("Documento eliminado correctamente");
+    } catch {
+      toast.danger("Ocurrió un error al eliminar el documento");
+    }
   };
 
   const viewTransition = async (documentId: number) => {
@@ -105,16 +94,13 @@ export const Documents = () => {
       const { error, message, data } = await getViewDocument(affiliateId, String(documentId));
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-        });
+        toast.danger(message);
 
         return;
       }
       setPdfBlob(data);
     } catch {
+      toast.danger("Ocurrió un error al obtener el documento");
     } finally {
       setLoadingDocument(false);
     }
@@ -149,13 +135,7 @@ export const Documents = () => {
       const { error, message, data } = await getDocuments(affiliateId);
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
         setDataRegister(null);
 
         return;
@@ -164,10 +144,41 @@ export const Documents = () => {
       setDataRegister(data);
       onOpen();
     } catch {
+      toast.danger("Ocurrió un error al obtener los documentos");
     } finally {
       setLoadingAllDocument(false);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInitialData = async () => {
+      if (!affiliateId) return;
+
+      setLoading(true);
+      setPdfBlob(null);
+      setActiveDocumentId(null);
+      setIsEdit(false);
+
+      try {
+        const { data } = await getAffiliateDocuments(affiliateId);
+
+        if (cancelled) return;
+        setDocuments(Array.isArray(data) ? [] : (data?.documentsAffiliate ?? []));
+      } catch {
+        if (!cancelled) toast.danger("Error al cargar la información inicial");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadInitialData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [affiliateId]);
 
   return (
     <>
@@ -189,13 +200,13 @@ export const Documents = () => {
               documents.map((doc, key) => (
                 <CardActions
                   key={key}
+                  haveButton={canDownload}
                   activeId={String(activeDocumentId)}
                   dataId={String(doc.procedureDocumentId)}
                   height="min-h-[120px]"
                   isEdit={isEdit}
                   isLoading={loadingDocument}
-                  isViewable={canDownload}
-                  sizeTextBody="text-sm"
+                  sizeTextBody="text-md"
                   textActive="VISUALIZANDO"
                   textBody={`${doc.name}`}
                   textHeader={`${key + 1}. ${doc.shortened}`}
@@ -222,7 +233,7 @@ export const Documents = () => {
         isOpen={isOpen}
         isUpdate={isUpdate}
         onClose={onClose}
-        onRefreshDocuments={getDocumentsAffiliate}
+        onRefreshDocuments={refreshDocuments}
       />
     </>
   );

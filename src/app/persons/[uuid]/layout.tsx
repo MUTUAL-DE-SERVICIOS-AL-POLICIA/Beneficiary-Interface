@@ -1,10 +1,10 @@
-import { Card } from "@heroui/card";
+import { Card } from "@heroui/react";
 import { ReactNode } from "react";
 
 import { getPerson } from "@/api/person";
-import { AlertServer, BreadcrumbsState } from "@/components/common";
-import { Sidebar, Options } from "@/components/persons/sidebarMenu";
-import { PersonProvider } from "@/utils/context/PersonContext";
+import { AlertServer, BreadcrumbsState } from "@/components";
+import { Options, Sidebar } from "@/components/persons/sidebarMenu";
+import { PersonProvider } from "@/context";
 
 interface ProfileLayoutProps {
   children: ReactNode;
@@ -46,7 +46,7 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
       </div>
 
       <section className="flex justify-center md:flex-row flex-wrap gap-1 h-[calc(100vh-135px)]">
-        <Card className="flex-1 min-w-[250px] max-w-[300px] 2xl:max-w-[400px] border-small rounded-small border-default-200 dark:border-default-600 h-full">
+        <Card className="flex-1 min-w-62.5 max-w-75 2xl:max-w-100 border-small rounded-small border-default-200 dark:border-default-600 h-full">
           <Sidebar features={data.features} user={basicInfo} />
         </Card>
 

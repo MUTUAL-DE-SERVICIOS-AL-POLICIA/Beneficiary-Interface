@@ -2,15 +2,12 @@
 const nextConfig = {
   reactStrictMode: false,
   output: "standalone",
+  allowedDevOrigins: ['192.168.2.240'],
   experimental: {
     serverActions: {
-      bodySizeLimit: "400mb",
-
-    },
-  },
-  allowedDevOrigins: [
-    "192.168.2.240",
-  ],
+      bodySizeLimit: '500mb',
+    }
+  }
 };
 
-module.exports = nextConfig;
+export default nextConfig;

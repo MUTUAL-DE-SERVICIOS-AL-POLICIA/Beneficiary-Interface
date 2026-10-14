@@ -1,5 +1,5 @@
 "use server";
-import { apiClientBiometric } from "@/utils/services";
+import { apiClientBiometric } from "@/services";
 import { ResponseData } from "@/utils/interfaces";
 
 export const checkBiometricStatus = async () => {
@@ -26,9 +26,7 @@ export const checkBiometricStatus = async () => {
       message: "Servicio de biometrico no disponible",
       data: [],
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "No se puede comprobar la disponibilidad del servicio de biometrico",
@@ -75,9 +73,7 @@ export const captureTwoFingerprints = async () => {
       error: true,
       message: "Ocurrió un error",
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al capturar las huellas",
@@ -123,9 +119,7 @@ export const captureOneFingerprint = async () => {
       error: true,
       message: "Ocurrió un error",
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al capturar una huella",
@@ -149,9 +143,7 @@ export const captureStop = async (): Promise<ResponseData> => {
       error: false,
       message: "Captura detenida exitosamente",
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al detener la captura de huella(s)",

@@ -1,6 +1,6 @@
 "use client";
 
-import { DateInputCustom, InputCustom } from "@/components/common";
+import { DateInputCustom, InputCustom } from "@/components";
 
 interface Props {
   dateDerelict: string | Date;

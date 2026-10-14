@@ -1,6 +1,6 @@
 import "server-only";
 
-import { GatewayRequestError } from "@/utils/services/GatewayRequestError";
+import { GatewayRequestError } from "@/services/GatewayRequestError";
 
 const TOOL_KEY_PATTERN = /^[a-z][a-z0-9-]{0,63}$/;
 

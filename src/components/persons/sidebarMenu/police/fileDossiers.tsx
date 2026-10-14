@@ -1,6 +1,5 @@
 "use client";
-import { useDisclosure } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
+import { toast } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ModalRegisterFileDossier } from "./manage";
@@ -18,10 +17,10 @@ import {
   HeaderManage,
   SpinnerLoading,
   ViewerPdf,
-} from "@/components/common";
-import { usePerson } from "@/utils/context/PersonContext";
+} from "@/components";
+import { usePerson } from "@/context/PersonContext";
+import { usePermissions } from "@/context/PermissionContext";
 import { AffiliateFileDossier } from "@/utils/interfaces";
-import { usePermissions } from "@/utils/context/PermissionContext";
 
 export const FileDossiers = () => {
   const { can } = usePermissions();
@@ -29,7 +28,7 @@ export const FileDossiers = () => {
   const canUpdate = can("affiliates.file_dossiers", "update");
   const canDelete = can("affiliates.file_dossiers", "delete");
   const canDownload = can("affiliates.file_dossiers", "download");
-  const [fileDossiers, setFileDossiers] = useState([]);
+  const [fileDossiers, setFileDossiers] = useState<AffiliateFileDossier[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingAllFileDossiers, setLoadingAllFileDossiers] = useState(false);
   const [loadingDocument, setLoadingDocument] = useState(false);
@@ -39,19 +38,17 @@ export const FileDossiers = () => {
   const [activeFileDossierId, setActiveFileDossierId] = useState<number | null>(null);
   const [sizePdf, setSizePdf] = useState<string>("w-[48%] border-l pl-2");
   const [sizeColumn, setSizeColumn] = useState<string>("w-[52%]");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [dataRegister, setDataRegister] = useState<any>(null);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [fileDossierEdit, setFileDossierEdit] = useState<AffiliateFileDossier>();
-  useEffect(() => {
-    getFileDossiersAffiliate();
-  }, []);
+  // Función para refrescar manualmente los expedientes (usada al eliminar o desde el Modal)
+  const refreshFileDossiers = useCallback(async () => {
+    if (!affiliateId) return;
 
-  const switchEdit = () => {
-    setIsEdit(!isEdit);
-  };
-
-  const getFileDossiersAffiliate = useCallback(async () => {
     try {
       setLoading(true);
       setPdfBlob(null);
@@ -60,14 +57,7 @@ export const FileDossiers = () => {
       const { error, message, data } = await getAffiliateShowFileDossiers(affiliateId);
 
       if (error) {
-        addToast({
-          title: `Ocurrió un problema, servidor: ${error}, servicio: ${data.serviceStatus}`,
-          description: message,
-          color: "warning",
-          timeout: 3000,
-          shouldShowTimeoutProgress: true,
-        });
-
+        toast.danger(message);
         setFileDossiers([]);
 
         return;
@@ -76,42 +66,33 @@ export const FileDossiers = () => {
       if (Array.isArray(data)) {
         setFileDossiers([]);
       } else {
-        setFileDossiers(data.fileDossiersAffiliate);
+        setFileDossiers(data.fileDossiersAffiliate || []);
       }
-
-      return;
     } catch {
+      toast.danger("Ocurrió un error al obtener los expedientes");
     } finally {
       setLoading(false);
     }
   }, [affiliateId]);
+
+  const switchEdit = () => {
+    setIsEdit(!isEdit);
+  };
 
   const removeFileDossier = async (fileDossierId: number) => {
     try {
       const { error, message } = await deleteFileDossier(affiliateId, String(fileDossierId));
 
       if (error) {
-        addToast({
-          title: "Ocurrido un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
 
         return;
       }
-      getFileDossiersAffiliate();
-      addToast({
-        title: "Expediente eliminado",
-        description: message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
-
-      return;
-    } catch {}
+      refreshFileDossiers();
+      toast.success("Expediente eliminado correctamente");
+    } catch {
+      toast.danger("Ocurrió un error al eliminar el expediente");
+    }
   };
 
   const viewTransition = async (fileDossierId: number) => {
@@ -121,19 +102,14 @@ export const FileDossiers = () => {
       const { error, message, data } = await getViewFileDossier(affiliateId, String(fileDossierId));
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
 
         return;
       }
 
       setPdfBlob(data);
     } catch {
+      toast.danger("Ocurrió un error al obtener el expediente");
     } finally {
       setLoadingDocument(false);
     }
@@ -174,13 +150,7 @@ export const FileDossiers = () => {
       const { error, message, data } = await getAllFileDossiers(affiliateId);
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
         setDataRegister(null);
 
         return;
@@ -189,10 +159,46 @@ export const FileDossiers = () => {
       setDataRegister(data);
       onOpen();
     } catch {
+      toast.danger("Ocurrió un error al obtener los expedientes");
     } finally {
       setLoadingAllFileDossiers(false);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInitialData = async () => {
+      if (!affiliateId) return;
+
+      setLoading(true);
+      setPdfBlob(null);
+      setActiveFileDossierId(null);
+      setIsEdit(false);
+
+      try {
+        const { error, message, data } = await getAffiliateShowFileDossiers(affiliateId);
+
+        if (cancelled) return;
+        if (error) {
+          toast.danger(message);
+          setFileDossiers([]);
+        } else {
+          setFileDossiers(Array.isArray(data) ? [] : (data?.fileDossiersAffiliate ?? []));
+        }
+      } catch {
+        if (!cancelled) toast.danger("Ocurrió un error al obtener la información inicial");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void loadInitialData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [affiliateId]);
 
   return (
     <>
@@ -214,11 +220,11 @@ export const FileDossiers = () => {
               fileDossiers.map((fileDossier: AffiliateFileDossier, key) => (
                 <CardActions
                   key={key}
+                  haveButton={canDownload}
                   activeId={String(activeFileDossierId)}
                   dataId={String(fileDossier.fileDossierId)}
                   isEdit={isEdit}
                   isLoading={loadingDocument}
-                  isViewable={canDownload}
                   sizeTextBody="text-xl"
                   textActive="VISUALIZANDO"
                   textBody={`${fileDossier.name}`}
@@ -247,7 +253,7 @@ export const FileDossiers = () => {
         isOpen={isOpen}
         isUpdate={isUpdate}
         onClose={onClose}
-        onRefreshFileDossiers={getFileDossiersAffiliate}
+        onRefreshFileDossiers={refreshFileDossiers}
       />
     </>
   );

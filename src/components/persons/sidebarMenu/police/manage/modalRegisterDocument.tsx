@@ -1,13 +1,21 @@
-import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
-import { Button } from "@heroui/button";
-import { Form } from "@heroui/form";
-import { Input } from "@heroui/input";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
+import type { Key } from "@heroui/react";
+
+import {
+  Autocomplete,
+  Button,
+  Form,
+  Input,
+  Label,
+  ListBox,
+  Modal,
+  SearchField,
+  toast,
+  useFilter,
+} from "@heroui/react";
 import { useState } from "react";
 
 import { createAffiliateDocument, updateAffiliateDocument } from "@/api/affiliate";
-import { usePerson } from "@/utils/context/PersonContext";
+import { usePerson } from "@/context/PersonContext";
 import { AffiliateDocument, Document as DocumentInterface } from "@/utils/interfaces";
 
 interface Props {
@@ -16,7 +24,10 @@ interface Props {
   onClose: () => void;
   isUpdate?: boolean;
   affiliateDocument?: AffiliateDocument;
-  dataRegister?: any;
+  dataRegister?: {
+    allData: DocumentInterface[];
+    disableData: Key[];
+  } | null;
 }
 
 export function ModalRegisterDocument({
@@ -32,9 +43,17 @@ export function ModalRegisterDocument({
 }: Props) {
   const [loadingSave, setLoadingSave] = useState(false);
   const { affiliateId } = usePerson();
-  const [documentId, setDocumentId] = useState<any>(null);
+  const [documentId, setDocumentId] = useState<number | null>(null);
+  const { contains } = useFilter({ sensitivity: "base" });
+  const registerData = dataRegister ?? { allData: [], disableData: [] };
 
-  const onSubmit = async (e: any) => {
+  const handleDocumentChange = (key: Key | Key[] | null) => {
+    const selectedKey = Array.isArray(key) ? key[0] : key;
+
+    setDocumentId(selectedKey == null ? null : Number(selectedKey));
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoadingSave(true);
     e.preventDefault();
     try {
@@ -42,13 +61,7 @@ export function ModalRegisterDocument({
       const file = data.get("documentPdf");
 
       if (!(file instanceof File)) {
-        addToast({
-          title: "Ocurrió un error",
-          description: "Archivo inválido",
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger("Selecciona un archivo para continuar");
 
         return;
       }
@@ -67,6 +80,12 @@ export function ModalRegisterDocument({
           formData,
         );
       } else {
+        if (documentId === null) {
+          toast.danger("Selecciona un documento para continuar");
+
+          return;
+        }
+
         formData.append(`file[${documentId}]`, file);
         dataResponse = await createAffiliateDocument(affiliateId, documentId, formData);
       }
@@ -75,106 +94,117 @@ export function ModalRegisterDocument({
       error = dataResponse.error;
 
       if (error) {
-        addToast({
-          title: "Ocurrió un problema",
-          description: message,
-          color: "warning",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
 
         return;
       }
 
-      addToast({
-        title: "Aceptado",
-        description: message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
-      onRefreshDocuments();
-
-      return;
-    } catch (error) {
-      console.error("Error subir expediente:", error);
+      toast.success(message);
+      await onRefreshDocuments();
+      setDocumentId(null);
+      onClose();
+    } catch {
+      toast.danger("Error al subir el documento");
     } finally {
       setLoadingSave(false);
-      setDocumentId(new Set([]));
-      onClose();
     }
   };
 
   return (
-    <>
-      <Modal
-        hideCloseButton
+    <Modal>
+      <Modal.Backdrop
+        isKeyboardDismissDisabled
         isDismissable={false}
-        isKeyboardDismissDisabled={true}
         isOpen={isOpen}
-        size="5xl"
-        onClose={onClose}
+        onOpenChange={(open) => {
+          if (!open) onClose();
+        }}
       >
-        <Form onSubmit={onSubmit}>
-          <ModalContent>
-            {(onClose) => (
-              <>
-                {isUpdate && affiliateDocument ? (
-                  <>
-                    <ModalHeader className="flex flex-col">ACTUALIZAR DOCUMENTO</ModalHeader>
-                  </>
+        <Modal.Container size="lg">
+          <Modal.Dialog className="w-full max-w-5xl">
+            <Form onSubmit={onSubmit}>
+              <Modal.Header>
+                <Modal.Heading>
+                  {isUpdate && affiliateDocument ? "ACTUALIZAR DOCUMENTO" : "SELECCIONE DOCUMENTO"}
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
+                {!isUpdate ? (
+                  <Autocomplete
+                    fullWidth
+                    isRequired
+                    className="w-full"
+                    disabledKeys={registerData.disableData}
+                    name="documentId"
+                    placeholder="Buscar documento"
+                    selectionMode="single"
+                    value={documentId}
+                    variant="secondary"
+                    onChange={handleDocumentChange}
+                  >
+                    <Label>Buscar documento</Label>
+                    <Autocomplete.Trigger>
+                      <Autocomplete.Value />
+                      <Autocomplete.ClearButton />
+                      <Autocomplete.Indicator />
+                    </Autocomplete.Trigger>
+                    <Autocomplete.Popover>
+                      <Autocomplete.Filter filter={contains}>
+                        <SearchField aria-label="Filtrar documentos" name="document-search">
+                          <SearchField.Group>
+                            <SearchField.SearchIcon />
+                            <SearchField.Input placeholder="Buscar..." />
+                            <SearchField.ClearButton />
+                          </SearchField.Group>
+                        </SearchField>
+                        <ListBox aria-label="Documentos disponibles">
+                          {registerData.allData.map((document) =>
+                            document.id === null ? null : (
+                              <ListBox.Item
+                                key={document.id}
+                                id={document.id}
+                                textValue={`(${document.shortened}): ${document.name}`}
+                              >
+                                <div className="truncate text-sm">
+                                  <span className="font-semibold">({document.shortened}): </span>
+                                  <span>{document.name}</span>
+                                </div>
+                                <ListBox.ItemIndicator />
+                              </ListBox.Item>
+                            ),
+                          )}
+                        </ListBox>
+                      </Autocomplete.Filter>
+                    </Autocomplete.Popover>
+                  </Autocomplete>
                 ) : (
-                  <ModalHeader className="flex flex-col">SELECCIONE DOCUMENTO</ModalHeader>
+                  <p>
+                    {affiliateDocument && (
+                      <>
+                        <b>Nombre:</b> {affiliateDocument.name}
+                        <br />
+                        <b>Código:</b> {affiliateDocument.shortened}
+                      </>
+                    )}
+                  </p>
                 )}
-
-                <ModalBody>
-                  {!isUpdate ? (
-                    <Autocomplete
-                      isRequired
-                      className="w-full"
-                      defaultItems={dataRegister.allData}
-                      disabledKeys={dataRegister.disableData}
-                      label="Buscar documento"
-                      labelPlacement="inside"
-                      variant="bordered"
-                      onChange={setDocumentId}
-                    >
-                      {(document: DocumentInterface) => (
-                        <AutocompleteItem
-                          key={document.id}
-                          textValue={`(${document.shortened}): ${document.name}`}
-                        >
-                          <div className="text-small truncate">
-                            <span className="font-semibold">({document.shortened}): </span>
-                            <span>{document.name}</span>
-                          </div>
-                        </AutocompleteItem>
-                      )}
-                    </Autocomplete>
-                  ) : (
-                    <p>
-                      {affiliateDocument && (
-                        <>
-                          <b>Nombre:</b> {affiliateDocument.name}
-                          <br />
-                          <b>Código:</b> {affiliateDocument.shortened}
-                        </>
-                      )}
-                    </p>
-                  )}
-                  <Input isRequired name="documentPdf" type="file" />
-                </ModalBody>
-                <ModalFooter>
-                  <Button onPress={onClose}>Cerrar</Button>
-                  <Button isLoading={loadingSave} type="submit">
-                    Subir
-                  </Button>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Form>
-      </Modal>
-    </>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="documentPdf">Archivo PDF</Label>
+                  <Input required accept="application/pdf" id="documentPdf" name="documentPdf" type="file" />
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button slot="close" variant="secondary">
+                  Cerrar
+                </Button>
+                <Button isPending={loadingSave} type="submit">
+                  Subir
+                </Button>
+              </Modal.Footer>
+            </Form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 }

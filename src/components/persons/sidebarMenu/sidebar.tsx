@@ -1,13 +1,13 @@
 "use client";
 
-import { CardBody, CardHeader } from "@heroui/card";
-import { Divider } from "@heroui/divider";
+import { Card, Separator } from "@heroui/react";
 
-import { UserInfo, TabsSidebar } from "./";
+import { TabsSidebar } from "./";
 
-import { basicPersonInfo } from "@/utils/types";
+import { UserInfo } from "@/components";
+import { usePermissions } from "@/context/PermissionContext";
 import { Features } from "@/utils/interfaces";
-import { usePermissions } from "@/utils/context/PermissionContext";
+import { basicPersonInfo } from "@/utils/types";
 
 interface Props {
   user: basicPersonInfo;
@@ -41,11 +41,18 @@ export const Sidebar = ({ user, features }: Props) => {
 
   return (
     <>
-      <CardHeader className="justify-center">
-        <UserInfo isCopy isPolice={features.isPolice} user={user} />
-      </CardHeader>
-      <Divider className="bg-gray-400 w-full" />
-      <CardBody>
+      <Card.Header className="justify-center">
+        <UserInfo
+          hasPhoto
+          isDelete
+          isEdit
+          isRegister
+          isPolice={features.isPolice}
+          user={{ ...user, nup: user.nup?.toString() }}
+        />
+      </Card.Header>
+      <Separator className="bg-gray-400 w-full" />
+      <Card.Content className="flex flex-col gap-2">
         <TabsSidebar tabSidebar={person} />
 
         {features.isPolice && (
@@ -63,7 +70,7 @@ export const Sidebar = ({ user, features }: Props) => {
             <TabsSidebar tabSidebar={affiliates} />
           </>
         )}
-      </CardBody>
+      </Card.Content>
     </>
   );
 };

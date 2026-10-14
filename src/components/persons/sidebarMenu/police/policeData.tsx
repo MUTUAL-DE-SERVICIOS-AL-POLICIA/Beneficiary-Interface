@@ -1,35 +1,49 @@
 "use client";
 import { useEffect, useState } from "react";
+import { toast } from "@heroui/react";
 
 import { Derelict, Entry, Service, State } from "./information";
 
 import { getAffiliate } from "@/api/affiliate";
-import { usePerson } from "@/utils/context/PersonContext";
+import { SpinnerLoading } from "@/components";
+import { usePerson } from "@/context/PersonContext";
 import { initialPoliceData } from "@/utils/types";
-import { SpinnerLoading } from "@/components/common";
 
 export const PoliceData = () => {
   const [policeData, setPoliceData] = useState(initialPoliceData);
-
   const [loading, setLoading] = useState(false);
   const { affiliateId } = usePerson();
 
   useEffect(() => {
-    getPoliceData();
-  }, []);
+    let cancelled = false;
 
-  const getPoliceData = async () => {
-    try {
+    const fetchPoliceData = async () => {
+      if (!affiliateId) return;
+
       setLoading(true);
-      const { data } = await getAffiliate(affiliateId);
+      try {
+        const { data } = await getAffiliate(affiliateId);
 
-      return setPoliceData(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        if (!cancelled) {
+          setPoliceData(data);
+        }
+      } catch {
+        if (!cancelled) {
+          toast.danger("Ocurrió un error al obtener los datos policiales");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void fetchPoliceData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [affiliateId]);
 
   return (
     <div className="relative h-full w-full">

@@ -1,10 +1,12 @@
-import { Link } from "@heroui/link";
-import { Tooltip } from "@heroui/tooltip";
-import { NavbarBrand, NavbarContent, NavbarItem, Navbar as NextUINavbar } from "@heroui/navbar";
+"use client";
 
-import { UserSession, ThemeSwitch, Search } from "@/components/common";
-import { Logo } from "@/components/icons";
+import { Link, Tooltip } from "@heroui/react";
+
+import { UserSession } from "./userSession";
+
+import { ThemeSwitch, Logo, Search } from "@/components";
 import { searchPerson } from "@/api/person";
+
 interface Props {
   user: {
     name: string;
@@ -21,19 +23,21 @@ interface Props {
 
 export const Navbar = ({ user, environment, computerToolName, hubUrl, logoutUrl }: Props) => {
   return (
-    <NextUINavbar
-      isBordered
-      className="border-r light:border-gray-200 dark:border-gray-500"
-      maxWidth="full"
-      position="sticky"
-    >
-      <NavbarContent className="hidden sm:flex" justify="start">
-        <NavbarBrand className="gap-7">
-          <Tooltip content="Ir inicio" placement="bottom">
+    <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
+      <header className="mx-auto flex h-16 w-full items-center justify-between gap-4 px-6">
+        <div className="flex items-center gap-4">
+          <Tooltip delay={0}>
             <Link className="flex justify-start items-center gap-1" href={hubUrl}>
-              <Logo height={105} width={105} />
+              <Logo height={30} width={80} />
             </Link>
+            <Tooltip.Content showArrow placement="right">
+              <Tooltip.Arrow />
+              <p>Ir a inicio</p>
+            </Tooltip.Content>
           </Tooltip>
+        </div>
+
+        <div className="flex items-center gap-4">
           <div className="flex flex-col items-center text-center leading-tight">
             <span className="font-bold text-md uppercase">{computerToolName}</span>
             {(environment === "dev" || environment === "test") && (
@@ -42,23 +46,28 @@ export const Navbar = ({ user, environment, computerToolName, hubUrl, logoutUrl 
               </span>
             )}
           </div>
-        </NavbarBrand>
-      </NavbarContent>
+        </div>
 
-      <NavbarContent className="hidden sm:flex basis-1/5 sm:basis-full" justify="end">
-        <NavbarItem className="hidden sm:flex gap-2">
-          <Search searchPerson={searchPerson} />
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center text-center leading-tight">
+            <Search searchPerson={searchPerson} />
+          </div>
+        </div>
+
+        <div className="hidden sm:flex items-center gap-2">
           <ThemeSwitch />
-          <UserSession
-            clientRoles={user.clientRoles}
-            email={user.email}
-            groups={user.groups}
-            logoutUrl={logoutUrl}
-            name={user.name}
-            username={user.username}
-          />
-        </NavbarItem>
-      </NavbarContent>
-    </NextUINavbar>
+          <div className="hidden md:flex">
+            <UserSession
+              clientRoles={user.clientRoles}
+              email={user.email}
+              groups={user.groups}
+              logoutUrl={logoutUrl}
+              name={user.name}
+              username={user.username}
+            />
+          </div>
+        </div>
+      </header>
+    </nav>
   );
 };

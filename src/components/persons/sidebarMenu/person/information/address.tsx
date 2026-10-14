@@ -1,4 +1,4 @@
-import { InputCustom } from "@/components/common";
+import { InputCustom } from "@/components";
 
 export const Address = () => {
   return (
