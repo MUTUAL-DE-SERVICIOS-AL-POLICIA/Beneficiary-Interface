@@ -1,6 +1,6 @@
 "use client";
 
-import { InputCustom } from "@/components/common";
+import { InputCustom } from "@/components";
 
 interface Props {
   serviceYears: number | string;
