@@ -1,14 +1,13 @@
 "use client";
-import { useDisclosure } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
-import { useEffect, useState } from "react";
+import { toast } from "@heroui/react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Hands } from "./information";
 import { ModalRegisterFingerprints } from "./manage";
 
 import { getAllFingerprintsIds, getRegisteredFingerprints } from "@/api/person";
-import { HeaderManage, SpinnerLoading } from "@/components/common";
-import { usePerson } from "@/utils/context/PersonContext";
+import { HeaderManage, SpinnerLoading } from "@/components";
+import { usePerson } from "@/context/PersonContext";
 import { Fingerprint } from "@/utils/interfaces";
 
 export const Fingerprints = () => {
@@ -17,43 +16,37 @@ export const Fingerprints = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingAllFingerprints, setAllFingerprints] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [dataRegister, setDataRegister] = useState<any[]>([]);
 
-  const { person } = usePerson();
-  const personId = person.id;
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
 
-  useEffect(() => {
-    getFingerprints();
-  }, []);
+  const { person } = usePerson();
+  const personId = person?.id;
 
   const switchEdit = () => {
     setIsEdit(!isEdit);
   };
 
-  const getFingerprints = async () => {
+  // Función para refrescar manualmente cuando se registra o elimina una huella desde el modal
+  const refreshFingerprints = useCallback(async () => {
+    if (!personId) return;
+
     setLoading(true);
     try {
       const { error, message, fingerprintsRegistered } = await getRegisteredFingerprints(personId);
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
       }
-      setRegisteredFingerprints(fingerprintsRegistered);
-
-      return;
-    } catch (error) {
-      console.error(error);
+      setRegisteredFingerprints(fingerprintsRegistered ?? []);
+    } catch {
+      toast.danger("Ocurrió un error al obtener los registros de huellas dactilares");
     } finally {
       setLoading(false);
     }
-  };
+  }, [personId]);
 
   const handleOPenModal = async () => {
     try {
@@ -61,13 +54,7 @@ export const Fingerprints = () => {
       const { error, message, data } = await getAllFingerprintsIds();
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
         setDataRegister([]);
 
         return;
@@ -75,12 +62,46 @@ export const Fingerprints = () => {
 
       setDataRegister(data);
       onOpen();
-    } catch (error) {
-      console.error("Error al obtener tipos de huellas:", error);
+    } catch {
+      toast.danger("Ocurrió un error al obtener los datos de los registros de huellas dactilares");
     } finally {
       setAllFingerprints(false);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadFingerprints = async () => {
+      if (!personId) return;
+
+      setLoading(true);
+      try {
+        const { error, message, fingerprintsRegistered } = await getRegisteredFingerprints(personId);
+
+        if (cancelled) return;
+
+        if (error) {
+          toast.danger(message);
+        }
+        setRegisteredFingerprints(fingerprintsRegistered ?? []);
+      } catch {
+        if (!cancelled) {
+          toast.danger("Ocurrió un error al obtener los registros de huellas dactilares");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadFingerprints();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [personId]);
 
   return (
     <>
@@ -103,7 +124,7 @@ export const Fingerprints = () => {
         dataRegister={dataRegister}
         isOpen={isOpen}
         onClose={onClose}
-        onRefreshFingerprints={getFingerprints}
+        onRefreshFingerprints={refreshFingerprints}
         onSelectFinger={setSelectedFinger}
       />
     </>

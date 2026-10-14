@@ -1,6 +1,6 @@
 "use server";
 
-import { apiClient } from "@/utils/services";
+import { apiClient } from "@/services";
 import { ResponseData } from "@/utils/interfaces";
 export const postUploadChunk = async (body: any): Promise<ResponseData> => {
   try {
@@ -18,9 +18,7 @@ export const postUploadChunk = async (body: any): Promise<ResponseData> => {
       error: false,
       message: "Chunk del archivo creado o actualizado correctamente",
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al crear o actualizar el archivo",

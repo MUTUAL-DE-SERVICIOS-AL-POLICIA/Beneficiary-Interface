@@ -1,16 +1,11 @@
-import { Button } from "@heroui/button";
-import { Form } from "@heroui/form";
-import { Input } from "@heroui/input";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { Progress } from "@heroui/progress";
-import { Select, SelectItem } from "@heroui/select";
-import { Selection } from "@heroui/table";
-import { addToast } from "@heroui/toast";
+import type { Key } from "@heroui/react";
+
+import { Button, Form, Input, Label, ListBox, Modal, ProgressCircle, Select, toast } from "@heroui/react";
 import { useState } from "react";
 
 import { createFileDossier, updateFileDossier } from "@/api/affiliate";
 import { postUploadChunk } from "@/api/common";
-import { usePerson } from "@/utils/context/PersonContext";
+import { usePerson } from "@/context/PersonContext";
 import { AffiliateFileDossier, FileDossier as FileDossierInterface } from "@/utils/interfaces";
 
 interface ModalProps {
@@ -19,7 +14,10 @@ interface ModalProps {
   onClose: () => void;
   isUpdate?: boolean;
   affiliateFileDossier?: AffiliateFileDossier;
-  dataRegister?: any;
+  dataRegister?: {
+    allData: FileDossierInterface[];
+    disableData: Key[];
+  } | null;
 }
 
 export function ModalRegisterFileDossier({
@@ -35,10 +33,11 @@ export function ModalRegisterFileDossier({
 }: ModalProps) {
   const [loadingSave, setLoadingSave] = useState(false);
   const { affiliateId } = usePerson();
-  const [fileDossierId, setFileDossierId] = useState<Selection>(new Set([]));
+  const [fileDossierId, setFileDossierId] = useState<Key | null>(null);
   const [progress, setProgress] = useState(0);
+  const registerData = dataRegister ?? { allData: [], disableData: [] };
 
-  const onSubmit = async (e: any) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setLoadingSave(true);
     e.preventDefault();
     try {
@@ -46,13 +45,13 @@ export function ModalRegisterFileDossier({
       const file = formData.get("fileDossierPdf");
 
       if (!(file instanceof File)) {
-        addToast({
-          title: "Ocurrió un error",
-          description: "Archivo inválido",
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger("No se ha seleccionado un archivo válido");
+
+        return;
+      }
+
+      if (!isUpdate && fileDossierId === null) {
+        toast.danger("Selecciona un expediente para continuar");
 
         return;
       }
@@ -62,7 +61,7 @@ export function ModalRegisterFileDossier({
       const fileId =
         isUpdate && affiliateFileDossier
           ? affiliateFileDossier.fileDossierId.toString()
-          : String(Array.from(fileDossierId)[0]);
+          : String(fileDossierId);
       const initialName = `fileDossier-${affiliateId}-${fileId}`;
 
       for (let i = 0; i < totalChunks; i++) {
@@ -78,13 +77,7 @@ export function ModalRegisterFileDossier({
         const response = await postUploadChunk(body);
 
         if (response.error) {
-          addToast({
-            title: "Ocurrió un error al subir chunk: " + (i + 1) + " del expediente",
-            description: response.message,
-            color: "danger",
-            timeout: 3500,
-            shouldShowTimeoutProgress: true,
-          });
+          toast.danger("Error al subir el archivo: " + response.message);
 
           return;
         }
@@ -103,112 +96,126 @@ export function ModalRegisterFileDossier({
       }
 
       if (dataResponse.error) {
-        addToast({
-          title: "Ocurrió un problema",
-          description: dataResponse.message,
-          color: "warning",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(dataResponse.message);
 
         return;
       }
 
-      addToast({
-        title: "Aceptado",
-        description: dataResponse.message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
-      onRefreshFileDossiers();
-
-      return;
-    } catch (error) {
-      console.error("Error subir expediente:", error);
-    } finally {
-      setLoadingSave(false);
-      setFileDossierId(new Set([]));
+      toast.success(dataResponse.message);
+      await onRefreshFileDossiers();
+      setFileDossierId(null);
       setProgress(0);
       onClose();
+    } catch {
+      toast.danger("Error al registrar el expediente");
+    } finally {
+      setLoadingSave(false);
     }
   };
 
   return (
-    <>
-      <Modal
-        hideCloseButton
+    <Modal>
+      <Modal.Backdrop
+        isKeyboardDismissDisabled
         isDismissable={false}
-        isKeyboardDismissDisabled={true}
         isOpen={isOpen}
-        size="3xl"
-        onClose={onClose}
+        onOpenChange={(open) => {
+          if (!open) onClose();
+        }}
       >
-        <Form onSubmit={onSubmit}>
-          <ModalContent>
-            {(onClose) => (
-              <>
+        <Modal.Container size="lg">
+          <Modal.Dialog className="w-full max-w-3xl">
+            <Form onSubmit={onSubmit}>
+              <Modal.Header>
+                <Modal.Heading>
+                  {loadingSave
+                    ? "REGISTRANDO EXPEDIENTE"
+                    : isUpdate && affiliateFileDossier
+                      ? "ACTUALIZAR EXPEDIENTE"
+                      : "SELECCIONE EXPEDIENTE"}
+                </Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
                 {loadingSave ? (
-                  <>
-                    <ModalHeader className="flex flex-col">REGISTRANDO EXPEDIENTE</ModalHeader>
-                    <ModalBody>
-                      <Progress
-                        aria-label="Downloading..."
-                        className="max-w-md"
-                        color="success"
-                        showValueLabel={true}
-                        size="md"
-                        value={progress}
-                      />
-                    </ModalBody>
-                  </>
+                  <div className="flex flex-col items-center gap-3 py-4">
+                    <ProgressCircle aria-label="Progreso de carga" color="success" size="md" value={progress}>
+                      <ProgressCircle.Track>
+                        <ProgressCircle.TrackCircle />
+                        <ProgressCircle.FillCircle />
+                      </ProgressCircle.Track>
+                    </ProgressCircle>
+                    <span>{Math.round(progress)}%</span>
+                  </div>
                 ) : (
                   <>
-                    {isUpdate && affiliateFileDossier ? (
-                      <>
-                        <ModalHeader className="flex flex-col">ACTUALIZAR EXPEDIENTE</ModalHeader>
-                      </>
+                    {!isUpdate ? (
+                      <Select
+                        fullWidth
+                        isRequired
+                        disabledKeys={registerData.disableData}
+                        name="fileDossierId"
+                        placeholder="Seleccione un expediente"
+                        value={fileDossierId}
+                        onChange={(key) => setFileDossierId(Array.isArray(key) ? (key[0] ?? null) : key)}
+                      >
+                        <Label>Expedientes</Label>
+                        <Select.Trigger>
+                          <Select.Value />
+                          <Select.Indicator />
+                        </Select.Trigger>
+                        <Select.Popover>
+                          <ListBox aria-label="Expedientes disponibles">
+                            {registerData.allData.map((fileDossier) =>
+                              fileDossier.id === null ? null : (
+                                <ListBox.Item
+                                  key={fileDossier.id}
+                                  id={fileDossier.id}
+                                  textValue={fileDossier.name ?? ""}
+                                >
+                                  {fileDossier.name}
+                                  <ListBox.ItemIndicator />
+                                </ListBox.Item>
+                              ),
+                            )}
+                          </ListBox>
+                        </Select.Popover>
+                      </Select>
                     ) : (
-                      <ModalHeader className="flex flex-col">SELECCIONE EXPEDIENTE</ModalHeader>
+                      <p>
+                        {affiliateFileDossier && (
+                          <>
+                            <b>Nombre:</b> {affiliateFileDossier.name}
+                            <br />
+                            <b>Código:</b> {affiliateFileDossier.shortened}
+                          </>
+                        )}
+                      </p>
                     )}
-                    <ModalBody>
-                      {!isUpdate ? (
-                        <Select
-                          isRequired
-                          disabledKeys={dataRegister.disableData}
-                          items={dataRegister.allData}
-                          label="Expedientes"
-                          placeholder="Seleccione un expediente"
-                          onSelectionChange={setFileDossierId}
-                        >
-                          {(fileDossier: FileDossierInterface) => (
-                            <SelectItem key={fileDossier.id}>{fileDossier.name}</SelectItem>
-                          )}
-                        </Select>
-                      ) : (
-                        <p>
-                          {affiliateFileDossier && (
-                            <>
-                              <b>Nombre:</b> {affiliateFileDossier.name}
-                              <br />
-                              <b>Código:</b> {affiliateFileDossier.shortened}
-                            </>
-                          )}
-                        </p>
-                      )}
-                      <Input isRequired name="fileDossierPdf" type="file" />
-                    </ModalBody>
-                    <ModalFooter>
-                      <Button onPress={onClose}>Cerrar</Button>
-                      <Button type="submit">Subir</Button>
-                    </ModalFooter>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor="fileDossierPdf">Archivo del expediente</Label>
+                      <Input
+                        required
+                        accept="application/pdf"
+                        id="fileDossierPdf"
+                        name="fileDossierPdf"
+                        type="file"
+                      />
+                    </div>
                   </>
                 )}
-              </>
-            )}
-          </ModalContent>
-        </Form>
-      </Modal>
-    </>
+              </Modal.Body>
+              {!loadingSave && (
+                <Modal.Footer>
+                  <Button slot="close" variant="secondary">
+                    Cerrar
+                  </Button>
+                  <Button type="submit">Subir</Button>
+                </Modal.Footer>
+              )}
+            </Form>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 }

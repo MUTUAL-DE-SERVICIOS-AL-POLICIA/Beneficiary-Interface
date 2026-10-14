@@ -1,62 +1,66 @@
 "use client";
 
-import { Card } from "@heroui/card";
-import { Spinner } from "@heroui/spinner";
-import { addToast } from "@heroui/toast";
-import { useRouter } from "next/navigation";
+import { Spinner, toast } from "@heroui/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { getBeneficiaries } from "@/api/person";
-import { UserInfo } from "@/components/persons/sidebarMenu";
-import { usePerson } from "@/utils/context/PersonContext";
+import { UserInfo } from "@/components";
+import { usePerson } from "@/context/PersonContext";
 import { basicPersonInfo } from "@/utils/types";
 
 export const Beneficiaries = () => {
-  const router = useRouter();
   const [isBeneficiaries, setIsBeneficiaries] = useState<basicPersonInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const { person } = usePerson();
+  const personId = person?.id;
 
   useEffect(() => {
-    getBeneficiariesData();
-  }, []);
+    let cancelled = false;
 
-  const getBeneficiariesData = async () => {
-    try {
+    const loadBeneficiariesData = async () => {
+      if (!personId) return;
+
       setLoading(true);
-      const { error, message, data } = await getBeneficiaries(String(person.id));
+      try {
+        const { error, message, data } = await getBeneficiaries(String(personId));
 
-      if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        if (cancelled) return;
 
-        return;
+        if (error) {
+          toast.danger(message || "Ocurrió un error al obtener los beneficiarios");
+
+          return;
+        }
+
+        setIsBeneficiaries(data?.beneficiaries ?? []);
+      } catch {
+        if (!cancelled) {
+          toast.danger("Ocurrió un error al obtener los beneficiarios");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
+    };
 
-      setIsBeneficiaries(data.beneficiaries);
+    void loadBeneficiariesData();
 
-      return;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      cancelled = true;
+    };
+  }, [personId]);
 
   return (
     <>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <Spinner
-            classNames={{ label: "text-foreground mt-4" }}
+            aria-label="Cargando beneficiarios"
+            className="text-foreground"
             color="success"
             size="lg"
-            variant="spinner"
           />
         </div>
       )}
@@ -69,25 +73,18 @@ export const Beneficiaries = () => {
           }`}
         >
           {isBeneficiaries.map((item, index) => (
-            <Card
-              key={index}
-              isPressable
-              className="w-full border-small rounded-small border-default-200 dark:border-default-400 flex justify-center items-center"
-              onPress={() => {
-                router.push(`/persons/${item.uuidColumn}`);
-              }}
-            >
+            <Link key={item.uuidColumn ?? index} className="w-full" href={`/persons/${item.uuidColumn}`}>
               <UserInfo
                 isPolice={false}
                 user={{
                   fullName: item.fullName,
-                  nup: item.nup,
+                  nup: String(item.nup),
                   identityCard: item.identityCard,
                   kinship: item.kinship,
                   state: item.state,
                 }}
               />
-            </Card>
+            </Link>
           ))}
         </div>
       ) : (

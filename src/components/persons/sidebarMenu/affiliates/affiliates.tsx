@@ -1,64 +1,65 @@
 "use client";
 
-import { Card } from "@heroui/card";
-import { Spinner } from "@heroui/spinner";
-import { addToast } from "@heroui/toast";
-import { useRouter } from "next/navigation";
+import { Spinner, toast } from "@heroui/react";
+import Link from "next/link";
+// import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { getAffiliates } from "@/api/person";
-import { UserInfo } from "@/components/persons/sidebarMenu";
-import { usePerson } from "@/utils/context/PersonContext";
+import { UserInfo } from "@/components";
+import { usePerson } from "@/context/PersonContext";
 import { basicPersonInfo } from "@/utils/types";
 
 export const Affiliates = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const [isAffiliates, setIsAffiliates] = useState<basicPersonInfo[]>([]);
   const [loading, setLoading] = useState(false);
   const { person } = usePerson();
+  const personId = person?.id;
 
   useEffect(() => {
-    getAffiliatesData();
-  }, []);
+    let cancelled = false;
 
-  const getAffiliatesData = async () => {
-    try {
+    const loadAffiliatesData = async () => {
+      if (!personId) return;
+
       setLoading(true);
 
-      const { error, message, data } = await getAffiliates(String(person.id));
+      try {
+        const { error, message, data } = await getAffiliates(String(personId));
 
-      if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        if (cancelled) return;
 
-        return;
+        if (error) {
+          toast.danger(message || "Ocurrió un error al obtener los afiliados");
+
+          return;
+        }
+
+        setIsAffiliates(data ?? []);
+      } catch {
+        if (!cancelled) {
+          toast.danger("Ocurrió un error al obtener los afiliados");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
+    };
 
-      setIsAffiliates(data);
+    void loadAffiliatesData();
 
-      return;
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      cancelled = true;
+    };
+  }, [personId]);
 
   return (
     <>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center z-10">
-          <Spinner
-            classNames={{ label: "text-foreground mt-4" }}
-            color="success"
-            size="lg"
-            variant="spinner"
-          />
+          <Spinner aria-label="Cargando afiliados" className="text-foreground" color="success" size="lg" />
         </div>
       )}
       {isAffiliates.length > 0 ? (
@@ -70,24 +71,17 @@ export const Affiliates = () => {
           }`}
         >
           {isAffiliates.map((item, index) => (
-            <Card
-              key={index}
-              isPressable
-              className="w-full border-small rounded-small border-default-200 dark:border-default-400 flex justify-center items-center"
-              onPress={() => {
-                router.push(`/persons/${item.uuidColumn}`);
-              }}
-            >
+            <Link key={item.uuidColumn ?? index} className="w-full" href={`/persons/${item.uuidColumn}`}>
               <UserInfo
                 isPolice={true}
                 user={{
                   fullName: item.fullName,
-                  nup: item.nup,
+                  nup: String(item.nup),
                   identityCard: item.identityCard,
                   state: item.state,
                 }}
               />
-            </Card>
+            </Link>
           ))}
         </div>
       ) : (

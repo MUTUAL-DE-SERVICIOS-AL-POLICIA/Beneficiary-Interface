@@ -1,10 +1,10 @@
-import { Button } from "@heroui/button";
-import { Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/drawer";
-import { useDisclosure } from "@heroui/modal";
-import { Tooltip } from "@heroui/tooltip";
+"use client";
 
-import { InputCustom } from "@/components/common";
-import { ContactsCellPhoneIcon, ContactsPhoneIcon } from "@/components/icons";
+import { Button, Tooltip, Drawer } from "@heroui/react";
+import { useState } from "react";
+
+import { InputCustom } from "@/components";
+import { ContactsCellPhoneIcon, ContactsPhoneIcon } from "@/components";
 
 interface PhoneDisplayProps {
   label: string;
@@ -12,8 +12,11 @@ interface PhoneDisplayProps {
   labelDrawer?: string;
 }
 
-export function PhonesDrawer({ label, phoneNumbers, labelDrawer = "Telefonos" }: PhoneDisplayProps) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+export function PhonesDrawer({ label, phoneNumbers, labelDrawer = "Teléfonos" }: PhoneDisplayProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onOpen = () => setIsOpen(true);
+  const onOpenChange = (open: boolean) => setIsOpen(open);
 
   const hasNumbers = phoneNumbers.length > 0;
   const firstNumber = hasNumbers ? phoneNumbers[0] : "";
@@ -23,41 +26,45 @@ export function PhonesDrawer({ label, phoneNumbers, labelDrawer = "Telefonos" }:
       <div className="flex items-end gap-2">
         <InputCustom isCopy={hasNumbers} label={label} value={firstNumber} />
 
-        <Tooltip content="Ver todos" placement="bottom">
+        <Tooltip>
           <div>
             <Button
               isIconOnly
               className="border hover:border-gray-500 dark:hover:border-green-800"
               size="md"
-              variant="faded"
+              variant="secondary"
               onPress={onOpen}
             >
               {labelDrawer === "Celulares" ? <ContactsCellPhoneIcon /> : <ContactsPhoneIcon />}
             </Button>
           </div>
+          <Tooltip.Content showArrow placement="bottom">
+            <Tooltip.Arrow />
+            <p>Ver todos</p>
+          </Tooltip.Content>
         </Tooltip>
       </div>
 
-      <Drawer backdrop="opaque" isOpen={isOpen} onOpenChange={onOpenChange}>
-        <DrawerContent className="w-[20%]">
-          {() => (
-            <>
-              <DrawerHeader className="text-lg font-semibold">{labelDrawer}</DrawerHeader>
-              <DrawerBody>
-                {hasNumbers ? (
-                  <div className="flex flex-col gap-3">
-                    {phoneNumbers.map((number, idx) => (
-                      <InputCustom key={idx} value={number} />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500">No hay números registrados</p>
-                )}
-              </DrawerBody>
-            </>
-          )}
-        </DrawerContent>
-      </Drawer>
+      <Drawer.Backdrop isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Drawer.Content placement="right">
+          <Drawer.Dialog>
+            <Drawer.Header className="text-lg font-semibold">
+              <Drawer.Heading>{labelDrawer}</Drawer.Heading>
+            </Drawer.Header>
+            <Drawer.Body>
+              {hasNumbers ? (
+                <div className="flex flex-col gap-3">
+                  {phoneNumbers.map((number, idx) => (
+                    <InputCustom key={idx} value={number} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">No hay números registrados</p>
+              )}
+            </Drawer.Body>
+          </Drawer.Dialog>
+        </Drawer.Content>
+      </Drawer.Backdrop>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import { Card } from "@heroui/card";
+import { Card } from "@heroui/react";
 
 import { TableComponent } from "@/components/persons";
 
@@ -26,7 +26,7 @@ export default async function Persons() {
         <TableComponent
           headerColumns={personTableHeaders}
           startPage={1}
-          startRowsMay={14}
+          startRowsMay={10}
           startRowsMen={10}
         />
       </Card>

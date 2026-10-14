@@ -1,6 +1,5 @@
 "use client";
-import { useDisclosure } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
+import { toast } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ModalRegisterFileDossier } from "./manage";
@@ -18,13 +17,13 @@ import {
   HeaderManage,
   SpinnerLoading,
   ViewerPdf,
-} from "@/components/common";
-import { usePerson } from "@/utils/context/PersonContext";
-import { getAccessCookie } from "@/utils/helpers/cookie";
+} from "@/components";
+import { usePerson } from "@/context/PersonContext";
+import { getAccessCookie } from "@/utils/cookie";
 import { AffiliateFileDossier } from "@/utils/interfaces";
 
 export const FileDossiers = () => {
-  const [fileDossiers, setFileDossiers] = useState([]);
+  const [fileDossiers, setFileDossiers] = useState<AffiliateFileDossier[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingAllFileDossiers, setLoadingAllFileDossiers] = useState(false);
   const [loadingDocument, setLoadingDocument] = useState(false);
@@ -34,32 +33,21 @@ export const FileDossiers = () => {
   const [activeFileDossierId, setActiveFileDossierId] = useState<number | null>(null);
   const [sizePdf, setSizePdf] = useState<string>("w-[48%] border-l pl-2");
   const [sizeColumn, setSizeColumn] = useState<string>("w-[52%]");
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [dataRegister, setDataRegister] = useState<any>(null);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [fileDossierEdit, setFileDossierEdit] = useState<AffiliateFileDossier>();
   const [isCreateFileDossier, setIsCreateFileDossier] = useState(false);
   const [isUpdateFileDossier, setIsUpdateFileDossier] = useState(false);
   const [isDeleteFileDossier, setIsDeleteFileDossier] = useState(false);
 
-  useEffect(() => {
-    getFileDossiersAffiliate();
-    getPermissions();
-  }, []);
+  // Función para refrescar manualmente los expedientes (usada al eliminar o desde el Modal)
+  const refreshFileDossiers = useCallback(async () => {
+    if (!affiliateId) return;
 
-  const getPermissions = async () => {
-    const { data } = await getAccessCookie();
-
-    data.includes("isCreateFileDossier") ? setIsCreateFileDossier(true) : setIsCreateFileDossier(false);
-    data.includes("isUpdateFileDossier") ? setIsUpdateFileDossier(true) : setIsUpdateFileDossier(false);
-    data.includes("isDeleteFileDossier") ? setIsDeleteFileDossier(true) : setIsDeleteFileDossier(false);
-  };
-
-  const switchEdit = () => {
-    setIsEdit(!isEdit);
-  };
-
-  const getFileDossiersAffiliate = useCallback(async () => {
     try {
       setLoading(true);
       setPdfBlob(null);
@@ -68,14 +56,7 @@ export const FileDossiers = () => {
       const { error, message, data } = await getAffiliateShowFileDossiers(affiliateId);
 
       if (error) {
-        addToast({
-          title: `Ocurrió un problema, servidor: ${error}, servicio: ${data.serviceStatus}`,
-          description: message,
-          color: "warning",
-          timeout: 3000,
-          shouldShowTimeoutProgress: true,
-        });
-
+        toast.danger(message);
         setFileDossiers([]);
 
         return;
@@ -84,44 +65,32 @@ export const FileDossiers = () => {
       if (Array.isArray(data)) {
         setFileDossiers([]);
       } else {
-        setFileDossiers(data.fileDossiersAffiliate);
+        setFileDossiers(data.fileDossiersAffiliate || []);
       }
-
-      return;
-    } catch (error) {
-      console.error(error);
+    } catch {
+      toast.danger("Ocurrió un error al obtener los expedientes");
     } finally {
       setLoading(false);
     }
   }, [affiliateId]);
+
+  const switchEdit = () => {
+    setIsEdit(!isEdit);
+  };
 
   const removeFileDossier = async (fileDossierId: number) => {
     try {
       const { error, message } = await deleteFileDossier(affiliateId, String(fileDossierId));
 
       if (error) {
-        addToast({
-          title: "Ocurrido un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
 
         return;
       }
-      getFileDossiersAffiliate();
-      addToast({
-        title: "Expediente eliminado",
-        description: message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
-
-      return;
-    } catch (error) {
-      console.error("Error al eliminar expediente:", error);
+      refreshFileDossiers();
+      toast.success("Expediente eliminado correctamente");
+    } catch {
+      toast.danger("Ocurrió un error al eliminar el expediente");
     }
   };
 
@@ -132,20 +101,14 @@ export const FileDossiers = () => {
       const { error, message, data } = await getViewFileDossier(affiliateId, String(fileDossierId));
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
 
         return;
       }
 
       setPdfBlob(data);
-    } catch (error) {
-      console.error("Error al obtener el expediente:", error);
+    } catch {
+      toast.danger("Ocurrió un error al obtener el expediente");
     } finally {
       setLoadingDocument(false);
     }
@@ -186,13 +149,7 @@ export const FileDossiers = () => {
       const { error, message, data } = await getAllFileDossiers(affiliateId);
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
         setDataRegister(null);
 
         return;
@@ -200,12 +157,65 @@ export const FileDossiers = () => {
 
       setDataRegister(data);
       onOpen();
-    } catch (error) {
-      console.error("Error al obtener los tipos de expedientes:", error);
+    } catch {
+      toast.danger("Ocurrió un error al obtener los expedientes");
     } finally {
       setLoadingAllFileDossiers(false);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInitialData = async () => {
+      if (!affiliateId) return;
+
+      setLoading(true);
+      setPdfBlob(null);
+      setActiveFileDossierId(null);
+      setIsEdit(false);
+
+      try {
+        const [permissionsRes, dossiersRes] = await Promise.all([
+          getAccessCookie(),
+          getAffiliateShowFileDossiers(affiliateId),
+        ]);
+
+        if (cancelled) return;
+
+        // Permisos
+        const permissionsData = permissionsRes.data || [];
+
+        setIsCreateFileDossier(permissionsData.includes("isCreateFileDossier"));
+        setIsUpdateFileDossier(permissionsData.includes("isUpdateFileDossier"));
+        setIsDeleteFileDossier(permissionsData.includes("isDeleteFileDossier"));
+
+        // Expedientes
+        if (dossiersRes.error) {
+          toast.danger(dossiersRes.message);
+          setFileDossiers([]);
+        } else if (Array.isArray(dossiersRes.data)) {
+          setFileDossiers([]);
+        } else {
+          setFileDossiers(dossiersRes.data?.fileDossiersAffiliate || []);
+        }
+      } catch {
+        if (!cancelled) {
+          toast.danger("Ocurrió un error al obtener la información inicial");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadInitialData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [affiliateId]);
 
   return (
     <>
@@ -227,6 +237,7 @@ export const FileDossiers = () => {
               fileDossiers.map((fileDossier: AffiliateFileDossier, key) => (
                 <CardActions
                   key={key}
+                  haveButton
                   activeId={String(activeFileDossierId)}
                   dataId={String(fileDossier.fileDossierId)}
                   isEdit={isEdit}
@@ -259,7 +270,7 @@ export const FileDossiers = () => {
         isOpen={isOpen}
         isUpdate={isUpdate}
         onClose={onClose}
-        onRefreshFileDossiers={getFileDossiersAffiliate}
+        onRefreshFileDossiers={refreshFileDossiers}
       />
     </>
   );

@@ -1,4 +1,4 @@
-import { DateInputCustom, InputCustom } from "@/components/common";
+import { DateInputCustom, InputCustom } from "@/components";
 
 interface Props {
   dateEntry: string | Date;

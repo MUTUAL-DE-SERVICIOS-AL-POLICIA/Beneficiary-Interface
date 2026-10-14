@@ -1,16 +1,11 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Divider } from "@heroui/divider";
-import { Listbox, ListboxItem } from "@heroui/listbox";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
+import { Button, Modal, toast } from "@heroui/react";
 import { useState } from "react";
 
 import { captureOneFingerprint, captureTwoFingerprints } from "@/api/biometric";
 import { postFingerprints } from "@/api/person";
-import { TouchIndiceIcon, TouchPulgarIcon } from "@/components";
-import { SpinnerLoading } from "@/components/common";
-import { usePerson } from "@/utils/context/PersonContext";
+import { SpinnerLoading, TouchIndiceIcon, TouchPulgarIcon } from "@/components";
+import { usePerson } from "@/context/PersonContext";
 import { Fingerprint, FingerprintCore } from "@/utils/interfaces";
 
 interface Props {
@@ -58,13 +53,7 @@ export const ModalRegisterFingerprints = ({
       const { error, message, data } = await captureTwoFingerprints();
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error al capturar las dos huellas",
-          description: message,
-          color: "warning",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
         setLoadingRegister(false);
 
         return;
@@ -101,30 +90,18 @@ export const ModalRegisterFingerprints = ({
       const response = await postFingerprints(personId, { personFingerprints, wsqFingerprints });
 
       if (response.error) {
-        addToast({
-          title: "Ocurrido un error al guardar las dos huellas",
-          description: response.message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(response.message);
 
         return;
       }
 
-      addToast({
-        title: "Aceptado",
-        description: response.message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
+      toast.success(response.message);
 
       await onRefreshFingerprints();
 
       return;
-    } catch (e: any) {
-      console.error(e);
+    } catch {
+      toast.danger("Error al capturar las huellas dactilares");
     } finally {
       setLoadingSaved(false);
       onSelectFinger(undefined);
@@ -142,13 +119,7 @@ export const ModalRegisterFingerprints = ({
       const { error, message, data } = await captureOneFingerprint();
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error en la captura",
-          description: message,
-          color: "warning",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
         setLoadingRegister(false);
 
         return;
@@ -174,30 +145,17 @@ export const ModalRegisterFingerprints = ({
       const response = await postFingerprints(personId, { personFingerprints, wsqFingerprints });
 
       if (response.error) {
-        addToast({
-          title: "Ocurrió un error al guardar la huella",
-          description: response.message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(response.message);
 
         return;
       }
 
-      addToast({
-        title: "Aceptado",
-        description: response.message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
-
+      toast.success(response.message);
       await onRefreshFingerprints();
 
       return;
-    } catch (e: any) {
-      console.error(e);
+    } catch {
+      toast.danger("Error al capturar la huella dactilar");
     } finally {
       setLoadingSaved(false);
       onSelectFinger(undefined);
@@ -224,84 +182,79 @@ export const ModalRegisterFingerprints = ({
         topSpinner="top-[82%]"
       />
 
-      <Modal isDismissable={false} isOpen={isOpen} size="md" onClose={onClose}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">Seleccione una opción:</ModalHeader>
-              <ModalBody>
-                <div className="w-full border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100">
-                  Registro de 2 huellas
-                  <Divider className="h-1" />
-                  <Listbox
-                    aria-label="Actions"
-                    itemClasses={{
-                      base: "px-3 rounded-t-medium gap-3 h-12",
-                    }}
-                    onAction={(key) => handleTwoFingersSelect(String(key))}
-                  >
-                    {twoFingerprints.map((fingerprint) => {
-                      const isPulgar = fingerprint.name.includes("Pulgar");
+      <Modal.Backdrop isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <Modal.Container size="md">
+          <Modal.Dialog>
+            <Modal.Header>
+              <Modal.Heading>Seleccione una opción:</Modal.Heading>
+            </Modal.Header>
 
-                      return (
-                        <ListboxItem
-                          key={fingerprint.id}
-                          color="success"
-                          endContent={
-                            <div style={{ display: "flex" }}>
-                              {isPulgar ? (
-                                <>
-                                  <TouchPulgarIcon />
-                                  <TouchPulgarIcon />
-                                </>
-                              ) : (
-                                <>
-                                  <TouchIndiceIcon />
-                                  <TouchIndiceIcon />
-                                </>
-                              )}
-                            </div>
-                          }
-                        >
-                          {fingerprint.name}
-                        </ListboxItem>
-                      );
-                    })}
-                  </Listbox>
-                  Registro de 1 huella
-                  <Divider className="h-1" />
-                  <Listbox
-                    aria-label="Actions"
-                    itemClasses={{
-                      base: "px-3 rounded-t-medium gap-3 h-12",
-                    }}
-                    onAction={(key) => handleOneFingerSelect(String(key))}
-                  >
-                    {dataRegister.map((fingerprint) => {
-                      const isIndice = fingerprint.name.includes("Índice");
+            <Modal.Body>
+              <div className="w-full rounded-small border border-default-200 px-1 py-2 dark:border-default-100">
+                <p className="mb-2">Registro de 2 huellas</p>
+                <div className="my-2 h-px w-full bg-default-200" />
 
-                      return (
-                        <ListboxItem
-                          key={fingerprint.id}
-                          color="success"
-                          endContent={isIndice ? <TouchIndiceIcon /> : <TouchPulgarIcon />}
-                        >
-                          {fingerprint.name}
-                        </ListboxItem>
-                      );
-                    })}
-                  </Listbox>
+                <div className="flex flex-col gap-2">
+                  {twoFingerprints.map((fingerprint) => {
+                    const isPulgar = fingerprint.name.includes("Pulgar");
+
+                    return (
+                      <Button
+                        key={String(fingerprint.id)}
+                        className="justify-between border border-default-200 px-4 py-3 text-left"
+                        variant="secondary"
+                        onPress={() => handleTwoFingersSelect(String(fingerprint.id))}
+                      >
+                        <span>{fingerprint.name}</span>
+                        <span className="flex gap-2">
+                          {isPulgar ? (
+                            <>
+                              <TouchPulgarIcon />
+                              <TouchPulgarIcon />
+                            </>
+                          ) : (
+                            <>
+                              <TouchIndiceIcon />
+                              <TouchIndiceIcon />
+                            </>
+                          )}
+                        </span>
+                      </Button>
+                    );
+                  })}
                 </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cerrar
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+
+                <p className="mt-4 mb-2">Registro de 1 huella</p>
+                <div className="my-2 h-px w-full bg-default-200" />
+
+                <div className="flex flex-col gap-2">
+                  {dataRegister.map((fingerprint) => {
+                    const isIndice = fingerprint.name.includes("Índice");
+
+                    return (
+                      <Button
+                        key={String(fingerprint.id)}
+                        className="justify-between border border-default-200 px-4 py-3 text-left"
+                        variant="secondary"
+                        onPress={() => handleOneFingerSelect(String(fingerprint.id))}
+                      >
+                        <span>{fingerprint.name}</span>
+                        <span>{isIndice ? <TouchIndiceIcon /> : <TouchPulgarIcon />}</span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button variant="ghost" onPress={onClose}>
+                Cerrar
+              </Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
     </>
   );
 };
