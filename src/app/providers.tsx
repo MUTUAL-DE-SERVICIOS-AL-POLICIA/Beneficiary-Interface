@@ -1,12 +1,11 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import type { ThemeProviderProps } from "next-themes";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { HeroUIProvider } from "@heroui/system";
-import { useRouter } from "next/navigation";
+import { Toast } from "@heroui/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { ToastProvider } from "@heroui/toast";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -42,19 +41,27 @@ export function SidebarProvider({
   }, [initialCollapsed]);
 
   useEffect(() => {
-    if (collapsed !== null) {
-      localStorage.setItem("sidebar-collapsed", collapsed.toString());
-    }
+    if (collapsed === null) return;
+
+    localStorage.setItem("sidebar-collapsed", collapsed.toString());
   }, [collapsed]);
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => !prev);
+  };
 
   if (collapsed === null) {
     return null;
   }
 
-  const toggleCollapsed = () => setCollapsed((prev) => !prev);
-
   return (
-    <SidebarContext.Provider value={{ collapsed, toggleCollapsed, setCollapsed }}>
+    <SidebarContext.Provider
+      value={{
+        collapsed,
+        toggleCollapsed,
+        setCollapsed,
+      }}
+    >
       {children}
     </SidebarContext.Provider>
   );
@@ -71,14 +78,10 @@ export function useSidebar() {
 }
 
 export function Providers({ children, themeProps, initialSidebarCollapsed }: ProvidersProps) {
-  const router = useRouter();
-
   return (
-    <HeroUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>
-        <ToastProvider />
-        <SidebarProvider initialCollapsed={initialSidebarCollapsed ?? true}>{children}</SidebarProvider>
-      </NextThemesProvider>
-    </HeroUIProvider>
+    <NextThemesProvider {...themeProps}>
+      <Toast.Provider placement="top end" />
+      <SidebarProvider initialCollapsed={initialSidebarCollapsed ?? true}>{children}</SidebarProvider>
+    </NextThemesProvider>
   );
 }
