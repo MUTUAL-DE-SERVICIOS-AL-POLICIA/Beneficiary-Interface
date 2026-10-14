@@ -1,6 +1,6 @@
 "use server";
 
-import { apiClient } from "@/utils/services";
+import { apiClient } from "@/services";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getAffiliate = async (affiliateId: string): Promise<ResponseData> => {
@@ -21,9 +21,7 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
       message: "Datos del afiliado obtenido exitosamente",
       data,
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al obtener datos del afiliado",

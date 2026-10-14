@@ -1,8 +1,7 @@
 "use client";
 import type { AffiliateDocument } from "@/utils/interfaces";
 
-import { useDisclosure } from "@heroui/modal";
-import { addToast } from "@heroui/toast";
+import { toast } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
 
 import { ModalRegisterDocument } from "./manage";
@@ -15,9 +14,9 @@ import {
   HeaderManage,
   SpinnerLoading,
   ViewerPdf,
-} from "@/components/common";
-import { usePerson } from "@/utils/context/PersonContext";
-import { getAccessCookie } from "@/utils/helpers/cookie";
+} from "@/components";
+import { usePerson } from "@/context/PersonContext";
+import { getAccessCookie } from "@/utils/cookie";
 
 export const Documents = () => {
   const { affiliateId } = usePerson();
@@ -31,8 +30,11 @@ export const Documents = () => {
   const [activeDocumentId, setActiveDocumentId] = useState<number | null>(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const [documentEdit, setDocumentEdit] = useState<AffiliateDocument>();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [dataRegister, setDataRegister] = useState<any>(null);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
 
   const [isExpanded, setIsExpanded] = useState(false);
   const sizePdf = isExpanded ? "w-[100%]" : "w-[48%] border-l pl-2";
@@ -42,20 +44,10 @@ export const Documents = () => {
   const [isUpdateDocument, setIsUpdateDocument] = useState(false);
   const [isDeleteDocument, setIsDeleteDocument] = useState(false);
 
-  useEffect(() => {
-    getDocumentsAffiliate();
-    getPermissions();
-  }, []);
+  // Función reutilizable para actualizar la lista manualmente (por ejemplo, desde el modal o al eliminar)
+  const refreshDocuments = useCallback(async () => {
+    if (!affiliateId) return;
 
-  const getPermissions = async () => {
-    const { data } = await getAccessCookie();
-
-    data.includes("isCreateDocument") ? setIsCreateDocument(true) : setIsCreateDocument(false);
-    data.includes("isUpdateDocument") ? setIsUpdateDocument(true) : setIsUpdateDocument(false);
-    data.includes("isDeleteDocument") ? setIsDeleteDocument(true) : setIsDeleteDocument(false);
-  };
-
-  const getDocumentsAffiliate = useCallback(async () => {
     try {
       setLoading(true);
       setPdfBlob(null);
@@ -63,16 +55,15 @@ export const Documents = () => {
       setIsEdit(false);
       const { data } = await getAffiliateDocuments(affiliateId);
 
-      if (Array.isArray(data)) return setDocuments([]);
+      if (Array.isArray(data)) {
+        setDocuments([]);
+
+        return;
+      }
 
       setDocuments(data.documentsAffiliate ?? []);
-    } catch (error) {
-      console.error(error);
-      addToast({
-        title: "Error",
-        description: "No se pudieron cargar los documentos.",
-        color: "danger",
-      });
+    } catch {
+      toast.danger("Error al obtener los documentos del afiliado");
     } finally {
       setLoading(false);
     }
@@ -83,28 +74,14 @@ export const Documents = () => {
       const { error, message } = await deleteDocument(affiliateId, String(procedureDocumentId));
 
       if (error) {
-        addToast({
-          title: "Ocurrido un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
 
         return;
       }
-      getDocumentsAffiliate();
-      addToast({
-        title: "Documento eliminado",
-        description: message,
-        color: "success",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
-
-      return;
-    } catch (error) {
-      console.error("Error al eliminar expediente:", error);
+      refreshDocuments();
+      toast.success("Documento eliminado correctamente");
+    } catch {
+      toast.danger("Ocurrió un error al eliminar el documento");
     }
   };
 
@@ -116,17 +93,13 @@ export const Documents = () => {
       const { error, message, data } = await getViewDocument(affiliateId, String(documentId));
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-        });
+        toast.danger(message);
 
         return;
       }
       setPdfBlob(data);
-    } catch (error) {
-      console.error("Error al obtener el expediente:", error);
+    } catch {
+      toast.danger("Ocurrió un error al obtener el documento");
     } finally {
       setLoadingDocument(false);
     }
@@ -161,13 +134,7 @@ export const Documents = () => {
       const { error, message, data } = await getDocuments(affiliateId);
 
       if (error) {
-        addToast({
-          title: "Ocurrió un error",
-          description: message,
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger(message);
         setDataRegister(null);
 
         return;
@@ -175,12 +142,62 @@ export const Documents = () => {
 
       setDataRegister(data);
       onOpen();
-    } catch (error) {
-      console.error("Error al obtener los tipos de expedientes:", error);
+    } catch {
+      toast.danger("Ocurrió un error al obtener los documentos");
     } finally {
       setLoadingAllDocument(false);
     }
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadInitialData = async () => {
+      if (!affiliateId) return;
+
+      setLoading(true);
+      setPdfBlob(null);
+      setActiveDocumentId(null);
+      setIsEdit(false);
+
+      try {
+        const [permissionsRes, documentsRes] = await Promise.all([
+          getAccessCookie(),
+          getAffiliateDocuments(affiliateId),
+        ]);
+
+        if (cancelled) return;
+
+        // Carga de permisos
+        const permissionsData = permissionsRes.data || [];
+
+        setIsCreateDocument(permissionsData.includes("isCreateDocument"));
+        setIsUpdateDocument(permissionsData.includes("isUpdateDocument"));
+        setIsDeleteDocument(permissionsData.includes("isDeleteDocument"));
+
+        // Carga de documentos
+        if (Array.isArray(documentsRes.data)) {
+          setDocuments([]);
+        } else {
+          setDocuments(documentsRes.data?.documentsAffiliate ?? []);
+        }
+      } catch {
+        if (!cancelled) {
+          toast.danger("Error al cargar la información inicial");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadInitialData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [affiliateId]);
 
   return (
     <>
@@ -202,12 +219,13 @@ export const Documents = () => {
               documents.map((doc, key) => (
                 <CardActions
                   key={key}
+                  haveButton
                   activeId={String(activeDocumentId)}
                   dataId={String(doc.procedureDocumentId)}
                   height="min-h-[120px]"
                   isEdit={isEdit}
                   isLoading={loadingDocument}
-                  sizeTextBody="text-sm"
+                  sizeTextBody="text-md"
                   textActive="VISUALIZANDO"
                   textBody={`${doc.name}`}
                   textHeader={`${key + 1}. ${doc.shortened}`}
@@ -234,7 +252,7 @@ export const Documents = () => {
         isOpen={isOpen}
         isUpdate={isUpdate}
         onClose={onClose}
-        onRefreshDocuments={getDocumentsAffiliate}
+        onRefreshDocuments={refreshDocuments}
       />
     </>
   );

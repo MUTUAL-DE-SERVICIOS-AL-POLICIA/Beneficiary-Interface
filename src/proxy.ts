@@ -16,9 +16,7 @@ export const proxy = async () => {
     }
 
     return NextResponse.next();
-  } catch (e) {
-    console.error("Error verificando token en middleware", e);
-
+  } catch {
     return NextResponse.redirect(url);
   }
 };

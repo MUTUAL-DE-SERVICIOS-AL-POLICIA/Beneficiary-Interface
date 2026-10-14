@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { apiClientBiometric } from "@/utils/services";
+import { apiClientBiometric } from "@/services";
 
 interface Area {
   id: number;
@@ -327,8 +327,7 @@ export function Hands(props: HandsProps) {
 
             client
               .GET("biometrico/capturar/huella")
-              .then((response: any) => {
-                console.log(response);
+              .then(() => {
                 setSelectedAreas((prev) => [...prev, area.id]);
               })
               .catch((error: any) => {

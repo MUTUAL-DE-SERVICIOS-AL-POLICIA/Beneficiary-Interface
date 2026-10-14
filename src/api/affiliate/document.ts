@@ -1,5 +1,5 @@
 "use server";
-import { apiClient } from "@/utils/services";
+import { apiClient } from "@/services";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getDocuments = async (affiliateId: string): Promise<ResponseData> => {
@@ -20,9 +20,7 @@ export const getDocuments = async (affiliateId: string): Promise<ResponseData> =
       message: "Datos para creación de documentos obtenidos exitosamente",
       data,
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al obtener los todos los documentos.",
@@ -56,9 +54,7 @@ export const createAffiliateDocument = async (
       error: data.error,
       message: data.message,
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al crear el documento",
@@ -91,9 +87,7 @@ export const updateAffiliateDocument = async (
       error: data.error,
       message: data.message,
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al actualizar el documento",
@@ -119,9 +113,7 @@ export const getAffiliateDocuments = async (affiliateId: string): Promise<Respon
       message: "Documentos del afiliado obtenido exitosamente",
       data,
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al obtener los documentos del afiliado",
@@ -149,13 +141,11 @@ export const getViewDocument = async (affiliateId: string, documentId: string): 
       message: "Expediente obtenido exitosamente",
       data,
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al obtener el expediente",
-      data: e.message,
+      data: [],
     };
   }
 };
@@ -182,9 +172,7 @@ export const deleteDocument = async (
       error: data.error,
       message: data.message,
     };
-  } catch (e: any) {
-    console.error(e);
-
+  } catch {
     return {
       error: true,
       message: "Error al crear o actualizar el expediente",

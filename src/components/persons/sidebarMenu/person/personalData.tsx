@@ -1,6 +1,6 @@
 import { Address, Basic, Death, Financial } from "./information";
 
-import { usePerson } from "@/utils/context/PersonContext";
+import { usePerson } from "@/context/PersonContext";
 
 export const PersonalData = () => {
   const { person, financialEntity } = usePerson();

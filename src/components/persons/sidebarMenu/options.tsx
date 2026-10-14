@@ -1,10 +1,10 @@
 "use client";
-import { addToast } from "@heroui/toast";
+import { toast } from "@heroui/react";
 import { useState } from "react";
 
 import { getPersonRecords } from "@/api/person";
-import { DrawerRecords } from "@/components/common";
-import { usePerson } from "@/utils/context/PersonContext";
+import { DrawerRecords } from "@/components";
+import { usePerson } from "@/context/PersonContext";
 
 export const Options = () => {
   const [dataRecords, setDataRecords] = useState<any[]>([]);
@@ -14,13 +14,9 @@ export const Options = () => {
     const { error, message, data } = await getPersonRecords(String(person.id));
 
     if (error) {
-      addToast({
-        title: "Ocurrió un error",
-        description: message,
-        color: "danger",
-        timeout: 3500,
-        shouldShowTimeoutProgress: true,
-      });
+      toast.danger(message);
+
+      return;
     }
     setDataRecords(data);
   };

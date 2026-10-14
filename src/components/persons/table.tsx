@@ -1,24 +1,13 @@
 "use client";
-import { Button } from "@heroui/button";
-import { Input } from "@heroui/input";
-import { Pagination } from "@heroui/pagination";
-import {
-  SortDescriptor,
-  Table,
-  TableBody,
-  TableCell,
-  TableColumn,
-  TableHeader,
-  TableRow,
-} from "@heroui/table";
-import { addToast } from "@heroui/toast";
-import { Tooltip } from "@heroui/tooltip";
+import type { SortDescriptor } from "@heroui/react";
+
+import { Button, Pagination, SearchField, Table, Tooltip, toast } from "@heroui/react";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 
 import { getPersons } from "@/api/person";
-import { PersonInfoIcon, SearchIcon } from "@/components";
+import { PersonInfoIcon } from "@/components";
 import { Column } from "@/utils/interfaces";
 
 interface PropsTable {
@@ -49,35 +38,37 @@ export const TableComponent = ({ headerColumns, startPage, startRowsMay, startRo
   const hasSearchFilter = Boolean(filterValue);
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
-  const fetchData = useCallback(
-    async (options?: { page?: number; rows?: number; filter?: string }) => {
-      const p = options?.page ?? page;
-      const rpp = options?.rows ?? rowsPerPage;
-      const filter = options?.filter ?? (hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined);
+  useEffect(() => {
+    let cancelled = false;
 
+    const loadData = async () => {
+      const filter = hasSearchFilter ? debouncedFilterValue.toLowerCase() : undefined;
       const { error, persons, total } = await getPersons(
-        rpp,
-        p,
+        rowsPerPage,
+        page,
         filter,
-        sortDescriptor.column.toString(),
+        String(sortDescriptor.column),
         sortDescriptor.direction === "ascending" ? "ASC" : "DESC",
       );
 
+      if (cancelled) return;
+
       if (error) {
-        addToast({
-          title: "Error",
-          description: "No se pudieron obtener los datos",
-          color: "danger",
-          timeout: 3500,
-          shouldShowTimeoutProgress: true,
-        });
+        toast.danger("Error al obtener los datos de la tabla");
+
+        return;
       }
 
       setFiltered(persons);
       setTotalItems(total || 0);
-    },
-    [debouncedFilterValue, page, rowsPerPage, sortDescriptor, hasSearchFilter],
-  );
+    };
+
+    void loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [page, rowsPerPage, debouncedFilterValue, hasSearchFilter, sortDescriptor]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -95,10 +86,6 @@ export const TableComponent = ({ headerColumns, startPage, startRowsMay, startRo
 
     return () => window.removeEventListener("resize", handleResize);
   }, [startRowsMay, startRowsMen]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -120,15 +107,20 @@ export const TableComponent = ({ headerColumns, startPage, startRowsMay, startRo
     if (columnKey === "actions") {
       return (
         <div className="flex justify-center gap-2">
-          <Tooltip content="Ver" placement="right">
+          <Tooltip>
             <Button
               isIconOnly
+              aria-label="Ver persona"
               size="sm"
-              variant="bordered"
+              variant="secondary"
               onPress={() => router.push(`${pathname}/${item.uuidColumn}`)}
             >
               <PersonInfoIcon />
             </Button>
+            <Tooltip.Content showArrow placement="right">
+              <Tooltip.Arrow />
+              <span>Ver</span>
+            </Tooltip.Content>
           </Tooltip>
         </div>
       );
@@ -138,67 +130,119 @@ export const TableComponent = ({ headerColumns, startPage, startRowsMay, startRo
   };
 
   return (
-    <Table
-      isCompact
-      removeWrapper
-      aria-label="Table of content"
-      bottomContent={<Pagination showControls page={page} total={totalPages} onChange={handlePageChange} />}
-      selectionMode="single"
-      shadow="lg"
-      sortDescriptor={sortDescriptor}
-      topContent={
-        <div className="flex flex-col gap-4">
-          <Input
-            isClearable
-            placeholder="Buscar por Carnet de Identidad, Nombres o Apellidos"
-            startContent={<SearchIcon />}
-            value={filterValue}
-            onClear={() => handleSearchChange("")}
-            onValueChange={handleSearchChange}
-          />
-          <div className="flex justify-between items-center">
-            <span>
-              Total: <b>{totalItems}</b>
-            </span>
-            <label className="flex items-center gap-2">
-              Filas por página:
-              <select
-                className="text-default-700 text-small dark:text-white"
-                value={rowsPerPage}
-                onChange={handleRowsPerPageChange}
-              >
-                <option value={startRowsPerPage}>{startRowsPerPage}</option>
-                <option value={Math.ceil((startRowsPerPage * 2) / 10) * 10}>
-                  {Math.ceil((startRowsPerPage * 2) / 10) * 10}
-                </option>
-                <option value={Math.ceil((startRowsPerPage * 3) / 10) * 10}>
-                  {Math.ceil((startRowsPerPage * 3) / 10) * 10}
-                </option>
-              </select>
-            </label>
-          </div>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+        <SearchField
+          fullWidth
+          aria-label="Buscar personas"
+          name="persons-search"
+          value={filterValue}
+          onChange={handleSearchChange}
+        >
+          <SearchField.Group>
+            <SearchField.SearchIcon />
+            <SearchField.Input placeholder="Buscar por Carnet de Identidad, Nombres o Apellidos" />
+            <SearchField.ClearButton />
+          </SearchField.Group>
+        </SearchField>
+        <div className="flex items-center justify-between gap-4">
+          <span>
+            Total: <b>{totalItems}</b>
+          </span>
+          <label className="flex items-center gap-2">
+            Filas por página:
+            <select
+              className="text-default-700 text-small dark:text-white"
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+            >
+              <option value={startRowsPerPage}>{startRowsPerPage}</option>
+              <option value={Math.ceil((startRowsPerPage * 2) / 10) * 10}>
+                {Math.ceil((startRowsPerPage * 2) / 10) * 10}
+              </option>
+              <option value={Math.ceil((startRowsPerPage * 3) / 10) * 10}>
+                {Math.ceil((startRowsPerPage * 3) / 10) * 10}
+              </option>
+            </select>
+          </label>
         </div>
-      }
-      onSortChange={setSortDescriptor}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column: Column) => (
-          <TableColumn
-            key={column.key}
-            align={column.key === "identityCard" ? "end" : "start"}
-            allowsSorting={column.sortable}
+      </div>
+      <Table variant="secondary">
+        <Table.ScrollContainer>
+          <Table.Content
+            aria-label="Tabla de personas"
+            className="min-w-full"
+            selectionMode="single"
+            sortDescriptor={sortDescriptor}
+            onSortChange={setSortDescriptor}
           >
-            {column.name}
-          </TableColumn>
+            <Table.Header columns={headerColumns}>
+              {(column: Column) => (
+                <Table.Column
+                  key={column.key ?? String(column.id)}
+                  allowsSorting={column.sortable}
+                  className={column.key === "identityCard" ? "text-end" : "text-start"}
+                  id={column.key ?? String(column.id)}
+                  isRowHeader={column.key === "firstName"}
+                >
+                  {column.sortable
+                    ? ({ sortDirection }: { sortDirection: "ascending" | "descending" | undefined }) => (
+                        <Table.SortableColumnHeader sortDirection={sortDirection}>
+                          {column.name}
+                        </Table.SortableColumnHeader>
+                      )
+                    : column.name}
+                </Table.Column>
+              )}
+            </Table.Header>
+            <Table.Body
+              items={filtered}
+              renderEmptyState={() => <div className="p-4 text-center">Sin datos</div>}
+            >
+              {(item: any) => (
+                <Table.Row key={item.id} id={item.id}>
+                  <Table.Collection items={headerColumns}>
+                    {(column) => (
+                      <Table.Cell className={column.key === "identityCard" ? "text-end" : undefined}>
+                        {renderCell(item, column.key ?? String(column.id))}
+                      </Table.Cell>
+                    )}
+                  </Table.Collection>
+                </Table.Row>
+              )}
+            </Table.Body>
+          </Table.Content>
+        </Table.ScrollContainer>
+        {totalPages > 1 && (
+          <Table.Footer className="flex justify-end px-2 py-3">
+            <Pagination size="sm">
+              <Pagination.Summary>
+                Página {page} de {totalPages}
+              </Pagination.Summary>
+              <Pagination.Content>
+                <Pagination.Item>
+                  <Pagination.Previous
+                    isDisabled={page <= 1}
+                    onPress={() => handlePageChange(Math.max(1, page - 1))}
+                  >
+                    <Pagination.PreviousIcon />
+                    <span>Anterior</span>
+                  </Pagination.Previous>
+                </Pagination.Item>
+                <Pagination.Item>
+                  <Pagination.Next
+                    isDisabled={page >= totalPages}
+                    onPress={() => handlePageChange(Math.min(totalPages, page + 1))}
+                  >
+                    <span>Siguiente</span>
+                    <Pagination.NextIcon />
+                  </Pagination.Next>
+                </Pagination.Item>
+              </Pagination.Content>
+            </Pagination>
+          </Table.Footer>
         )}
-      </TableHeader>
-      <TableBody emptyContent="Sin datos" items={filtered}>
-        {(item: Column) => (
-          <TableRow key={item.id}>
-            {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+      </Table>
+    </div>
   );
 };

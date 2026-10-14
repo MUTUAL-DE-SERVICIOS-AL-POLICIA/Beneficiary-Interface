@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 
 import { PhonesDrawer } from "./phones";
 
-import { InputCustom, DateInputCustom } from "@/components/common";
+import { DateInputCustom, InputCustom } from "@/components";
 import { Person as PersonInterface } from "@/utils/interfaces";
 
 const fields = [
