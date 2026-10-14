@@ -1,5 +1,7 @@
 "use server";
-import { apiClient } from "@/services";
+
+import { webActionError } from "@/utils/helpers/server-action-error";
+import { apiClient } from "@/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getDocuments = async (affiliateId: string): Promise<ResponseData> => {
@@ -20,7 +22,11 @@ export const getDocuments = async (affiliateId: string): Promise<ResponseData> =
       message: "Datos para creación de documentos obtenidos exitosamente",
       data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener los todos los documentos.",
@@ -54,7 +60,11 @@ export const createAffiliateDocument = async (
       error: data.error,
       message: data.message,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al crear el documento",
@@ -87,7 +97,11 @@ export const updateAffiliateDocument = async (
       error: data.error,
       message: data.message,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al actualizar el documento",
@@ -113,7 +127,11 @@ export const getAffiliateDocuments = async (affiliateId: string): Promise<Respon
       message: "Documentos del afiliado obtenido exitosamente",
       data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener los documentos del afiliado",
@@ -125,7 +143,9 @@ export const getAffiliateDocuments = async (affiliateId: string): Promise<Respon
 
 export const getViewDocument = async (affiliateId: string, documentId: string): Promise<ResponseData> => {
   try {
-    const response = await apiClient.GET(`beneficiaries/affiliates/${affiliateId}/documents/${documentId}`);
+    const response = await apiClient.GET_BLOB(
+      `beneficiaries/affiliates/${affiliateId}/documents/${documentId}`,
+    );
     const data = await response.blob();
 
     if (!response.ok) {
@@ -141,11 +161,14 @@ export const getViewDocument = async (affiliateId: string, documentId: string): 
       message: "Expediente obtenido exitosamente",
       data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener el expediente",
-      data: [],
     };
   }
 };
@@ -172,7 +195,11 @@ export const deleteDocument = async (
       error: data.error,
       message: data.message,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al crear o actualizar el expediente",

@@ -63,6 +63,7 @@ export function ModalRegisterFileDossier({
           ? affiliateFileDossier.fileDossierId.toString()
           : String(fileDossierId);
       const initialName = `fileDossier-${affiliateId}-${fileId}`;
+      const uploadVariant = isUpdate && affiliateFileDossier ? "update" : "create";
 
       for (let i = 0; i < totalChunks; i++) {
         const start = i * CHUNK_SIZE;
@@ -74,7 +75,7 @@ export function ModalRegisterFileDossier({
         body.append("chunk", chunk);
         body.append("nameChunk", initialName + "-" + i);
 
-        const response = await postUploadChunk(body);
+        const response = await postUploadChunk(body, uploadVariant);
 
         if (response.error) {
           toast.danger("Error al subir el archivo: " + response.message);

@@ -5,28 +5,29 @@ import { Link, Tooltip } from "@heroui/react";
 import { UserSession } from "./userSession";
 
 import { ThemeSwitch, Logo, Search } from "@/components";
-import { urlLogin } from "@/services";
-import { User } from "@/utils/interfaces";
-import { logout, searchPerson } from "@/api";
+import { searchPerson } from "@/api/person";
 
 interface Props {
-  user: User;
+  user: {
+    name: string;
+    username: string;
+    email?: string;
+    groups: readonly string[];
+    clientRoles: readonly string[];
+  };
   environment: string;
   computerToolName: string;
+  hubUrl: string;
+  logoutUrl: string;
 }
 
-export const Navbar = ({ user, environment, computerToolName }: Props) => {
-  const onLogout = async () => {
-    await logout();
-    window.location.href = `${urlLogin}/login`;
-  };
-
+export const Navbar = ({ user, environment, computerToolName, hubUrl, logoutUrl }: Props) => {
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
       <header className="mx-auto flex h-16 w-full items-center justify-between gap-4 px-6">
         <div className="flex items-center gap-4">
           <Tooltip delay={0}>
-            <Link className="flex justify-start items-center gap-1" href={`${urlLogin}/apphub`}>
+            <Link className="flex justify-start items-center gap-1" href={hubUrl}>
               <Logo height={30} width={80} />
             </Link>
             <Tooltip.Content showArrow placement="right">
@@ -57,10 +58,12 @@ export const Navbar = ({ user, environment, computerToolName }: Props) => {
           <ThemeSwitch />
           <div className="hidden md:flex">
             <UserSession
-              name={user?.name}
-              urlLogin={`${urlLogin}/login`}
-              username={user?.username}
-              onLogout={onLogout}
+              clientRoles={user.clientRoles}
+              email={user.email}
+              groups={user.groups}
+              logoutUrl={logoutUrl}
+              name={user.name}
+              username={user.username}
             />
           </div>
         </div>

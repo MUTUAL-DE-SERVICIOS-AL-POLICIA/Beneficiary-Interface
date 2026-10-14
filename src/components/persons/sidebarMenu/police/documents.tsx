@@ -16,9 +16,14 @@ import {
   ViewerPdf,
 } from "@/components";
 import { usePerson } from "@/context/PersonContext";
-import { getAccessCookie } from "@/utils/cookie";
+import { usePermissions } from "@/context/PermissionContext";
 
 export const Documents = () => {
+  const { can } = usePermissions();
+  const canWrite = can("affiliates.documents", "write");
+  const canUpdate = can("affiliates.documents", "update");
+  const canDelete = can("affiliates.documents", "delete");
+  const canDownload = can("affiliates.documents", "download");
   const { affiliateId } = usePerson();
 
   const [documents, setDocuments] = useState<AffiliateDocument[]>([]);
@@ -39,10 +44,6 @@ export const Documents = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const sizePdf = isExpanded ? "w-[100%]" : "w-[48%] border-l pl-2";
   const sizeColumn = isExpanded ? "w-0" : "w-[52%]";
-
-  const [isCreateDocument, setIsCreateDocument] = useState(false);
-  const [isUpdateDocument, setIsUpdateDocument] = useState(false);
-  const [isDeleteDocument, setIsDeleteDocument] = useState(false);
 
   // Función reutilizable para actualizar la lista manualmente (por ejemplo, desde el modal o al eliminar)
   const refreshDocuments = useCallback(async () => {
@@ -161,34 +162,14 @@ export const Documents = () => {
       setIsEdit(false);
 
       try {
-        const [permissionsRes, documentsRes] = await Promise.all([
-          getAccessCookie(),
-          getAffiliateDocuments(affiliateId),
-        ]);
+        const { data } = await getAffiliateDocuments(affiliateId);
 
         if (cancelled) return;
-
-        // Carga de permisos
-        const permissionsData = permissionsRes.data || [];
-
-        setIsCreateDocument(permissionsData.includes("isCreateDocument"));
-        setIsUpdateDocument(permissionsData.includes("isUpdateDocument"));
-        setIsDeleteDocument(permissionsData.includes("isDeleteDocument"));
-
-        // Carga de documentos
-        if (Array.isArray(documentsRes.data)) {
-          setDocuments([]);
-        } else {
-          setDocuments(documentsRes.data?.documentsAffiliate ?? []);
-        }
+        setDocuments(Array.isArray(data) ? [] : (data?.documentsAffiliate ?? []));
       } catch {
-        if (!cancelled) {
-          toast.danger("Error al cargar la información inicial");
-        }
+        if (!cancelled) toast.danger("Error al cargar la información inicial");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -208,8 +189,8 @@ export const Documents = () => {
           isEdit={isEdit}
           isLoading={loadingAllDocument}
           switchEdit={() => setIsEdit((prev) => !prev)}
-          toEdit={isUpdateDocument || isDeleteDocument}
-          toRegister={isCreateDocument}
+          toEdit={canUpdate || canDelete}
+          toRegister={canWrite}
           onPressRegister={handleOpenModal}
         />
 
@@ -219,7 +200,7 @@ export const Documents = () => {
               documents.map((doc, key) => (
                 <CardActions
                   key={key}
-                  haveButton
+                  haveButton={canDownload}
                   activeId={String(activeDocumentId)}
                   dataId={String(doc.procedureDocumentId)}
                   height="min-h-[120px]"
@@ -231,8 +212,8 @@ export const Documents = () => {
                   textHeader={`${key + 1}. ${doc.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete={isDeleteDocument}
-                  onEdit={isUpdateDocument}
+                  onDelete={canDelete}
+                  onEdit={canUpdate}
                   onPress={() => viewTransition(doc.procedureDocumentId)}
                   onPressDelete={() => removeDocument(doc.procedureDocumentId)}
                   onPressEdit={() => editDocument(doc)}
