@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Input, Label, Card, Surface, toast, Avatar, ListBox } from "@heroui/react";
+import { Button, Input, Label, Card, Surface, toast, Avatar, ListBox, Checkbox } from "@heroui/react";
 import { useState } from "react";
 
 import { apiClient } from "@/services";
@@ -13,12 +13,13 @@ export default function Persons() {
   const [dateTo, setDateTo] = useState(dateNow);
   const [, setLoading] = useState(false);
   const [selectedReport, setSelectedReport] = useState<string[]>([]);
+  const [allRecords, setAllRecords] = useState(false);
 
   const downloadReport = async () => {
     try {
       setLoading(true);
 
-      const api = `beneficiaries/reports/${selectedReport[0]}?dateFrom=${dateFrom}&dateTo=${dateTo}`;
+      const api = `beneficiaries/reports/${selectedReport[0]}?dateFrom=${dateFrom}&dateTo=${dateTo}&allRecords=${allRecords}`;
 
       const response = await apiClient.GET(api);
 
@@ -61,6 +62,7 @@ export default function Persons() {
               <Input
                 className="w-3/4"
                 defaultValue={dateFrom}
+                disabled={allRecords}
                 type="date"
                 variant="secondary"
                 onChange={(e) => setDateFrom(e.target.value)}
@@ -71,11 +73,27 @@ export default function Persons() {
               <Input
                 className="w-3/4"
                 defaultValue={dateTo}
+                disabled={allRecords}
                 type="date"
                 variant="secondary"
                 onChange={(e) => setDateTo(e.target.value)}
               />
             </Surface>
+            <div className="flex items-center gap-3">
+              <Checkbox
+                id="label-marketing"
+                isSelected={allRecords}
+                onChange={setAllRecords}
+                className='border-2'
+              >
+                <Checkbox.Content>
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                </Checkbox.Content>
+              </Checkbox>
+              <Label htmlFor="label-marketing">Generar todos los registros</Label>
+            </div>
           </div>
           <Button
             className="mt-auto w-full border-2 bg-emerald-400 hover:bg-emerald-200 text-black"
@@ -88,6 +106,7 @@ export default function Persons() {
         </Card>
       </div>
       <Card className="card-no-outline flex-1 border-2 p-3 min-w-162.5 h-full">
+        <label>Seleccione un reporte</label>
         <div className="flex w-full flex-col gap-1 overflow-y-auto overflow-x-hidden">
           <ListBox
             aria-label="Assignee"
@@ -95,7 +114,6 @@ export default function Persons() {
             selectionMode="single"
             onSelectionChange={(keys) => {
               const selectedKey = keys instanceof Set ? keys.values().next().value : null;
-
               setSelectedReport(selectedKey == null ? [] : [String(selectedKey)]);
             }}
           >
