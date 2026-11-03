@@ -81,10 +81,10 @@ export default function Persons() {
             </Surface>
             <div className="flex items-center gap-3">
               <Checkbox
+                className="border-2"
                 id="label-marketing"
                 isSelected={allRecords}
                 onChange={setAllRecords}
-                className='border-2'
               >
                 <Checkbox.Content>
                   <Checkbox.Control>
@@ -106,7 +106,7 @@ export default function Persons() {
         </Card>
       </div>
       <Card className="card-no-outline flex-1 border-2 p-3 min-w-162.5 h-full">
-        <label>Seleccione un reporte</label>
+        <p>Seleccione un reporte</p>
         <div className="flex w-full flex-col gap-1 overflow-y-auto overflow-x-hidden">
           <ListBox
             aria-label="Assignee"
@@ -114,6 +114,7 @@ export default function Persons() {
             selectionMode="single"
             onSelectionChange={(keys) => {
               const selectedKey = keys instanceof Set ? keys.values().next().value : null;
+
               setSelectedReport(selectedKey == null ? [] : [String(selectedKey)]);
             }}
           >
