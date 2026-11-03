@@ -20,6 +20,13 @@ export type basicPersonInfo = Pick<Person, "identityCard" | "uuidColumn"> &
     fullName: string;
     nup?: number;
     kinship?: string;
+    personPhoto?: {
+      id: number;
+      path: string;
+      createdAt: string;
+      updatedAt: string;
+      deletedAt: string;
+    };
   };
 
 export type PoliceData = Affiliate & {
