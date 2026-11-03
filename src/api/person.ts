@@ -284,3 +284,93 @@ export const searchPerson = async (value: string, type: string) => {
     };
   }
 };
+
+export const createPersonPhoto = async (
+  personId: string,
+  identityCard: string,
+  body: any,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.POST(
+      `beneficiaries/persons/${personId}/createPhoto/${identityCard}`,
+      body,
+      true,
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Error al registrar la foto",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch {
+    return {
+      error: true,
+      message: "Error al registrar la foto",
+    };
+  }
+};
+
+export const updatePersonPhoto = async (
+  personId: string,
+  identityCard: string,
+  body: any,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.PATCH(
+      `beneficiaries/persons/${personId}/updatePhoto/${identityCard}`,
+      body,
+      true,
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Error al registrar la foto",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch {
+    return {
+      error: true,
+      message: "Error al registrar la foto",
+    };
+  }
+};
+
+export const deletePersonPhoto = async (personId: string): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.DELETE(`beneficiaries/persons/${personId}/deletePhoto`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Error al registrar la foto",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch {
+    return {
+      error: true,
+      message: "Error al registrar la foto",
+    };
+  }
+};
