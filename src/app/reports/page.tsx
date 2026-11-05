@@ -6,6 +6,17 @@ import { useState } from "react";
 import { apiClient } from "@/services";
 import { ExcelIcon } from "@/components";
 
+const reports = [
+  {
+    id: "registerFingerprints",
+    title: "REPORTE DE BENEFICIARIOS CON HUELLAS DIGITALES REGISTRADAS",
+  },
+  {
+    id: "registerPhotos",
+    title: "REPORTE DE BENEFICIARIOS CON FOTO REGISTRADA",
+  }
+];
+
 export default function Persons() {
   const dateNow = new Date().toISOString().split("T")[0];
 
@@ -31,7 +42,7 @@ export default function Persons() {
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("Content-Disposition");
-      const filename = contentDisposition?.match(/filename="?([^"]+)"?/i)?.[1] ?? "ventas";
+      const filename = contentDisposition?.match(/filename="?([^"]+)"?/i)?.[1] ?? selectedReport[0];
 
       const url = URL.createObjectURL(blob);
 
@@ -118,19 +129,22 @@ export default function Persons() {
               setSelectedReport(selectedKey == null ? [] : [String(selectedKey)]);
             }}
           >
-            <ListBox.Item
-              className="rounded-lg data-[focused=true]:bg-accent/10 data-[selected=true]:bg-accent/30"
-              id="registerFingerprints"
-              textValue="Bob"
-            >
-              <Avatar size="md">
-                <ExcelIcon className="h-6 w-6" />
-              </Avatar>
-              <div className="flex flex-col">
-                <Label>REPORTE DE BENEFICIARIOS CON HUELLAS DIGITALES REGISTRADAS</Label>
-              </div>
-              <ListBox.ItemIndicator />
-            </ListBox.Item>
+            {reports.map((report) => (
+              <ListBox.Item
+                key={report.id}
+                className="rounded-lg data-[focused=true]:bg-accent/10 data-[selected=true]:bg-accent/30"
+                id={report.id}
+                textValue={report.title}
+              >
+                <Avatar size="md">
+                  <ExcelIcon className="h-6 w-6" />
+                </Avatar>
+                <div className="flex flex-col">
+                  <Label>{report.title}</Label>
+                </div>
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
           </ListBox>
         </div>
       </Card>
