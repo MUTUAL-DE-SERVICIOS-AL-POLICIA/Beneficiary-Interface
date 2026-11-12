@@ -1,8 +1,7 @@
 "use server";
 
-import { webActionError } from "@/utils/helpers/server-action-error";
-
 import { apiClient } from "@/services/GatewayServerClient";
+import { webActionError } from "@/utils/helpers/server-action-error";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getPersons = async (
@@ -313,6 +312,108 @@ export const searchPerson = async (value: string, type: string) => {
     return {
       error: true,
       message: "Error al buscar a la persona",
+    };
+  }
+};
+
+export const createPersonPhoto = async (
+  personId: string,
+  identityCard: string,
+  body: any,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.POST(
+      `beneficiaries/persons/${personId}/createPhoto/${identityCard}`,
+      body,
+      true,
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Error al registrar la foto",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
+    return {
+      error: true,
+      message: "Error al registrar la foto",
+    };
+  }
+};
+
+export const updatePersonPhoto = async (
+  personId: string,
+  identityCard: string,
+  body: any,
+): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.PATCH(
+      `beneficiaries/persons/${personId}/updatePhoto/${identityCard}`,
+      body,
+      true,
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Error al registrar la foto",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
+    return {
+      error: true,
+      message: "Error al registrar la foto",
+    };
+  }
+};
+
+export const deletePersonPhoto = async (personId: string): Promise<ResponseData> => {
+  try {
+    const response = await apiClient.DELETE(`beneficiaries/persons/${personId}/deletePhoto`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        error: true,
+        message: "Error al registrar la foto",
+      };
+    }
+
+    return {
+      error: data.error,
+      message: data.message,
+    };
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
+    return {
+      error: true,
+      message: "Error al registrar la foto",
     };
   }
 };

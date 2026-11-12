@@ -5,16 +5,23 @@ import { apiClient } from "@/services/GatewayServerClient";
 
 export async function GET(request: Request) {
   const input = new URL(request.url).searchParams;
+  const report = input.get("report") ?? "";
   const dateFrom = input.get("dateFrom") ?? "";
   const dateTo = input.get("dateTo") ?? "";
+  const allRecords = input.get("allRecords") === "true";
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateFrom) || !/^\d{4}-\d{2}-\d{2}$/.test(dateTo)) {
+  const allowedReports = new Set(["registerFingerprints", "registerPhotos"]);
+
+  if (
+    !allowedReports.has(report) ||
+    (!allRecords && (!/^\d{4}-\d{2}-\d{2}$/.test(dateFrom) || !/^\d{4}-\d{2}-\d{2}$/.test(dateTo)))
+  ) {
     return new NextResponse(null, { status: 400 });
   }
 
   try {
-    const query = new URLSearchParams({ dateFrom, dateTo });
-    const upstream = await apiClient.GET_BLOB(`beneficiaries/reports/registerFingerprints?${query}`);
+    const query = new URLSearchParams({ dateFrom, dateTo, allRecords: String(allRecords) });
+    const upstream = await apiClient.GET_BLOB(`beneficiaries/reports/${report}?${query}`);
     const headers = new Headers({
       "Content-Type": upstream.headers.get("content-type") ?? "text/csv; charset=utf-8",
       "Cache-Control": "no-store",

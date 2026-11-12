@@ -66,8 +66,17 @@ export interface Person {
   createdAt: Date | string | null;
   updatedAt: Date | string | null;
   deletedAt: Date | string | null;
-
+  personPhoto?: PersonPhoto;
   personAffiliate?: PersonAffiliate[];
+}
+
+export interface PersonPhoto {
+  id: number;
+  personId: number;
+  path: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
 }
 
 export interface Column {

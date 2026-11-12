@@ -13,6 +13,7 @@ interface ProfileLayoutProps {
 
 export default async function Layout({ children, params }: ProfileLayoutProps) {
   const { uuid } = await params;
+
   const { error, message, data } = await getPerson(uuid);
 
   if (error) {
@@ -24,10 +25,11 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
   );
 
   const basicInfo = {
-    fullName: fullName,
+    fullName,
     nup: data.nup,
     identityCard: data.identityCard,
     state: true,
+    personPhoto: data.personPhoto,
   };
 
   return (
@@ -42,6 +44,7 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
         <div>
           <BreadcrumbsState />
         </div>
+
         <Options />
       </div>
 
@@ -50,7 +53,7 @@ export default async function Layout({ children, params }: ProfileLayoutProps) {
           <Sidebar features={data.features} user={basicInfo} />
         </Card>
 
-        <Card className="card-no-outline flex-1 border border-default-200 dark:border-default-600 rounded-medium p-3 min-w-[650px] h-full">
+        <Card className="card-no-outline flex-1 border border-default-200 dark:border-default-600 rounded-medium p-3 min-w-162.5 h-full">
           {children}
         </Card>
       </section>

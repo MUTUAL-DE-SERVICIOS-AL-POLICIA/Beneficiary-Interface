@@ -1,10 +1,21 @@
 "use client";
 
-import { Button, Input, Label, Card, Surface, toast, Avatar, ListBox } from "@heroui/react";
+import { Button, Input, Label, Card, Surface, toast, Avatar, ListBox, Checkbox } from "@heroui/react";
 import { useState } from "react";
 
 import { ExcelIcon } from "@/components";
 import { usePermissions } from "@/context/PermissionContext";
+
+const reports = [
+  {
+    id: "registerFingerprints",
+    title: "REPORTE DE BENEFICIARIOS CON HUELLAS DIGITALES REGISTRADAS",
+  },
+  {
+    id: "registerPhotos",
+    title: "REPORTE DE BENEFICIARIOS CON FOTO REGISTRADA",
+  },
+];
 
 export default function Persons() {
   const { can } = usePermissions();
@@ -14,6 +25,7 @@ export default function Persons() {
   const [dateTo, setDateTo] = useState(dateNow);
   const [, setLoading] = useState(false);
   const [selectedReport, setSelectedReport] = useState<string[]>([]);
+  const [allRecords, setAllRecords] = useState(false);
 
   const downloadReport = async () => {
     if (!can("reports", "download")) {
@@ -25,7 +37,13 @@ export default function Persons() {
     try {
       setLoading(true);
 
-      const api = `/api/beneficiaries/report?dateFrom=${dateFrom}&dateTo=${dateTo}`;
+      const query = new URLSearchParams({
+        report: selectedReport[0],
+        dateFrom,
+        dateTo,
+        allRecords: String(allRecords),
+      });
+      const api = `/api/beneficiaries/report?${query}`;
 
       const response = await fetch(api, { cache: "no-store" });
 
@@ -37,9 +55,7 @@ export default function Persons() {
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("Content-Disposition");
-      const filename =
-        contentDisposition?.match(/filename="?([^"]+)"?/i)?.[1] ??
-        "reporte-de-huellas-digitales-registradas.csv";
+      const filename = contentDisposition?.match(/filename="?([^"]+)"?/i)?.[1] ?? `${selectedReport[0]}.csv`;
 
       const url = URL.createObjectURL(blob);
 
@@ -70,6 +86,7 @@ export default function Persons() {
               <Input
                 className="w-3/4"
                 defaultValue={dateFrom}
+                disabled={allRecords}
                 type="date"
                 variant="secondary"
                 onChange={(e) => setDateFrom(e.target.value)}
@@ -80,11 +97,27 @@ export default function Persons() {
               <Input
                 className="w-3/4"
                 defaultValue={dateTo}
+                disabled={allRecords}
                 type="date"
                 variant="secondary"
                 onChange={(e) => setDateTo(e.target.value)}
               />
             </Surface>
+            <div className="flex items-center gap-3">
+              <Checkbox
+                className="border-2"
+                id="label-marketing"
+                isSelected={allRecords}
+                onChange={setAllRecords}
+              >
+                <Checkbox.Content>
+                  <Checkbox.Control>
+                    <Checkbox.Indicator />
+                  </Checkbox.Control>
+                </Checkbox.Content>
+              </Checkbox>
+              <Label htmlFor="label-marketing">Generar todos los registros</Label>
+            </div>
           </div>
           <Button
             className="mt-auto w-full border-2 bg-emerald-400 hover:bg-emerald-200 text-black"
@@ -97,6 +130,7 @@ export default function Persons() {
         </Card>
       </div>
       <Card className="card-no-outline flex-1 border-2 p-3 min-w-162.5 h-full">
+        <p>Seleccione un reporte</p>
         <div className="flex w-full flex-col gap-1 overflow-y-auto overflow-x-hidden">
           <ListBox
             aria-label="Assignee"
@@ -108,19 +142,22 @@ export default function Persons() {
               setSelectedReport(selectedKey == null ? [] : [String(selectedKey)]);
             }}
           >
-            <ListBox.Item
-              className="rounded-lg data-[focused=true]:bg-accent/10 data-[selected=true]:bg-accent/30"
-              id="registerFingerprints"
-              textValue="Bob"
-            >
-              <Avatar size="md">
-                <ExcelIcon className="h-6 w-6" />
-              </Avatar>
-              <div className="flex flex-col">
-                <Label>REPORTE DE BENEFICIARIOS CON HUELLAS DIGITALES REGISTRADAS</Label>
-              </div>
-              <ListBox.ItemIndicator />
-            </ListBox.Item>
+            {reports.map((report) => (
+              <ListBox.Item
+                key={report.id}
+                className="rounded-lg data-[focused=true]:bg-accent/10 data-[selected=true]:bg-accent/30"
+                id={report.id}
+                textValue={report.title}
+              >
+                <Avatar size="md">
+                  <ExcelIcon className="h-6 w-6" />
+                </Avatar>
+                <div className="flex flex-col">
+                  <Label>{report.title}</Label>
+                </div>
+                <ListBox.ItemIndicator />
+              </ListBox.Item>
+            ))}
           </ListBox>
         </div>
       </Card>
