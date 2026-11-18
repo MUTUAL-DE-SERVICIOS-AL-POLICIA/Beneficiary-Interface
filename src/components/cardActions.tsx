@@ -51,9 +51,9 @@ export const CardActions = ({
   return (
     <>
       <Card
-        className={`group flex flex-col border-2 rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
+        className={`group shrink-0 border-2 rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
       >
-        <Card.Header className="relative z-0 flex flex-1 flex-col gap-2">
+        <Card.Header className="flex flex-col gap-2 relative">
           <div className="flex justify-between items-start flex-wrap gap-2">
             <Card.Title className="pr-8">{textHeader}</Card.Title>
             <div className="flex items-center gap-1 shrink-0 min-h-8">
@@ -62,14 +62,14 @@ export const CardActions = ({
             </div>
           </div>
           <Card.Description className={`${sizeTextBody} text-foreground/80`}>{textBody}</Card.Description>
-          {!isEdit && haveButton && (
-            <div className="mt-auto flex w-full shrink-0 justify-end pt-2">
-              <Button className="w-full sm:w-auto" variant="outline" onPress={onPress}>
-                {activeId === dataId ? (isLoading ? textLoading : textActive) : textHover}
-              </Button>
-            </div>
-          )}
         </Card.Header>
+        {!isEdit && haveButton && (
+          <Card.Footer className="flex justify-end">
+            <Button className="w-full sm:w-auto" variant="outline" onPress={onPress}>
+              {activeId === dataId ? (isLoading ? textLoading : textActive) : textHover}
+            </Button>
+          </Card.Footer>
+        )}
       </Card>
 
       <ModalAlert
