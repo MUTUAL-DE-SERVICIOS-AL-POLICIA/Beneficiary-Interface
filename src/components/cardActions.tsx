@@ -51,9 +51,9 @@ export const CardActions = ({
   return (
     <>
       <Card
-        className={`group border-2 rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
+        className={`group flex flex-col border-2 rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
       >
-        <Card.Header className="flex flex-col gap-2 relative">
+        <Card.Header className="relative z-0 flex flex-1 flex-col gap-2">
           <div className="flex justify-between items-start flex-wrap gap-2">
             <Card.Title className="pr-8">{textHeader}</Card.Title>
             <div className="flex items-center gap-1 shrink-0 min-h-8">
@@ -63,7 +63,7 @@ export const CardActions = ({
           </div>
           <Card.Description className={`${sizeTextBody} text-foreground/80`}>{textBody}</Card.Description>
         </Card.Header>
-        <Card.Footer className="flex justify-end">
+        <Card.Footer className="relative z-0 mt-auto flex shrink-0 justify-end">
           {!isEdit && haveButton && (
             <Button className="w-full sm:w-auto" variant="outline" onPress={onPress}>
               {activeId === dataId ? (isLoading ? textLoading : textActive) : !isEdit ? textHover : ""}

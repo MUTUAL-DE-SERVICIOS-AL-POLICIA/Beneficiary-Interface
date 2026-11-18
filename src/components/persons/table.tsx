@@ -181,7 +181,7 @@ export const TableComponent = ({ headerColumns, startPage, startRowsMay, startRo
                 <Table.Column
                   key={column.key ?? String(column.id)}
                   allowsSorting={column.sortable}
-                  className={column.key === "identityCard" ? "text-end" : "text-start"}
+                  className="text-start"
                   id={column.key ?? String(column.id)}
                   isRowHeader={column.key === "firstName"}
                 >
@@ -203,7 +203,7 @@ export const TableComponent = ({ headerColumns, startPage, startRowsMay, startRo
                 <Table.Row key={item.id} id={item.id}>
                   <Table.Collection items={headerColumns}>
                     {(column) => (
-                      <Table.Cell className={column.key === "identityCard" ? "text-end" : undefined}>
+                      <Table.Cell className="text-start">
                         {renderCell(item, column.key ?? String(column.id))}
                       </Table.Cell>
                     )}
