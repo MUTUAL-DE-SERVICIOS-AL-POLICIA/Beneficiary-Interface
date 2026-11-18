@@ -62,14 +62,14 @@ export const CardActions = ({
             </div>
           </div>
           <Card.Description className={`${sizeTextBody} text-foreground/80`}>{textBody}</Card.Description>
-        </Card.Header>
-        <Card.Footer className="relative z-0 mt-auto flex shrink-0 justify-end">
           {!isEdit && haveButton && (
-            <Button className="w-full sm:w-auto" variant="outline" onPress={onPress}>
-              {activeId === dataId ? (isLoading ? textLoading : textActive) : !isEdit ? textHover : ""}
-            </Button>
+            <div className="mt-auto flex w-full shrink-0 justify-end pt-2">
+              <Button className="w-full sm:w-auto" variant="outline" onPress={onPress}>
+                {activeId === dataId ? (isLoading ? textLoading : textActive) : textHover}
+              </Button>
+            </div>
           )}
-        </Card.Footer>
+        </Card.Header>
       </Card>
 
       <ModalAlert
