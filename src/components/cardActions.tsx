@@ -51,7 +51,7 @@ export const CardActions = ({
   return (
     <>
       <Card
-        className={`group border-2 rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
+        className={`group shrink-0 border-2 rounded-small border-default-200 dark:border-default-200 ${height} w-auto max-w-full`}
       >
         <Card.Header className="flex flex-col gap-2 relative">
           <div className="flex justify-between items-start flex-wrap gap-2">
@@ -63,13 +63,13 @@ export const CardActions = ({
           </div>
           <Card.Description className={`${sizeTextBody} text-foreground/80`}>{textBody}</Card.Description>
         </Card.Header>
-        <Card.Footer className="flex justify-end">
-          {!isEdit && haveButton && (
+        {!isEdit && haveButton && (
+          <Card.Footer className="flex justify-end">
             <Button className="w-full sm:w-auto" variant="outline" onPress={onPress}>
-              {activeId === dataId ? (isLoading ? textLoading : textActive) : !isEdit ? textHover : ""}
+              {activeId === dataId ? (isLoading ? textLoading : textActive) : textHover}
             </Button>
-          )}
-        </Card.Footer>
+          </Card.Footer>
+        )}
       </Card>
 
       <ModalAlert

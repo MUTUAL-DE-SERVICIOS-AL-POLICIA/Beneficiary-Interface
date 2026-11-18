@@ -5,8 +5,10 @@ import { useRouter, usePathname } from "next/navigation";
 
 import { PersonsIcon, ReportIcon, CollapseTrueIcon, CollapseFalseIcon } from "@/components";
 import { useSidebar } from "@/app/providers";
+import { usePermissions } from "@/context/PermissionContext";
 
 export const SidebarRoot = () => {
+  const { can } = usePermissions();
   const { collapsed, toggleCollapsed } = useSidebar();
   const CollapseIcon = collapsed ? CollapseFalseIcon : CollapseTrueIcon;
   const router = useRouter();
@@ -14,7 +16,7 @@ export const SidebarRoot = () => {
 
   const menuItems = [
     { label: "Inicio", href: "/persons", icon: PersonsIcon },
-    { label: "Reportes", href: "/reports", icon: ReportIcon },
+    ...(can("reports", "download") ? [{ label: "Reportes", href: "/reports", icon: ReportIcon }] : []),
   ];
 
   return (

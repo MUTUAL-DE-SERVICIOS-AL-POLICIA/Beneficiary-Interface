@@ -20,7 +20,6 @@ export class FetchService extends APIConnection {
     const requestConfig = this.addInterceptors(
       {
         method: "GET",
-        credentials: "include",
       },
       contentType,
     );
@@ -33,7 +32,6 @@ export class FetchService extends APIConnection {
     const requestConfig = this.addInterceptors(
       {
         method: "POST",
-        credentials: "include",
         body: isFormData ? body : JSON.stringify(body),
       },
       headers,
@@ -45,7 +43,6 @@ export class FetchService extends APIConnection {
   async PUT(endpoint: string, body: any): Promise<any> {
     const requestConfig = this.addInterceptors({
       method: "PUT",
-      credentials: "include",
       body: JSON.stringify(body),
     });
 
@@ -58,7 +55,6 @@ export class FetchService extends APIConnection {
     const requestConfig = this.addInterceptors(
       {
         method: "PATCH",
-        credentials: "include",
         body: isFormData ? body : JSON.stringify(body),
       },
       headers,
@@ -69,7 +65,6 @@ export class FetchService extends APIConnection {
   async DELETE(endpoint: string): Promise<any> {
     const requestConfig = this.addInterceptors({
       method: "DELETE",
-      credentials: "include",
     });
 
     return this.handleRequest(endpoint, requestConfig);

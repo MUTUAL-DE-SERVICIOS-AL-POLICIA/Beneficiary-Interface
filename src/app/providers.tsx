@@ -7,10 +7,14 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Toast } from "@heroui/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
+import { PermissionProvider } from "@/context/PermissionContext";
+import type { ResourcePermission } from "@/utils/interfaces";
+
 export interface ProvidersProps {
   children: React.ReactNode;
   themeProps?: ThemeProviderProps;
   initialSidebarCollapsed?: boolean;
+  permissions?: readonly ResourcePermission[];
 }
 
 type SidebarContextType = {
@@ -77,11 +81,18 @@ export function useSidebar() {
   return context;
 }
 
-export function Providers({ children, themeProps, initialSidebarCollapsed }: ProvidersProps) {
+export function Providers({
+  children,
+  themeProps,
+  initialSidebarCollapsed,
+  permissions = [],
+}: ProvidersProps) {
   return (
     <NextThemesProvider {...themeProps}>
       <Toast.Provider placement="top end" />
-      <SidebarProvider initialCollapsed={initialSidebarCollapsed ?? true}>{children}</SidebarProvider>
+      <PermissionProvider permissions={permissions}>
+        <SidebarProvider initialCollapsed={initialSidebarCollapsed ?? true}>{children}</SidebarProvider>
+      </PermissionProvider>
     </NextThemesProvider>
   );
 }

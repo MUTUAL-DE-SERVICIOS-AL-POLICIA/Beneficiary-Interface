@@ -3,7 +3,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
 import { CityBirth, FinancialEntity, PensionEntity, Person } from "@/utils/interfaces";
-import { apiClient } from "@/services";
 
 interface PersonContextProps {
   person: Person;
@@ -33,7 +32,9 @@ export const PersonProvider: React.FC<{
 
   const loadPhoto = async () => {
     try {
-      const response = await apiClient.GET(`beneficiaries/persons/${person.id}/photo`);
+      const response = await fetch(`/api/beneficiaries/persons/${person.id}/photo`, {
+        cache: "no-store",
+      });
 
       if (!response.ok) {
         return;
@@ -90,7 +91,9 @@ export const PersonProvider: React.FC<{
       }
 
       try {
-        const response = await apiClient.GET(`beneficiaries/persons/${person.id}/photo`);
+        const response = await fetch(`/api/beneficiaries/persons/${person.id}/photo`, {
+          cache: "no-store",
+        });
 
         if (!response.ok || !isMounted) {
           return;

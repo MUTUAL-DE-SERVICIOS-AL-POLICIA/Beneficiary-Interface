@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { TabsSidebar } from "./";
 
 import { UserInfo } from "@/components";
+import { usePermissions } from "@/context/PermissionContext";
 import { Features } from "@/utils/interfaces";
 import { basicPersonInfo } from "@/utils/types";
 import { usePerson } from "@/context";
@@ -17,20 +18,30 @@ interface Props {
 }
 
 export const Sidebar = ({ user, features }: Props) => {
+  const { can } = usePermissions();
   const person = [
     { name: "DATOS PERSONALES", key: "personalData", icon: "PersonalDataIcon" },
     { name: "HUELLAS DACTILARES", key: "fingerprints", icon: "TouchIcon" },
-  ];
+  ].filter((item) => item.key !== "fingerprints" || can("persons.fingerprints", "read"));
 
   const police = [
     { name: "DATOS POLICIALES", key: "policeData", icon: "PoliceDataIcon" },
     { name: "DOCUMENTOS", key: "documents", icon: "DocumentsDataIcon" },
     { name: "EXPEDIENTES", key: "fileDossiers", icon: "FileDossiersIcon" },
-  ];
+  ].filter((item) => {
+    if (item.key === "documents") return can("affiliates.documents", "read");
+    if (item.key === "fileDossiers") return can("affiliates.file_dossiers", "read");
 
-  const beneficiaries = [{ name: "BENEFICIARIOS", key: "beneficiaries", icon: "BeneficiariesDataIcon" }];
+    return true;
+  });
 
-  const affiliates = [{ name: "AFILIADOS", key: "affiliates", icon: "AffiliateDataIcon" }];
+  const beneficiaries = can("persons.affiliates", "read")
+    ? [{ name: "BENEFICIARIOS", key: "beneficiaries", icon: "BeneficiariesDataIcon" }]
+    : [];
+
+  const affiliates = can("affiliates", "read")
+    ? [{ name: "AFILIADOS", key: "affiliates", icon: "AffiliateDataIcon" }]
+    : [];
 
   const router = useRouter();
   const { person: personData, photoUrl, loadPhoto } = usePerson();
@@ -110,11 +121,11 @@ export const Sidebar = ({ user, features }: Props) => {
     <>
       <Card.Header className="justify-center">
         <UserInfo
-          isDelete
-          isEdit
-          isRegister
-          hasPhoto={user.personPhoto !== null}
+          hasPhoto={Boolean(user.personPhoto)}
+          isDelete={can("persons.photos", "delete")}
+          isEdit={can("persons.photos", "update")}
           isPolice={features.isPolice}
+          isRegister={can("persons.photos", "write")}
           photoUrl={photoUrl}
           user={{ ...user, nup: user.nup?.toString() }}
           onPressDelete={deletePhoto}

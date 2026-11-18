@@ -1,6 +1,7 @@
 "use server";
 
-import { apiClient } from "@/services";
+import { apiClient } from "@/services/GatewayServerClient";
+import { webActionError } from "@/utils/helpers/server-action-error";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getPersons = async (
@@ -34,7 +35,11 @@ export const getPersons = async (
       persons: data.persons,
       total: data.total,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener el listado de personas",
@@ -62,11 +67,14 @@ export const getPerson = async (uuid: string): Promise<ResponseData> => {
       message: "Datos de la persona obtenido exitosamente",
       data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener datos de la persona",
-      data: [],
     };
   }
 };
@@ -89,11 +97,14 @@ export const getPersonRecords = async (personId: string): Promise<ResponseData> 
       message: data.message,
       data: data.data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener historial de modificaciones",
-      data: [],
     };
   }
 };
@@ -128,7 +139,11 @@ export const getRegisteredFingerprints = async (personId: number) => {
       message: "Ocurrió un error",
       fingerprintsRegistered: [],
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener las huellas registradas",
@@ -165,7 +180,11 @@ export const getAllFingerprintsIds = async () => {
       message: "Ocurrió un error",
       data: [],
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener el id de las huellas",
@@ -191,11 +210,14 @@ export const getAffiliates = async (id: string): Promise<ResponseData> => {
       message: "Afiliados obtenidos exitosamente",
       data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener afiliados",
-      data: [],
     };
   }
 };
@@ -218,11 +240,14 @@ export const getBeneficiaries = async (id: string): Promise<ResponseData> => {
       message: "Beneficiarios obtenidos exitosamente",
       data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener beneficiarios",
-      data: [],
     };
   }
 };
@@ -250,11 +275,14 @@ export const postFingerprints = async (
       error: false,
       message: data.message || "Huella(s) registradas exitosamente",
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener datos de la persona",
-      data: [],
     };
   }
 };
@@ -276,11 +304,14 @@ export const searchPerson = async (value: string, type: string) => {
       message: data.message,
       data: data.data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al buscar a la persona",
-      data: [],
     };
   }
 };
@@ -310,7 +341,11 @@ export const createPersonPhoto = async (
       error: data.error,
       message: data.message,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al registrar la foto",
@@ -343,7 +378,11 @@ export const updatePersonPhoto = async (
       error: data.error,
       message: data.message,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al registrar la foto",
@@ -367,7 +406,11 @@ export const deletePersonPhoto = async (personId: string): Promise<ResponseData>
       error: data.error,
       message: data.message,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al registrar la foto",

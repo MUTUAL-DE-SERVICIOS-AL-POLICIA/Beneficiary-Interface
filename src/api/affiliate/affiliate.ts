@@ -1,6 +1,8 @@
 "use server";
 
-import { apiClient } from "@/services";
+import { webActionError } from "@/utils/helpers/server-action-error";
+
+import { apiClient } from "@/services/GatewayServerClient";
 import { ResponseData } from "@/utils/interfaces";
 
 export const getAffiliate = async (affiliateId: string): Promise<ResponseData> => {
@@ -21,7 +23,11 @@ export const getAffiliate = async (affiliateId: string): Promise<ResponseData> =
       message: "Datos del afiliado obtenido exitosamente",
       data,
     };
-  } catch {
+  } catch (e: any) {
+    const webError = webActionError(e);
+
+    if (webError) return webError;
+
     return {
       error: true,
       message: "Error al obtener datos del afiliado",

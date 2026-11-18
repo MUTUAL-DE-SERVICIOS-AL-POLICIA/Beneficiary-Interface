@@ -3,8 +3,8 @@
 import { Button, Input, Label, Card, Surface, toast, Avatar, ListBox, Checkbox } from "@heroui/react";
 import { useState } from "react";
 
-import { apiClient } from "@/services";
 import { ExcelIcon } from "@/components";
+import { usePermissions } from "@/context/PermissionContext";
 
 const reports = [
   {
@@ -14,10 +14,11 @@ const reports = [
   {
     id: "registerPhotos",
     title: "REPORTE DE BENEFICIARIOS CON FOTO REGISTRADA",
-  }
+  },
 ];
 
 export default function Persons() {
+  const { can } = usePermissions();
   const dateNow = new Date().toISOString().split("T")[0];
 
   const [dateFrom, setDateFrom] = useState(dateNow);
@@ -27,12 +28,24 @@ export default function Persons() {
   const [allRecords, setAllRecords] = useState(false);
 
   const downloadReport = async () => {
+    if (!can("reports", "download")) {
+      toast.danger("No tiene permiso para descargar reportes");
+
+      return;
+    }
+
     try {
       setLoading(true);
 
-      const api = `beneficiaries/reports/${selectedReport[0]}?dateFrom=${dateFrom}&dateTo=${dateTo}&allRecords=${allRecords}`;
+      const query = new URLSearchParams({
+        report: selectedReport[0],
+        dateFrom,
+        dateTo,
+        allRecords: String(allRecords),
+      });
+      const api = `/api/beneficiaries/report?${query}`;
 
-      const response = await apiClient.GET(api);
+      const response = await fetch(api, { cache: "no-store" });
 
       if (!response.ok) {
         toast.danger("No se pudo generar el reporte");
@@ -42,7 +55,7 @@ export default function Persons() {
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("Content-Disposition");
-      const filename = contentDisposition?.match(/filename="?([^"]+)"?/i)?.[1] ?? selectedReport[0];
+      const filename = contentDisposition?.match(/filename="?([^"]+)"?/i)?.[1] ?? `${selectedReport[0]}.csv`;
 
       const url = URL.createObjectURL(blob);
 

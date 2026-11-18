@@ -19,10 +19,15 @@ import {
   ViewerPdf,
 } from "@/components";
 import { usePerson } from "@/context/PersonContext";
-import { getAccessCookie } from "@/utils/cookie";
+import { usePermissions } from "@/context/PermissionContext";
 import { AffiliateFileDossier } from "@/utils/interfaces";
 
 export const FileDossiers = () => {
+  const { can } = usePermissions();
+  const canWrite = can("affiliates.file_dossiers", "write");
+  const canUpdate = can("affiliates.file_dossiers", "update");
+  const canDelete = can("affiliates.file_dossiers", "delete");
+  const canDownload = can("affiliates.file_dossiers", "download");
   const [fileDossiers, setFileDossiers] = useState<AffiliateFileDossier[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingAllFileDossiers, setLoadingAllFileDossiers] = useState(false);
@@ -40,10 +45,6 @@ export const FileDossiers = () => {
   const onClose = () => setIsOpen(false);
   const [isUpdate, setIsUpdate] = useState(false);
   const [fileDossierEdit, setFileDossierEdit] = useState<AffiliateFileDossier>();
-  const [isCreateFileDossier, setIsCreateFileDossier] = useState(false);
-  const [isUpdateFileDossier, setIsUpdateFileDossier] = useState(false);
-  const [isDeleteFileDossier, setIsDeleteFileDossier] = useState(false);
-
   // Función para refrescar manualmente los expedientes (usada al eliminar o desde el Modal)
   const refreshFileDossiers = useCallback(async () => {
     if (!affiliateId) return;
@@ -176,37 +177,19 @@ export const FileDossiers = () => {
       setIsEdit(false);
 
       try {
-        const [permissionsRes, dossiersRes] = await Promise.all([
-          getAccessCookie(),
-          getAffiliateShowFileDossiers(affiliateId),
-        ]);
+        const { error, message, data } = await getAffiliateShowFileDossiers(affiliateId);
 
         if (cancelled) return;
-
-        // Permisos
-        const permissionsData = permissionsRes.data || [];
-
-        setIsCreateFileDossier(permissionsData.includes("isCreateFileDossier"));
-        setIsUpdateFileDossier(permissionsData.includes("isUpdateFileDossier"));
-        setIsDeleteFileDossier(permissionsData.includes("isDeleteFileDossier"));
-
-        // Expedientes
-        if (dossiersRes.error) {
-          toast.danger(dossiersRes.message);
-          setFileDossiers([]);
-        } else if (Array.isArray(dossiersRes.data)) {
+        if (error) {
+          toast.danger(message);
           setFileDossiers([]);
         } else {
-          setFileDossiers(dossiersRes.data?.fileDossiersAffiliate || []);
+          setFileDossiers(Array.isArray(data) ? [] : (data?.fileDossiersAffiliate ?? []));
         }
       } catch {
-        if (!cancelled) {
-          toast.danger("Ocurrió un error al obtener la información inicial");
-        }
+        if (!cancelled) toast.danger("Ocurrió un error al obtener la información inicial");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -226,8 +209,8 @@ export const FileDossiers = () => {
           isEdit={isEdit}
           isLoading={loadingAllFileDossiers}
           switchEdit={switchEdit}
-          toEdit={isUpdateFileDossier || isDeleteFileDossier}
-          toRegister={isCreateFileDossier}
+          toEdit={canUpdate || canDelete}
+          toRegister={canWrite}
           onPressRegister={handleOpenModal}
         />
 
@@ -237,7 +220,7 @@ export const FileDossiers = () => {
               fileDossiers.map((fileDossier: AffiliateFileDossier, key) => (
                 <CardActions
                   key={key}
-                  haveButton
+                  haveButton={canDownload}
                   activeId={String(activeFileDossierId)}
                   dataId={String(fileDossier.fileDossierId)}
                   isEdit={isEdit}
@@ -248,8 +231,8 @@ export const FileDossiers = () => {
                   textHeader={`${key + 1}. ${fileDossier.shortened}`}
                   textHover="VISUALIZAR"
                   textLoading="CARGANDO..."
-                  onDelete={isDeleteFileDossier}
-                  onEdit={isUpdateFileDossier}
+                  onDelete={canDelete}
+                  onEdit={canUpdate}
                   onPress={() => viewTransition(fileDossier.fileDossierId)}
                   onPressDelete={() => removeFileDossier(fileDossier.fileDossierId)}
                   onPressEdit={() => editFileDossier(fileDossier)}
